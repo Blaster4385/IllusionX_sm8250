@@ -659,6 +659,7 @@ struct smb_charger {
 	int			cutoff_count;
 	bool			dcin_aicl_done;
 	bool			hvdcp3_standalone_config;
+	bool			dcin_icl_user_set;
 	bool			low_voltage_charger;
 	bool			apsd_ext_timeout;
 	bool			qc3p5_detected;

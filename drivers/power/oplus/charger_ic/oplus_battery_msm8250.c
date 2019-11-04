@@ -8948,9 +8948,8 @@ irqreturn_t dc_plugin_irq_handler(int irq, void *data)
 
 		/*
 		 * Remove USB's CP ILIM vote - inapplicable for wireless
-		 * parallel charging. Also undo FCC STEPPER's 1.5 A vote.
+		 * parallel charging.
 		 */
-		vote(chg->fcc_votable, FCC_STEPPER_VOTER, false, 0);
 		if (chg->cp_ilim_votable)
 			vote(chg->cp_ilim_votable, ICL_CHANGE_VOTER, false, 0);
 
@@ -9011,14 +9010,19 @@ irqreturn_t dc_plugin_irq_handler(int irq, void *data)
 		vote(chg->dc_suspend_votable, CHG_TERMINATION_VOTER, false, 0);
 		vote(chg->fcc_main_votable, WLS_PL_CHARGING_VOTER, false, 0);
 
-		/* Force 1500mA FCC on WLS removal if fcc stepper is enabled */
-		if (chg->fcc_stepper_enable)
-			vote(chg->fcc_votable, FCC_STEPPER_VOTER,
-							true, 3000000);
 		chg->last_wls_vout = 0;
 		chg->dcin_aicl_done = false;
 		chg->dcin_icl_user_set = false;
 	}
+
+	/*
+	 * Vote for 1500mA FCC upon WLS detach and remove vote upon attach if
+	 * FCC stepper is enabled.
+	 */
+	if (chg->fcc_stepper_enable && !vbus_present)
+		vote(chg->fcc_votable, FCC_STEPPER_VOTER, !dcin_present,
+				dcin_present ? 0 : 1500000);
+
 #ifdef OPLUS_FEATURE_CHG_BASIC
 	if (chg->dc_psy)
 #endif

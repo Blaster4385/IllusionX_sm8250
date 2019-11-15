@@ -928,6 +928,9 @@ void oplus_dcin_irq_enable(bool enable)
 	&& (!chg->typec_legacy || chg->typec_legacy_use_rp_icl))
 
 static void update_sw_icl_max(struct smb_charger *chg, int pst);
+#ifndef OPLUS_FEATURE_CHG_BASIC
+static int smblib_get_prop_typec_mode(struct smb_charger *chg);
+#endif
 
 int smblib_read(struct smb_charger *chg, u16 addr, u8 *val)
 {
@@ -2686,6 +2689,13 @@ int smblib_set_icl_current(struct smb_charger *chg, int icl_ua)
 			goto out;
 		}
 	}
+
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	/* Do not configure ICL from SW for DAM cables */
+	if (smblib_get_prop_typec_mode(chg) ==
+			    POWER_SUPPLY_TYPEC_SINK_DEBUG_ACCESSORY)
+		return 0;
+#endif
 
 #ifdef OPLUS_CUSTOM_OP_DEF
 	if (suspend || (suspend_usb && !chg->wireless_present))
@@ -5152,6 +5162,12 @@ static int smblib_get_prop_ufp_mode(struct smb_charger *chg)
 
 	case SNK_RP_SHORT_BIT:
 		return POWER_SUPPLY_TYPEC_NON_COMPLIANT;
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	case SNK_DAM_500MA_BIT:
+	case SNK_DAM_1500MA_BIT:
+	case SNK_DAM_3000MA_BIT:
+		return POWER_SUPPLY_TYPEC_SINK_DEBUG_ACCESSORY;
+#endif
 	default:
 		break;
 	}
@@ -14335,6 +14351,9 @@ static enum power_supply_property smb5_batt_props[] = {
 #endif
 };
 
+#ifndef OPLUS_FEATURE_CHG_BASIC
+#define DEBUG_ACCESSORY_TEMP_DECIDEGC	250
+#endif
 static int smb5_batt_get_prop(struct power_supply *psy,
 		enum power_supply_property psp,
 		union power_supply_propval *val)
@@ -14441,7 +14460,11 @@ static int smb5_batt_get_prop(struct power_supply *psy,
 #endif
 #ifndef OPLUS_FEATURE_CHG_BASIC
 	case POWER_SUPPLY_PROP_TEMP:
-		rc = smblib_get_prop_from_bms(chg, POWER_SUPPLY_PROP_TEMP, val);
+		if (chg->typec_mode == POWER_SUPPLY_TYPEC_SINK_DEBUG_ACCESSORY)
+			val->intval = DEBUG_ACCESSORY_TEMP_DECIDEGC;
+		else
+			rc = smblib_get_prop_from_bms(chg,
+						POWER_SUPPLY_PROP_TEMP, val);
 		break;
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
 		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;

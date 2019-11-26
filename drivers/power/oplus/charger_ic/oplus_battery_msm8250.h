@@ -641,6 +641,7 @@ struct smb_charger {
 	bool			hvdcp3_standalone_config;
 	bool			low_voltage_charger;
 	bool			apsd_ext_timeout;
+	bool			qc3p5_detected;
 
 	/* workaround flag */
 	u32			wa_flags;

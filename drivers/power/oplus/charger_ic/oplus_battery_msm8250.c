@@ -2691,6 +2691,10 @@ int smblib_set_icl_current(struct smb_charger *chg, int icl_ua)
 		}
 	}
 
+	if (chg->chg_param.smb_version == PMI632_SUBTYPE)
+		schgm_flash_torch_priority(chg, suspend ? TORCH_BOOST_MODE :
+					TORCH_BUCK_MODE);
+
 #ifndef OPLUS_FEATURE_CHG_BASIC
 	/* Do not configure ICL from SW for DAM cables */
 	if (smblib_get_prop_typec_mode(chg) ==

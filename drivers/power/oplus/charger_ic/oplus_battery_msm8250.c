@@ -6208,7 +6208,7 @@ int smblib_set_prop_pd_active(struct smb_charger *chg,
 	const struct apsd_result *apsd = smblib_get_apsd_result(chg);
 
 	int rc = 0;
-	int sec_charger;
+	int sec_charger, typec_mode;
 
 	/*
 	 * Ignore repetitive notification while PD is active, which
@@ -6281,6 +6281,13 @@ int smblib_set_prop_pd_active(struct smb_charger *chg,
 	smblib_usb_pd_adapter_allowance_override(chg,
 			!!chg->pd_active ? FORCE_5V : FORCE_NULL);
 	smblib_update_usb_type(chg);
+
+	if (chg->real_charger_type == POWER_SUPPLY_TYPE_USB &&
+			!chg->ok_to_pd) {
+		typec_mode = smblib_get_prop_typec_mode(chg);
+		if (typec_rp_med_high(chg, typec_mode))
+			vote(chg->usb_icl_votable, USB_PSY_VOTER, false, 0);
+	}
 
 #ifdef OPLUS_FEATURE_CHG_BASIC
    if (chg->pd_active)  {

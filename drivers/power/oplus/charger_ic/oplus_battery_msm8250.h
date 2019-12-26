@@ -14,6 +14,7 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/consumer.h>
 #include <linux/extcon-provider.h>
+#include <linux/usb/typec.h>
 #include <../drivers/power/supply/qcom/storm-watch.h>
 #include <../drivers/power/supply/qcom/battery.h>
 
@@ -100,6 +101,7 @@ enum print_reason {
 #define WLS_PL_CHARGING_VOTER		"WLS_PL_CHARGING_VOTER"
 #define ICL_CHANGE_VOTER		"ICL_CHANGE_VOTER"
 #define WLCH_FFC_VOTER			"WLCH_FFC_VOTER"
+#define TYPEC_SWAP_VOTER		"TYPEC_SWAP_VOTER"
 
 #define BOOST_BACK_STORM_COUNT	3
 #ifdef OPLUS_FEATURE_CHG_BASIC
@@ -143,6 +145,7 @@ enum print_reason {
 #define DCIN_ICL_MIN_UA			100000
 #define DCIN_ICL_MAX_UA			1500000
 #define DCIN_ICL_STEP_UA		100000
+#define ROLE_REVERSAL_DELAY_MS		500
 
 enum smb_mode {
 	PARALLEL_MASTER = 0,
@@ -444,6 +447,7 @@ struct smb_charger {
 	struct mutex		dcin_aicl_lock;
 	spinlock_t		typec_pr_lock;
 	struct mutex		adc_lock;
+	struct mutex		typec_lock;
 
 	/* power supplies */
 	struct power_supply		*batt_psy;
@@ -473,6 +477,12 @@ struct smb_charger {
 	struct smb_regulator	*vbus_vreg;
 	struct smb_regulator	*vconn_vreg;
 	struct regulator	*dpdm_reg;
+
+	/* typec */
+	struct typec_port	*typec_port;
+	struct typec_capability	typec_caps;
+	struct typec_partner	*typec_partner;
+	struct typec_partner_desc typec_partner_desc;
 
 	/* votables */
 	struct votable		*dc_suspend_votable;
@@ -512,6 +522,7 @@ struct smb_charger {
 	struct delayed_work	usbov_dbc_work;
 	struct delayed_work	pr_swap_detach_work;
 	struct delayed_work	pr_lock_clear_work;
+	struct delayed_work	role_reversal_check;
 #ifdef OPLUS_CUSTOM_OP_DEF
 	struct delayed_work	reset_rd_work;
 #endif
@@ -586,6 +597,7 @@ struct smb_charger {
 	bool			typec_present;
 	int			fake_input_current_limited;
 	int			typec_mode;
+	int			dr_mode;
 	int			usb_icl_change_irq_enabled;
 	u32			jeita_status;
 	u8			float_cfg;
@@ -1030,6 +1042,8 @@ int smblib_get_prop_pr_swap_in_progress(struct smb_charger *chg,
 				union power_supply_propval *val);
 int smblib_set_prop_pr_swap_in_progress(struct smb_charger *chg,
 				const union power_supply_propval *val);
+int smblib_typec_port_type_set(const struct typec_capability *cap,
+					enum typec_port_type type);
 int smblib_get_prop_from_bms(struct smb_charger *chg,
 				enum power_supply_property psp,
 				union power_supply_propval *val);

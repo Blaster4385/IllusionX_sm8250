@@ -5394,46 +5394,28 @@ int smblib_get_pe_start(struct smb_charger *chg,
 int smblib_get_prop_smb_health(struct smb_charger *chg)
 {
 	int rc;
-	u8 stat;
 	int input_present;
+	union power_supply_propval prop = {0, };
 
 	rc = smblib_is_input_present(chg, &input_present);
 	if (rc < 0)
 		return rc;
 
-	if (input_present == INPUT_NOT_PRESENT)
+	if ((input_present == INPUT_NOT_PRESENT) || (!is_cp_available(chg)))
 		return POWER_SUPPLY_HEALTH_UNKNOWN;
 
-	if (chg->wa_flags & SW_THERM_REGULATION_WA) {
-		if (chg->smb_temp == -ENODATA)
-			return POWER_SUPPLY_HEALTH_UNKNOWN;
+	rc = power_supply_get_property(chg->cp_psy,
+				POWER_SUPPLY_PROP_CP_DIE_TEMP, &prop);
+	if (rc < 0)
+		return rc;
 
-		if (chg->smb_temp > SMB_TEMP_RST_THRESH)
-			return POWER_SUPPLY_HEALTH_OVERHEAT;
-
-		if (chg->smb_temp > SMB_TEMP_REG_H_THRESH)
-			return POWER_SUPPLY_HEALTH_HOT;
-
-		if (chg->smb_temp > SMB_TEMP_REG_L_THRESH)
-			return POWER_SUPPLY_HEALTH_WARM;
-
-		return POWER_SUPPLY_HEALTH_COOL;
-	}
-
-	rc = smblib_read(chg, SMB_TEMP_STATUS_REG, &stat);
-	if (rc < 0) {
-		smblib_err(chg, "Couldn't read SMB_TEMP_STATUS_REG, rc=%d\n",
-				rc);
-		return POWER_SUPPLY_HEALTH_UNKNOWN;
-	}
-
-	if (stat & SMB_TEMP_RST_BIT)
+	if (prop.intval > SMB_TEMP_RST_THRESH)
 		return POWER_SUPPLY_HEALTH_OVERHEAT;
 
-	if (stat & SMB_TEMP_UB_BIT)
+	if (prop.intval > SMB_TEMP_REG_H_THRESH)
 		return POWER_SUPPLY_HEALTH_HOT;
 
-	if (stat & SMB_TEMP_LB_BIT)
+	if (prop.intval > SMB_TEMP_REG_L_THRESH)
 		return POWER_SUPPLY_HEALTH_WARM;
 
 	return POWER_SUPPLY_HEALTH_COOL;
@@ -13639,19 +13621,17 @@ static int smb5_usb_main_get_prop(struct power_supply *psy,
 		break;
 	/* Use this property to report SMB health */
 	case POWER_SUPPLY_PROP_HEALTH:
-		val->intval = smblib_get_prop_smb_health(chg);
+		rc = val->intval = smblib_get_prop_smb_health(chg);
 		break;
 	default:
 		pr_debug("get prop %d is not supported in usb-main\n", psp);
 		rc = -EINVAL;
 		break;
 	}
-	if (rc < 0) {
+	if (rc < 0)
 		pr_debug("Couldn't get prop %d rc = %d\n", psp, rc);
-		return -ENODATA;
-	}
 
-	return 0;
+	return rc;
 }
 
 static int smb5_usb_main_set_prop(struct power_supply *psy,

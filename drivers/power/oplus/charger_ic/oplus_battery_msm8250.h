@@ -567,6 +567,7 @@ struct smb_charger {
 	bool			ok_to_pd;
 	bool			typec_legacy;
 	bool			typec_irq_en;
+	bool			typec_role_swap_failed;
 	struct	usbpd	*oplus_pd;
 	struct	usbpd_svid_handler	oplus_svid_handler;
 	/* cached status */

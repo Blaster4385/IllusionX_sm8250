@@ -438,6 +438,9 @@ struct smb_charger {
 	struct smb_chg_freq	chg_freq;
 	int			otg_delay_ms;
 	int			weak_chg_icl_ua;
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	u32			sdam_base;
+#endif
 	bool			pd_not_supported;
 
 	/* locks */

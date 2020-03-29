@@ -2413,6 +2413,9 @@ void smblib_uusb_removal(struct smb_charger *chg)
 	struct smb_irq_data *data;
 	struct storm_watch *wdata;
 	int sec_charger;
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	u8 val[2] = {0};
+#endif
 
 	sec_charger = chg->sec_pl_present ? POWER_SUPPLY_CHARGER_SEC_PL :
 				POWER_SUPPLY_CHARGER_SEC_NONE;
@@ -8205,6 +8208,20 @@ static void typec_src_removal(struct smb_charger *chg)
 		smblib_err(chg, "Couldn't write float charger options rc=%d\n",
 			rc);
 
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	if (chg->sdam_base) {
+		rc = smblib_write(chg,
+			chg->sdam_base + SDAM_QC_DET_STATUS_REG, 0);
+		if (rc < 0)
+			pr_err("Couldn't clear SDAM QC status rc=%d\n", rc);
+
+		rc = smblib_batch_write(chg,
+			chg->sdam_base + SDAM_QC_ADC_LSB_REG, val, 2);
+		if (rc < 0)
+			pr_err("Couldn't clear SDAM ADC status rc=%d\n", rc);
+	}
+#endif
+
 	if (!chg->pr_swap_in_progress) {
 		rc = smblib_usb_pd_adapter_allowance_override(chg, FORCE_NULL);
 		if (rc < 0)
@@ -12952,6 +12969,48 @@ static int smb5_parse_dt_voltages(struct smb5 *chip, struct device_node *node)
 	return 0;
 }
 
+#ifndef OPLUS_FEATURE_CHG_BASIC
+static int smb5_parse_sdam(struct smb5 *chip, struct device_node *node)
+{
+	struct device_node *child;
+	struct smb_charger *chg = &chip->chg;
+	struct property *prop;
+	const char *name;
+	int rc;
+	u32 base;
+	u8 type;
+
+	for_each_available_child_of_node(node, child) {
+		of_property_for_each_string(child, "reg", prop, name) {
+			rc = of_property_read_u32(child, "reg", &base);
+			if (rc < 0) {
+				pr_err("Failed to read base rc=%d\n", rc);
+				return rc;
+			}
+
+			rc = smblib_read(chg, base + PERPH_TYPE_OFFSET, &type);
+			if (rc < 0) {
+				pr_err("Failed to read type rc=%d\n", rc);
+				return rc;
+			}
+
+			switch (type) {
+			case SDAM_TYPE:
+				chg->sdam_base = base;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if (!chg->sdam_base)
+		pr_debug("SDAM node not defined\n");
+
+	return 0;
+}
+#endif
+
 static int smb5_parse_dt(struct smb5 *chip)
 {
 	struct smb_charger *chg = &chip->chg;
@@ -12978,6 +13037,12 @@ static int smb5_parse_dt(struct smb5 *chip)
 	rc = smb5_parse_dt_misc(chip, node);
 	if (rc < 0)
 		return rc;
+
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	rc = smb5_parse_sdam(chip, node);
+	if (rc < 0)
+		return rc;
+#endif
 
 	return 0;
 }
@@ -13050,6 +13115,10 @@ static enum power_supply_property smb5_usb_props[] = {
 	POWER_SUPPLY_PROP_SKIN_HEALTH,
 	POWER_SUPPLY_PROP_APSD_RERUN,
 	POWER_SUPPLY_PROP_APSD_TIMEOUT,
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	POWER_SUPPLY_PROP_CHARGER_STATUS,
+	POWER_SUPPLY_PROP_INPUT_VOLTAGE_SETTLED,
+#endif
 };
 #ifdef OPLUS_FEATURE_CHG_BASIC
 /**************************************************************
@@ -13169,6 +13238,9 @@ static int smb5_usb_get_prop(struct power_supply *psy,
 	struct smb5 *chip = power_supply_get_drvdata(psy);
 	struct smb_charger *chg = &chip->chg;
 	int rc = 0;
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	u8 reg = 0, buff[2] = {0};
+#endif
 	val->intval = 0;
 
 	switch (psp) {
@@ -13333,6 +13405,26 @@ static int smb5_usb_get_prop(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_APSD_TIMEOUT:
 		val->intval = chg->apsd_ext_timeout;
 		break;
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	case POWER_SUPPLY_PROP_CHARGER_STATUS:
+		val->intval = 0;
+		if (chg->sdam_base) {
+			rc = smblib_read(chg,
+				chg->sdam_base + SDAM_QC_DET_STATUS_REG, &reg);
+			if (!rc)
+				val->intval = reg;
+		}
+		break;
+	case POWER_SUPPLY_PROP_INPUT_VOLTAGE_SETTLED:
+		val->intval = 0;
+		if (chg->sdam_base) {
+			rc = smblib_batch_read(chg,
+				chg->sdam_base + SDAM_QC_ADC_LSB_REG, buff, 2);
+			if (!rc)
+				val->intval = (buff[1] << 8 | buff[0]) * 1038;
+		}
+		break;
+#endif
 	default:
 		pr_err("get prop %d is not supported in usb\n", psp);
 		rc = -EINVAL;
@@ -15158,11 +15250,25 @@ static int smb5_init_hw(struct smb5 *chip)
 	struct smb_charger *chg = &chip->chg;
 	int rc;
 #ifndef OPLUS_FEATURE_CHG_BASIC
-	u8 val = 0, mask = 0;
+	u8 val = 0, mask = 0, buf[2] = {0};
 #endif
 
 	if (chip->dt.no_battery)
 		chg->fake_capacity = 50;
+
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	if (chg->sdam_base) {
+		rc = smblib_write(chg,
+			chg->sdam_base + SDAM_QC_DET_STATUS_REG, 0);
+		if (rc < 0)
+			pr_err("Couldn't clear SDAM QC status rc=%d\n", rc);
+
+		rc = smblib_batch_write(chg,
+			chg->sdam_base + SDAM_QC_ADC_LSB_REG, buf, 2);
+		if (rc < 0)
+			pr_err("Couldn't clear SDAM ADC status rc=%d\n", rc);
+	}
+#endif
 
 	if (chip->dt.batt_profile_fcc_ua < 0)
 		smblib_get_charge_param(chg, &chg->param.fcc,
@@ -18094,6 +18200,11 @@ static void smb5_shutdown(struct platform_device *pdev)
 	}
 	/* disable all interrupts */
 	smb5_disable_interrupts(chg);
+
+#ifndef OPLUS_FEATURE_CHG_BASIC
+	/* disable the SMB_EN configuration */
+	smblib_masked_write(chg, MISC_SMB_EN_CMD_REG, EN_CP_CMD_BIT, 0);
+#endif
 
 	/* configure power role for UFP */
 	if (chg->connector_type == POWER_SUPPLY_CONNECTOR_TYPEC)

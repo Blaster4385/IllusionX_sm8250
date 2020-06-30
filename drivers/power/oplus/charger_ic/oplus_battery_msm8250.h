@@ -1009,6 +1009,8 @@ int smblib_get_die_health(struct smb_charger *chg,
 				union power_supply_propval *val);
 int smblib_get_prop_smb_health(struct smb_charger *chg);
 int smblib_get_prop_connector_health(struct smb_charger *chg);
+int smblib_get_prop_input_current_max(struct smb_charger *chg,
+				  union power_supply_propval *val);
 int smblib_get_skin_temp_status(struct smb_charger *chg);
 int smblib_get_prop_vph_voltage_now(struct smb_charger *chg,
 				union power_supply_propval *val);

@@ -2587,6 +2587,7 @@ static int smblib_get_pulse_cnt(struct smb_charger *chg, int *count)
 #define USBIN_150MA	150000
 #define USBIN_500MA	500000
 #define USBIN_900MA	900000
+#define USBIN_1000MA	1000000
 static int set_sdp_current(struct smb_charger *chg, int icl_ua)
 {
 	int rc;
@@ -5388,6 +5389,24 @@ int smblib_get_prop_low_power(struct smb_charger *chg,
 int smblib_get_prop_input_current_settled(struct smb_charger *chg,
 					  union power_supply_propval *val)
 {
+	return smblib_get_charge_param(chg, &chg->param.icl_stat, &val->intval);
+}
+
+int smblib_get_prop_input_current_max(struct smb_charger *chg,
+					  union power_supply_propval *val)
+{
+	int icl_ua = 0, rc;
+
+	rc = smblib_get_charge_param(chg, &chg->param.usb_icl, &icl_ua);
+	if (rc < 0)
+		return rc;
+
+	if (is_override_vote_enabled_locked(chg->usb_icl_votable) &&
+					icl_ua < USBIN_1000MA) {
+		val->intval = USBIN_1000MA;
+		return 0;
+	}
+
 	return smblib_get_charge_param(chg, &chg->param.icl_stat, &val->intval);
 }
 
@@ -13302,7 +13321,7 @@ static int smb5_usb_get_prop(struct power_supply *psy,
 		val->intval = get_client_vote(chg->usb_icl_votable, PD_VOTER);
 		break;
 	case POWER_SUPPLY_PROP_CURRENT_MAX:
-		rc = smblib_get_prop_input_current_settled(chg, val);
+		rc = smblib_get_prop_input_current_max(chg, val);
 		break;
 	case POWER_SUPPLY_PROP_TYPE:
 		val->intval = POWER_SUPPLY_TYPE_USB_PD;

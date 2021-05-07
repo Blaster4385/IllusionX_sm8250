@@ -1734,22 +1734,6 @@ static int __dwc3_gadget_ep_queue(struct dwc3_ep *dep, struct dwc3_request *req)
 	return 0;
 }
 
-static int dwc3_gadget_wakeup(struct usb_gadget *g)
-{
-	struct dwc3	*dwc = gadget_to_dwc(g);
-
-	schedule_work(&dwc->wakeup_work);
-	return 0;
-}
-
-static bool dwc3_gadget_is_suspended(struct dwc3 *dwc)
-{
-	if (atomic_read(&dwc->in_lpm) ||
-			dwc->link_state == DWC3_LINK_STATE_U3)
-		return true;
-	return false;
-}
-
 static int dwc3_gadget_ep_queue(struct usb_ep *ep, struct usb_request *request,
 	gfp_t gfp_flags)
 {

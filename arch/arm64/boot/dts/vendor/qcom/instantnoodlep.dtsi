@@ -1,4 +1,3 @@
-
 &op_wlchg {
 	status = "okay";
 	op,max-voltage-mv = <4550>;

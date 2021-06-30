@@ -111,7 +111,6 @@
         };
 };
 
-
 &tlmm {
 	uphall_tri_state_key_active: uphall_tri_state_key_active {
 		mux {

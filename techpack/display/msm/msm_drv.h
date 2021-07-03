@@ -107,8 +107,6 @@ enum msm_mdp_plane_property {
 
 	/* range properties */
 	PLANE_PROP_ZPOS = PLANE_PROP_BLOBCOUNT,
-	//xiaoxiaohuan@OnePlus.MultiMediaService,2018/08/04, add for fingerprint
-    PLANE_PROP_CUSTOM,
 	PLANE_PROP_ALPHA,
 	PLANE_PROP_COLOR_FILL,
 	PLANE_PROP_H_DECIMATE,
@@ -168,7 +166,6 @@ enum msm_mdp_crtc_property {
 	CRTC_PROP_IDLE_PC_STATE,
 
 	/* total # of properties */
-	CRTC_PROP_CUSTOM,
 	CRTC_PROP_COUNT
 };
 
@@ -204,7 +201,6 @@ enum msm_mdp_conn_property {
 	CONNECTOR_PROP_FB_TRANSLATION_MODE,
 	CONNECTOR_PROP_QSYNC_MODE,
 	CONNECTOR_PROP_CMD_FRAME_TRIGGER_MODE,
-	CONNECTOR_PROP_CUSTOM,
 
 	/* total # of properties */
 	CONNECTOR_PROP_COUNT
@@ -705,7 +701,6 @@ struct msm_drm_private {
 
 	/* update the flag when msm driver receives shutdown notification */
 	bool shutdown_in_progress;
-	ktime_t  commit_end_time;
 };
 
 /* get struct msm_kms * from drm_device * */

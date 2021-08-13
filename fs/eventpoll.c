@@ -1815,10 +1815,15 @@ fetch_events:
 			}
 
 			spin_unlock_irq(&ep->wq.lock);
+#ifdef CONFIG_ONEPLUS_HEALTHINFO
+			current->in_epoll = 1;
+#endif
 			if (!freezable_schedule_hrtimeout_range(to, slack,
 								HRTIMER_MODE_ABS))
 				timed_out = 1;
-
+#ifdef CONFIG_ONEPLUS_HEALTHINFO
+			current->in_epoll = 0;
+#endif
 			spin_lock_irq(&ep->wq.lock);
 		}
 
@@ -1890,9 +1895,9 @@ static int ep_loop_check_proc(void *priv, void *cookie, int call_nests)
 			 * during ep_insert().
 			 */
 			if (list_empty(&epi->ffd.file->f_tfile_llink)) {
-				if (get_file_rcu(epi->ffd.file))
-					list_add(&epi->ffd.file->f_tfile_llink,
-						 &tfile_check_list);
+				get_file(epi->ffd.file);
+				list_add(&epi->ffd.file->f_tfile_llink,
+					 &tfile_check_list);
 			}
 		}
 	}
@@ -2138,7 +2143,6 @@ SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
 error_tgt_fput:
 	if (full_check) {
 		clear_tfile_check_list();
-		loop_check_gen++;
 		mutex_unlock(&epmutex);
 	}
 

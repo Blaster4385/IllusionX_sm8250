@@ -350,7 +350,7 @@
 	};
 
 	chosen {
-		bootargs = "noirqdebug nodebugmon rcupdate.rcu_expedited=1 rcu_nocbs=0-7 kpti=off";
+		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7 kpti=off";
 	};
 
 	firmware: firmware {
@@ -374,7 +374,6 @@
 			};
 		};
 	};
-	/delete-node/ android;
 
 	reserved_memory: reserved-memory {
 		#address-cells = <2>;
@@ -779,7 +778,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU0>;
-		status = "disabled";
 	};
 
 	jtag_mm1: jtagmm@7140000 {
@@ -791,7 +789,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU1>;
-		status = "disabled";
 	};
 
 	jtag_mm2: jtagmm@7240000 {
@@ -803,7 +800,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU2>;
-		status = "disabled";
 	};
 
 	jtag_mm3: jtagmm@7340000 {
@@ -815,7 +811,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU3>;
-		status = "disabled";
 	};
 
 	jtag_mm4: jtagmm@7440000 {
@@ -827,7 +822,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU4>;
-		status = "disabled";
 	};
 
 	jtag_mm5: jtagmm@7540000 {
@@ -839,7 +833,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU5>;
-		status = "disabled";
 	};
 
 	jtag_mm6: jtagmm@7640000 {
@@ -851,7 +844,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU6>;
-		status = "disabled";
 	};
 
 	jtag_mm7: jtagmm@7740000 {
@@ -863,7 +855,6 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU7>;
-		status = "disabled";
 	};
 
 	qcom,devfreq-l3 {
@@ -4738,8 +4729,6 @@
 		      <0xb2e5510 0x5c0>;
 		reg-names = "smmu_iova_ipa", "tcs_cmd";
 		wlan-en-gpio = <&tlmm 20 0>;
-		qcom,bt-en-gpio = <&tlmm 21 0>;
-		qcom,sw-ctrl-gpio = <&tlmm 124 0>;
 		pinctrl-names = "wlan_en_active", "wlan_en_sleep";
 		pinctrl-0 = <&cnss_wlan_en_active>;
 		pinctrl-1 = <&cnss_wlan_en_sleep>;
@@ -4986,24 +4975,19 @@
 
 	qfprom: qfprom@780000 {
 		compatible = "qcom,qfprom";
-		reg = <0x00780000 0x5000>;
+		reg = <0x00784000 0x3000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 		read-only;
 		ranges;
 
-		gpu_lm_efuse: gpu_lm_efuse@45c8 {
-			reg = <0x45c8 0x4>;
+		gpu_lm_efuse: gpu_lm_efuse@5c8 {
+			reg = <0x5c8 0x4>;
 		};
 
-		gpu_speed_bin: gpu_speed_bin@419b {
-			reg = <0x419b 0x1>;
+		gpu_speed_bin: gpu_speed_bin@19b {
+			reg = <0x19b 0x1>;
 			bits = <5 3>;
-		};
-
-		thermal_speed_bin: thermal-speed-bin@1a2 {
-			reg = <0x1a2 0x1>;
-			bits = <7 1>;
 		};
 	};
 };
@@ -5060,6 +5044,7 @@
 #include "kona-pinctrl.dtsi"
 #include "kona-smp2p.dtsi"
 #include "kona-usb.dtsi"
+#include "kona-coresight.dtsi"
 #include "kona-sde.dtsi"
 #include "kona-sde-pll.dtsi"
 #include "msm-rdbg.dtsi"

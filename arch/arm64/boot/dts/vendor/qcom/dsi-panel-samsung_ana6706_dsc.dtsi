@@ -182,7 +182,7 @@
 					15 01 00 00 00 00 02 B5 13					/* ELVSS DIM OFF */
 					15 01 00 00 00 00 02 53 28
 					39 01 00 00 00 00 03 F0 A5 A5
-					/* 60hz �?120hz Transition */
+					/* 60hz 鈫?120hz Transition */
 					39 01 00 00 00 00 03 F0 5A 5A
 					15 01 00 00 00 00 02 60 02					/* 60HZ */
 					15 01 00 00 00 00 02 F7 0F
@@ -625,7 +625,7 @@
 					15 01 00 00 00 00 02 B5 13					/* ELVSS DIM OFF */
 					15 01 00 00 00 00 02 53 28
 					39 01 00 00 00 00 03 F0 A5 A5
-					/* 60hz �?120hz Transition */
+					/* 60hz 鈫?120hz Transition */
 					39 01 00 00 00 00 03 F0 5A 5A
 					15 01 00 00 00 00 02 60 22					/* 120HZ */
 					15 01 00 00 00 00 02 F7 0F
@@ -964,7 +964,6 @@
 
 			timing@2 {
 				qcom,mdss-dsi-timing-default;
-				qcom,mdss-dsi-splash-dms-switch-to-this-timing;
 				qcom,mdss-dsi-panel-framerate = <120>;
 				qcom,mdss-dsi-panel-clockrate = <1452000000>;
 				qcom,mdss-dsi-panel-width = <1440>;
@@ -1069,7 +1068,7 @@
 					15 01 00 00 00 00 02 B5 13					/* ELVSS DIM OFF */
 					15 01 00 00 00 00 02 53 28
 					39 01 00 00 00 00 03 F0 A5 A5
-					/* 60hz �?120hz Transition */
+					/* 60hz 鈫?120hz Transition */
 					39 01 00 00 00 00 03 F0 5A 5A
 					15 01 00 00 00 00 02 60 20					/* 120HZ */
 					15 01 00 00 00 00 02 F7 0F
@@ -1509,7 +1508,7 @@
 					15 01 00 00 00 00 02 B5 13					/* ELVSS DIM OFF */
 					15 01 00 00 00 00 02 53 28
 					39 01 00 00 00 00 03 F0 A5 A5
-					/* 60hz �?120hz Transition */
+					/* 60hz 鈫?120hz Transition */
 					39 01 00 00 00 00 03 F0 5A 5A
 					15 01 00 00 00 00 02 60 00					/*60HZ*/
 					15 01 00 00 00 00 02 F7 0F
@@ -1887,7 +1886,5 @@
 			qcom,display-topology = <1 1 1>,<2 2 1>;
 			qcom,default-topology-index = <1>;
 		};
-		/delete-node/ timing@0;
-		/delete-node/ timing@1;
 	};
 };

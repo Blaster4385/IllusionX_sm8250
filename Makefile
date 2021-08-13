@@ -436,6 +436,7 @@ LINUXINCLUDE    := \
 		-I$(objtree)/arch/$(SRCARCH)/include/generated \
 		$(if $(KBUILD_SRC), -I$(srctree)/include) \
 		-I$(objtree)/include \
+		-I$(srctree)/drivers/oneplus/include \
 		$(USERINCLUDE)
 
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -454,8 +455,31 @@ KBUILD_LDFLAGS :=
 GCC_PLUGINS_CFLAGS :=
 CLANG_FLAGS :=
 
-export ARCH SRCARCH CONFIG_SHELL HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
-export CPP AR NM STRIP OBJCOPY OBJDUMP OBJSIZE READELF KBUILD_HOSTLDFLAGS KBUILD_HOSTLDLIBS
+# yanglijie@SYSTEM,20201215,use oem specific macro
+# filter ebba ...
+ifneq ($(filter ebba%, $(OEM_TARGET_PRODUCT)),)
+KBUILD_CFLAGS += -DOEM_TARGET_PRODUCT_EBBA
+KBUILD_CFLAGS += $(MTK_CDEFS_FACTORY_VERSION)
+KBUILD_CFLAGS += $(MTK_CDEFS_FINAL_RELEASE)
+else
+# filter lemonades ...
+ifneq ($(filter lemonades%, $(OEM_TARGET_PRODUCT)),)
+KBUILD_CFLAGS += -DOEM_TARGET_PRODUCT_LEMONADES
+else
+# filter avicii ...
+ifneq ($(filter avicii%, $(OEM_TARGET_PRODUCT)),)
+KBUILD_CFLAGS += -DOEM_TARGET_PRODUCT_AVICII
+else
+# filter kebab ...
+ifneq ($(filter kebab%, $(OEM_TARGET_PRODUCT)),)
+KBUILD_CFLAGS += -DOEM_TARGET_PRODUCT_KEBAB
+endif
+endif
+endif
+endif
+
+export ARCH SRCARCH CONFIG_SHELL HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE AS LD CC
+export CPP AR NM STRIP OBJCOPY OBJDUMP KBUILD_HOSTLDFLAGS KBUILD_HOSTLDLIBS
 export MAKE LEX YACC AWK GENKSYMS INSTALLKERNEL PERL PYTHON PYTHON2 PYTHON3 UTS_MACHINE
 export HOSTCXX KBUILD_HOSTCXXFLAGS LDFLAGS_MODULE CHECK CHECKFLAGS
 
@@ -602,7 +626,7 @@ export KBUILD_MODULES KBUILD_BUILTIN
 ifeq ($(KBUILD_EXTMOD),)
 # Objects we will link into vmlinux / subdirs we need to visit
 init-y		:= init/
-drivers-y	:= drivers/ sound/ firmware/ techpack/
+drivers-y	:= drivers/ sound/ firmware/ techpack/ opslalib/
 net-y		:= net/
 libs-y		:= lib/
 core-y		:= usr/

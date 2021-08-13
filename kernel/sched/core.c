@@ -47,7 +47,7 @@ static inline void tracing_mark_write(int serial, char *name, unsigned int value
 #if TRACE_DEBUG
 	trace_printk("C|%d|%s|%u\n", 99990+serial, name, value);
 #endif
-
+}
 #ifdef CONFIG_SCHED_DEBUG
 /*
  * Debugging: various feature bits

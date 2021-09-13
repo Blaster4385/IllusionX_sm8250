@@ -809,7 +809,7 @@ static int smb1351_float_voltage_set(struct smb1351_charger *chip,
 	u8 temp;
 
 	if ((vfloat_mv < MIN_FLOAT_MV) || (vfloat_mv > MAX_FLOAT_MV)) {
-		pr_err("bad float voltage mv =%d asked to set\n", vfloat_mv);
+		pr_debug("bad float voltage mv =%d asked to set\n", vfloat_mv);
 		return -EINVAL;
 	}
 
@@ -1615,7 +1615,7 @@ static int smb1351_parallel_set_chg_suspend(struct smb1351_charger *chip,
 					APSD_EN_BIT | SUSPEND_MODE_CTRL_BIT,
 						SUSPEND_MODE_CTRL_BY_I2C);
 		if (rc) {
-			pr_err("Couldn't set USB suspend rc=%d\n", rc);
+			pr_debug("Couldn't set USB suspend rc=%d\n", rc);
 			return rc;
 		}
 

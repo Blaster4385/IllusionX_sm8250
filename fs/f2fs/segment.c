@@ -1262,6 +1262,8 @@ static void __init_discard_policy(struct f2fs_sb_info *sbi,
 				struct discard_policy *dpolicy,
 				int discard_type, unsigned int granularity)
 {
+	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
+
 	/* common policy */
 	dpolicy->type = discard_type;
 	dpolicy->sync = true;
@@ -1281,7 +1283,9 @@ static void __init_discard_policy(struct f2fs_sb_info *sbi,
 		dpolicy->ordered = true;
 		if (utilization(sbi) > DEF_DISCARD_URGENT_UTIL) {
 			dpolicy->granularity = 1;
-			dpolicy->max_interval = DEF_MIN_DISCARD_ISSUE_TIME;
+			if (atomic_read(&dcc->discard_cmd_cnt))
+				dpolicy->max_interval =
+					DEF_MIN_DISCARD_ISSUE_TIME;
 		}
 	} else if (discard_type == DPOLICY_FORCE) {
 		dpolicy->min_interval = DEF_MIN_DISCARD_ISSUE_TIME;
@@ -1941,152 +1945,15 @@ static int issue_discard_thread(void *data)
 	set_freezable();
 
 	do {
-#ifdef CONFIG_F2FS_OF2FS
-		if (f2fs_odiscard_enable) {
-			wait_event_interruptible_timeout(*q,
-					kthread_should_stop() || freezing(current) ||
-					dcc->discard_wake || dcc->odiscard_wake || dcc->otrim_wake,
-					msecs_to_jiffies(wait_ms));
-
-			if (dcc->discard_wake)
-				expect_odiscard_type = MAX_DPOLICY;
-
-			if (dcc->odiscard_wake) {
-				odiscard_expire = jiffies + msecs_to_jiffies(ODISCARD_EXEC_TIME_NO_CHARGING);
-				expect_odiscard_type = DPOLICY_ODISCARD;
-			}
-
-			if (dcc->otrim_wake) {
-				expect_odiscard_type = DPOLICY_FSTRIM;
-				discard_cmd_cnt = atomic_read(&dcc->discard_cmd_cnt);
-			}
-
-			dcc->discard_wake = 0;
-			dcc->odiscard_wake = 0;
-			dcc->otrim_wake = 0;
-
-			/* clean up pending candidates before going to sleep */
-			if (atomic_read(&dcc->queued_discard))
-				__wait_all_discard_cmd(sbi, NULL);
-
-			if (try_to_freeze())
-				continue;
-			if (f2fs_readonly(sbi->sb))
-				continue;
-			if (kthread_should_stop()) {
-				f2fs_printk(sbi, KERN_INFO "Debug:%s:discard thread return f2fs_odiscard_enable:%d",
-							__func__, sbi->gc_opt_enable);
-				return 0;
-			}
-			if (is_sbi_flag_set(sbi, SBI_NEED_FSCK)) {
-				wait_ms = dpolicy.max_interval;
-				continue;
-			}
-
-			if (expect_odiscard_type == DPOLICY_ODISCARD) {
-				/* limit odiscard exec 8 s */
-				if (!f2fs_device.battery_charging && time_after(jiffies, odiscard_expire)) {
-					wait_ms = DEF_MAX_DISCARD_ISSUE_TIME_OF2FS;
-					continue;
-				}
-			}
-
-			if (sbi->gc_mode == GC_URGENT) {
-				discard_type = DPOLICY_FORCE;
-				__init_discard_policy_of2fs(sbi, &dpolicy, discard_type, 1);
-			} else {
-				discard_type = select_discard_type_of2fs(sbi, expect_odiscard_type);
-				__init_discard_policy_of2fs(sbi, &dpolicy, discard_type,
-							dcc->discard_granularity);
-
-				if (DPOLICY_FSTRIM == expect_odiscard_type && DPOLICY_FSTRIM != discard_type)
-					f2fs_trim_status = F2FS_TRIM_INTERRUPT;
-			}
-
-			sb_start_intwrite(sbi->sb);
-
-			issued = __issue_discard_cmd(sbi, &dpolicy);
-			if (issued > 0) {
-				__wait_all_discard_cmd(sbi, &dpolicy);
-				if (dpolicy.io_busy) {
-					wait_ms = f2fs_time_to_wait(sbi, DISCARD_TIME);
-					if (!wait_ms)
-						wait_ms = dpolicy.mid_interval;
-				} else {
-					wait_ms = dpolicy.min_interval;
-				}
-			} else if (issued == -1) {
-				wait_ms = f2fs_time_to_wait(sbi, DISCARD_TIME);
-				if (!wait_ms)
-					wait_ms = dpolicy.mid_interval;
-			} else {
-				wait_ms = dpolicy.max_interval;
-			}
-
-			if (discard_type == DPOLICY_FSTRIM) {
-				discard_cmd_cnt -= issued;
-				if (discard_cmd_cnt <= 0 || 0 == issued) {
-					expect_odiscard_type = MAX_DPOLICY;
-					wait_ms = dpolicy.max_interval;
-					f2fs_trim_status = F2FS_TRIM_FINISH;
-				}
-			}
-
-			sb_end_intwrite(sbi->sb);
-
-		} else {
-
+		if (sbi->gc_mode == GC_URGENT ||
+			!f2fs_available_free_memory(sbi, DISCARD_CACHE))
+			__init_discard_policy(sbi, &dpolicy, DPOLICY_FORCE, 1);
+		else
 			__init_discard_policy(sbi, &dpolicy, DPOLICY_BG,
 						dcc->discard_granularity);
 
-			wait_event_interruptible_timeout(*q,
-					kthread_should_stop() || freezing(current) ||
-					dcc->discard_wake,
-					msecs_to_jiffies(wait_ms));
-
-			if (dcc->discard_wake)
-				dcc->discard_wake = 0;
-
-			/* clean up pending candidates before going to sleep */
-			if (atomic_read(&dcc->queued_discard))
-				__wait_all_discard_cmd(sbi, NULL);
-
-			if (try_to_freeze())
-				continue;
-			if (f2fs_readonly(sbi->sb))
-				continue;
-			if (kthread_should_stop()) {
-				f2fs_printk(sbi, KERN_INFO "Debug:%s:non-jumpedin, discard thread return", __func__);
-				return 0;
-			}
-			if (is_sbi_flag_set(sbi, SBI_NEED_FSCK)) {
-				wait_ms = dpolicy.max_interval;
-				continue;
-			}
-
-			if (sbi->gc_mode == GC_URGENT)
-				__init_discard_policy(sbi, &dpolicy, DPOLICY_FORCE, 1);
-
-			sb_start_intwrite(sbi->sb);
-
-			issued = __issue_discard_cmd(sbi, &dpolicy);
-			if (issued > 0) {
-				__wait_all_discard_cmd(sbi, &dpolicy);
-				wait_ms = dpolicy.min_interval;
-			} else if (issued == -1) {
-				wait_ms = f2fs_time_to_wait(sbi, DISCARD_TIME);
-				if (!wait_ms)
-					wait_ms = dpolicy.mid_interval;
-			} else {
-				wait_ms = dpolicy.max_interval;
-			}
-
-			sb_end_intwrite(sbi->sb);
-
-		}
-#else
-		__init_discard_policy(sbi, &dpolicy, DPOLICY_BG,
-					dcc->discard_granularity);
+		if (!atomic_read(&dcc->discard_cmd_cnt))
+			wait_ms = dpolicy.max_interval;
 
 		wait_event_interruptible_timeout(*q,
 				kthread_should_stop() || freezing(current) ||
@@ -2113,9 +1980,6 @@ static int issue_discard_thread(void *data)
 			continue;
 		}
 
-		if (sbi->gc_mode == GC_URGENT)
-			__init_discard_policy(sbi, &dpolicy, DPOLICY_FORCE, 1);
-
 		sb_start_intwrite(sbi->sb);
 
 		issued = __issue_discard_cmd(sbi, &dpolicy);
@@ -2131,7 +1995,6 @@ static int issue_discard_thread(void *data)
 		}
 
 		sb_end_intwrite(sbi->sb);
-#endif
 	} while (!kthread_should_stop());
 	f2fs_printk(sbi, KERN_INFO "Debug:%s:discard return", __func__);
 	return 0;

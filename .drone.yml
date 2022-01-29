@@ -1,0 +1,25 @@
+--- 
+clone: 
+  depth: 1
+kind: pipeline
+name: Blaster4385Pipeline
+steps: 
+  - 
+    environment: 
+      TG_TOKEN: 
+        from_secret: TOKEN
+      CHANNEL_ID:
+        from_secret: CHATID
+    commands:
+      - cp -af sources.list /etc/apt/
+      - cp -af 99own /etc/apt/apt.conf.d/
+      - apt-get update && apt-get -y clean && apt-get -y autoremove && apt-get -y upgrade
+      - apt-get install -yq tzdata
+      - ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && date
+      - apt-get -y install git bison flex libxml2 libssl-dev bc zip default-jre python3 python3-pip wget
+      - "curl https://raw.githubusercontent.com/Blaster4385/scripts/main/build_lemonkebab | bash"
+    image: ubuntu:jammy-20211029
+    name: Build
+    trigger: 
+      branch: 
+        - master

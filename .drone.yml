@@ -16,7 +16,7 @@ steps:
       - wget https://github.com/Blaster4385/scripts/raw/main/lib32-glibc-x86_64-2.34-1-x86_64.pkg.tar.zst && wget https://github.com/Blaster4385/scripts/blob/main/glibc-x86_64-2.34-1-x86_64.pkg.tar.zst
       - pacman -U lib32-glibc-x86_64-2.34-1-x86_64.pkg.tar.zst glibc-x86_64-2.34-1-x86_64.pkg.tar.zst
       - "curl https://raw.githubusercontent.com/Blaster4385/scripts/main/build_lemonkebab | bash"
-    image: ubuntu:jammy-20211029
+    image: archlinux:base-devel
     name: Build
     trigger: 
       branch: 

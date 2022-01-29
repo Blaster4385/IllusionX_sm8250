@@ -11,12 +11,10 @@ steps:
       CHANNEL_ID:
         from_secret: CHATID
     commands:
-      - cp -af sources.list /etc/apt/
-      - cp -af 99own /etc/apt/apt.conf.d/
-      - apt-get update && apt-get -y clean && apt-get -y autoremove && apt-get -y upgrade
-      - apt-get install -yq tzdata
-      - ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && date
-      - apt-get -y install git bison flex libxml2 libssl-dev bc zip default-jre python3 python3-pip wget curl
+      - pacman -Syu --needed --noconfirm wget base-devel xmlto inetutils bc cpio python-sphinx python-sphinx_rtd_theme graphviz imagemagick git python2 python zip unzip dpkg
+      - wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo6_6.2+20201114-2build1_amd64.deb -O libtinfo6.deb && dpkg-deb -R libtinfo6.deb libtinfo && cp libtinfo/lib/x86_64-linux-gnu/libtinfo.so.6.2 /usr/lib/libtinfo.so.6
+      - wget https://github.com/Blaster4385/scripts/raw/main/lib32-glibc-x86_64-2.34-1-x86_64.pkg.tar.zst && wget https://github.com/Blaster4385/scripts/blob/main/glibc-x86_64-2.34-1-x86_64.pkg.tar.zst
+      - pacman -U lib32-glibc-x86_64-2.34-1-x86_64.pkg.tar.zst glibc-x86_64-2.34-1-x86_64.pkg.tar.zst
       - "curl https://raw.githubusercontent.com/Blaster4385/scripts/main/build_lemonkebab | bash"
     image: ubuntu:jammy-20211029
     name: Build

@@ -142,10 +142,5 @@ arch/arm64/boot/dts/vendor/
 # Tech package directories
 techpack/
 
-#
-# Ignoring Android.bp link file
-#
-Android.bp
-
 # Output directory
 out/

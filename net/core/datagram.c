@@ -294,7 +294,7 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
 						       struct sk_buff *skb),
 				    int *peeked, int *off, int *err)
 {
-	struct sk_buff *skb, *last = NULL;
+	struct sk_buff *skb, *last;
 	long timeo;
 
 	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);

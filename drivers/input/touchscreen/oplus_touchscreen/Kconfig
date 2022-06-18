@@ -38,4 +38,14 @@ config TOUCHPANEL_MULTI_NOFLASH
 	help
 	  Say Y here if you have multiple noflash touchscreen.
 
+config TOUCHPANEL_SYNAPTICS
+#	default y
+	bool "TP Synaptics_IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using Synaptics_IC
+
+if TOUCHPANEL_SYNAPTICS
+source "drivers/input/touchscreen/oplus_touchscreen/Synaptics/Kconfig"
+endif
+
 source "drivers/input/touchscreen/oplus_touchscreen/util_interface/Kconfig"

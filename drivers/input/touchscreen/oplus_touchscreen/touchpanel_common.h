@@ -87,6 +87,14 @@
 #define CHK_BIT(data, flag) ((data) & (flag))
 #define VK_TAB {KEY_MENU, KEY_HOMEPAGE, KEY_BACK, KEY_SEARCH}
 
+#define SET_GESTURE_BIT(state, state_flag, config, config_flag)\
+	if (CHK_BIT(state, (1 << state_flag))) {\
+		SET_BIT(config, (1 << config_flag));\
+	} else {\
+		CLR_BIT(config, (1 << config_flag));\
+	}
+
+
 #define TOUCH_BIT_CHECK           0x3FF  //max support 10 point report.using for detect non-valid points
 #define MAX_FW_NAME_LENGTH        60
 #define MAX_EXTRA_NAME_LENGTH     60
@@ -705,6 +713,7 @@ struct touchpanel_data {
 	bool glove_mode_support;                            /*glove_mode support feature*/
 	bool black_gesture_support;                         /*black_gesture support feature*/
 	bool single_tap_support;                            /*black_gesture support feature*/
+    bool black_gesture_indep_support;                   /*black_gesture indep control support feature*/
 	bool charger_pump_support;                          /*charger_pump support feature*/
 	bool wireless_charger_support;                      /*wireless_charger support feature*/
 	bool headset_pump_support;                          /*headset_pump support feature*/
@@ -770,6 +779,7 @@ struct touchpanel_data {
 #if GESTURE_RATE_MODE
 	int geature_ignore;
 #endif
+    int gesture_enable_indep;                         /*independent control state of black gesture*/
 	int palm_enable;
 	int es_enable;
 	int fd_enable;
@@ -1029,6 +1039,7 @@ struct oplus_touchpanel_operations {
 				     int max_num);
 #endif
 	int (*tp_refresh_switch)(void *chip_data, int fps);
+    void (*set_gesture_state)         (void *chip_data, int state);
 };
 
 struct aging_test_proc_operations {

@@ -6,3 +6,4 @@ subdir-ccflags-$(CONFIG_TOUCHPANEL_MTK_PLATFORM) += -I$(srctree)/drivers/misc/me
 obj-$(CONFIG_TOUCHPANEL_OPLUS) += util_interface/
 obj-$(CONFIG_TOUCHPANEL_OPLUS) += touchpanel_common_driver.o
 obj-$(CONFIG_TOUCHPANEL_ALGORITHM) += touchpanel_algorithm.o
+obj-$(CONFIG_TOUCHPANEL_SYNAPTICS) += Synaptics/

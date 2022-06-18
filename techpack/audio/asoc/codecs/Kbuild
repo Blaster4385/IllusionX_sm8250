@@ -274,7 +274,7 @@ mbhc_dlkm-y := $(MBHC_OBJS)
 obj-$(CONFIG_SND_SOC_MSM_HDMI_CODEC_RX) += hdmi_dlkm.o
 hdmi_dlkm-y := $(HDMICODEC_OBJS)
 
-obj-$(OPLUS_FEATURE_SMARTPA_PM) += smartpa_pm.o
+obj-$(OPLUS_FEATURE_SMARTPA_PM) += smartpa_pm/smartpa_pm.o
 smartpa_pm_dlkm-y := $(SMARTPA_PM_OBJS)
 
 

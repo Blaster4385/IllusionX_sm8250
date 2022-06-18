@@ -123,11 +123,7 @@ obj-$(CONFIG_OPLUS_MULTI_KSWAPD) += multi_kswapd/
 #endif /*OPLUS_FEATURE_MULTI_KSWAPD*/
 
 #if defined(OPLUS_FEATURE_PROCESS_RECLAIM)
-ifeq ($(OPLUS_FEATURE_PROCESS_RECLAIM), yes)
 obj-$(CONFIG_PROCESS_RECLAIM_ENHANCE) += process_mm_reclaim.o
-else
-obj-$(CONFIG_PROCESS_RECLAIM_ENHANCE) += process_mm_reclaim_weak.o
-endif
 #endif /*defined(OPLUS_FEATURE_PROCESS_RECLAIM)
 
 #if defined(OPLUS_FEATURE_VIRTUAL_RESERVE_MEMORY)
@@ -139,7 +135,5 @@ obj-$(CONFIG_PHYSICAL_ANTI_FRAGMENTATION) += multi_freearea.o
 #endif
 
 #if defined(OPLUS_FEATURE_MEMLEAK_DETECT)
-ifeq ($(OPLUS_FEATURE_MEMLEAK_DETECT), yes)
 obj-$(CONFIG_DUMP_TASKS_MEM) += task_mem/
-endif
 #endif /*defined(OPLUS_FEATURE_MEMLEAK_DETECT)

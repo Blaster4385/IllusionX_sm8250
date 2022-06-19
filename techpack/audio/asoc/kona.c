@@ -6904,13 +6904,13 @@ static struct snd_soc_dai_link_component tfa98xx_dai_link_component[]=
 	},
 #else
 	{
-		.name= "tfa98xx.0-0034",
-		.dai_name="tfa98xx-aif-0-34",
+		.name= "tfa98xx.2-0034",
+		.dai_name="tfa98xx-aif-2-34",
 	},
 
 	{
-		.name= "tfa98xx.0-0035",
-		.dai_name="tfa98xx-aif-0-35",
+		.name= "tfa98xx.2-0035",
+		.dai_name="tfa98xx-aif-2-35",
 	},
 #endif
 };

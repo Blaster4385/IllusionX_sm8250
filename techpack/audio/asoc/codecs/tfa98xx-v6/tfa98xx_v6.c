@@ -470,8 +470,6 @@ static char ftm_tfa98xx_flag[5] = "fail";
 #define BOOT_MODE_FACTORY 3
 #endif
 
-#define DEBUG_BUFFER_SIZE 1024
-
 static int kernel_debug_open(struct inode *inode, struct file *file)
 {
 	pr_info("%s \n", __FUNCTION__);
@@ -482,16 +480,17 @@ static ssize_t kernel_debug_read(struct file *file, char __user *buf,
                                  size_t count, loff_t *pos)
 {
 /* /sys/kernel/debug/ftm_tfa98xx */
-	char buffer[DEBUG_BUFFER_SIZE];
+	const int size = 1024;
+	char buffer[size];
 	int n = 0;
 
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%s ", ftm_load_file);
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%s ", ftm_clk);
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%s ", ftm_SpeakerCalibration);
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%s ", ftm_path);
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%s ", ftm_spk_resistance);
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%s ", ftm_tfa98xx_flag);
-	n += scnprintf(buffer + n, DEBUG_BUFFER_SIZE - n, "%d ", ftm_mode);
+	n += scnprintf(buffer + n, size - n, "%s ", ftm_load_file);
+	n += scnprintf(buffer + n, size - n, "%s ", ftm_clk);
+	n += scnprintf(buffer + n, size - n, "%s ", ftm_SpeakerCalibration);
+	n += scnprintf(buffer + n, size - n, "%s ", ftm_path);
+	n += scnprintf(buffer + n, size - n, "%s ", ftm_spk_resistance);
+	n += scnprintf(buffer + n, size - n, "%s ", ftm_tfa98xx_flag);
+	n += scnprintf(buffer + n, size - n, "%d ", ftm_mode);
 
 	return simple_read_from_buffer(buf, count, pos, buffer, n);
 }

@@ -239,7 +239,9 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= wsa883x/
 	obj-y	+= sdm660_cdc/
 	oby-y	+= ak4376/
+	obj-y	+= aw87xx/
 	obj-y	+= max989xx/
+	obj-y	+= sia81xx/
 	obj-y	+= tfa98xx-v6/
 endif
 # Module information used by KBuild framework

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2020 The Linux Foundation. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -73,6 +73,8 @@ struct hdd_context;
 #define VENDOR1_AP_OUI_TYPE "\x00\xE0\x4C"
 #define VENDOR1_AP_OUI_TYPE_SIZE 3
 
+#define WLAN_BSS_MEMBERSHIP_SELECTOR_VHT_PHY 126
+#define WLAN_BSS_MEMBERSHIP_SELECTOR_HT_PHY 127
 #define BASIC_RATE_MASK   0x80
 #define RATE_MASK         0x7f
 
@@ -125,7 +127,6 @@ struct hdd_context;
 #if !defined(TDLS_MGMT_VERSION2)
 #define TDLS_MGMT_VERSION2 0
 #endif
-#endif
 
 /**
  * hdd_convert_cfgdot11mode_to_80211mode() - Function to convert cfg dot11 mode
@@ -136,10 +137,17 @@ struct hdd_context;
  */
 enum qca_wlan_802_11_mode
 hdd_convert_cfgdot11mode_to_80211mode(enum csr_cfgdot11mode mode);
+#endif
 
 #define HDD_SET_BIT(__param, __val)    ((__param) |= (1 << (__val)))
 
+#ifndef OPLUS_BUG_STABILITY
+//Modify for scan more hidden AP
 #define MAX_SCAN_SSID 10
+#else /* OPLUS_BUG_STABILITY */
+#define MAX_SCAN_SSID 16
+#endif /* OPLUS_BUG_STABILITY */
+
 
 #define IS_CHANNEL_VALID(channel) ((channel >= 0 && channel < 15) \
 			|| (channel >= 36 && channel <= 184))
@@ -665,10 +673,12 @@ int wlan_hdd_send_mode_change_event(void);
  * wlan_hdd_restore_channels() - Restore the channels which were cached
  * and disabled in wlan_hdd_disable_channels api.
  * @hdd_ctx: Pointer to the HDD context
+ * @notify_sap_event: Indicates if SAP event needs to be notified
  *
  * Return: 0 on success, Error code on failure
  */
-int wlan_hdd_restore_channels(struct hdd_context *hdd_ctx);
+int wlan_hdd_restore_channels(struct hdd_context *hdd_ctx,
+			      bool notify_sap_event);
 
 /**
  * hdd_store_sar_config() - Store SAR config in HDD context

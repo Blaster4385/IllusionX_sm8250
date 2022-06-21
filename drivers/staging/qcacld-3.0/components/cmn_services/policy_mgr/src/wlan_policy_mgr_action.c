@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2020 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2021 The Linux Foundation. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -35,7 +35,6 @@
 #include "wlan_nan_api.h"
 #include "nan_ucfg_api.h"
 #include "sap_api.h"
-#include "wlan_mlme_api.h"
 
 enum policy_mgr_conc_next_action (*policy_mgr_get_current_pref_hw_mode_ptr)
 	(struct wlan_objmgr_psoc *psoc);
@@ -332,8 +331,9 @@ QDF_STATUS policy_mgr_update_connection_info(struct wlan_objmgr_psoc *psoc,
 		}
 		conn_index++;
 	}
-	qdf_mutex_release(&pm_ctx->qdf_conc_list_lock);
+
 	if (!found) {
+		qdf_mutex_release(&pm_ctx->qdf_conc_list_lock);
 		/* err msg */
 		policy_mgr_err("can't find vdev_id %d in pm_conc_connection_list",
 			vdev_id);
@@ -343,11 +343,13 @@ QDF_STATUS policy_mgr_update_connection_info(struct wlan_objmgr_psoc *psoc,
 		status = pm_ctx->wma_cbacks.wma_get_connection_info(
 				vdev_id, &conn_table_entry);
 		if (QDF_STATUS_SUCCESS != status) {
+			qdf_mutex_release(&pm_ctx->qdf_conc_list_lock);
 			policy_mgr_err("can't find vdev_id %d in connection table",
 			vdev_id);
 			return status;
 		}
 	} else {
+		qdf_mutex_release(&pm_ctx->qdf_conc_list_lock);
 		policy_mgr_err("wma_get_connection_info is NULL");
 		return QDF_STATUS_E_FAILURE;
 	}
@@ -375,7 +377,7 @@ QDF_STATUS policy_mgr_update_connection_info(struct wlan_objmgr_psoc *psoc,
 			policy_mgr_get_bw(conn_table_entry.chan_width),
 			conn_table_entry.mac_id, chain_mask,
 			nss, vdev_id, true, true, conn_table_entry.ch_flagext);
-
+	qdf_mutex_release(&pm_ctx->qdf_conc_list_lock);
 	/* do we need to change the HW mode */
 	policy_mgr_check_n_start_opportunistic_timer(psoc);
 
@@ -1276,16 +1278,24 @@ void policy_mgr_update_user_config_sap_chan(
  */
 static bool policy_mgr_is_sap_go_existed(struct wlan_objmgr_psoc *psoc)
 {
+	uint32_t sta_ap_bit_mask = QDF_STA_MASK | QDF_SAP_MASK;
+	uint32_t sta_go_bit_mask = QDF_STA_MASK | QDF_P2P_GO_MASK;
 	uint32_t ap_present, go_present;
+	bool sta_ap_coexist, sta_go_coexist;
 
 	ap_present = policy_mgr_mode_specific_connection_count(
 				psoc, PM_SAP_MODE, NULL);
-	if (ap_present)
+	sta_ap_coexist = (policy_mgr_get_concurrency_mode(psoc) &
+			  sta_ap_bit_mask) == sta_ap_bit_mask;
+	if (ap_present && sta_ap_coexist)
 		return true;
 
 	go_present = policy_mgr_mode_specific_connection_count(
 				psoc, PM_P2P_GO_MODE, NULL);
-	if (go_present)
+	sta_go_coexist = (policy_mgr_get_concurrency_mode(psoc) &
+			  sta_go_bit_mask) == sta_go_bit_mask;
+	if (go_present && sta_go_coexist &&
+	    policy_mgr_go_scc_enforced(psoc))
 		return true;
 
 	return false;
@@ -1732,28 +1742,28 @@ static void __policy_mgr_check_sta_ap_concurrent_ch_intf(void *data)
 	struct sta_ap_intf_check_work_ctx *work_info = NULL;
 	uint32_t mcc_to_scc_switch, cc_count = 0, i;
 	QDF_STATUS status;
-	uint32_t ch_freq;
+	uint8_t go_index_start;
 	uint32_t op_ch_freq_list[MAX_NUMBER_OF_CONC_CONNECTIONS];
+	uint32_t ch_freq;
 	uint8_t vdev_id[MAX_NUMBER_OF_CONC_CONNECTIONS];
 
 	work_info = data;
 	if (!work_info) {
 		policy_mgr_err("Invalid work_info");
-		return;
+		goto end;
 	}
 
 	psoc = work_info->psoc;
 	if (!psoc) {
 		policy_mgr_err("Invalid psoc");
-		return;
+		goto end;
 	}
 
 	pm_ctx = policy_mgr_get_context(psoc);
 	if (!pm_ctx) {
 		policy_mgr_err("Invalid context");
-		return;
+		goto end;
 	}
-
 	mcc_to_scc_switch =
 		policy_mgr_get_mcc_to_scc_switch_mode(psoc);
 
@@ -1767,6 +1777,7 @@ static void __policy_mgr_check_sta_ap_concurrent_ch_intf(void *data)
 				psoc, &op_ch_freq_list[cc_count],
 				&vdev_id[cc_count], PM_SAP_MODE);
 	policy_mgr_debug("Number of concurrent SAP: %d", cc_count);
+	go_index_start = cc_count;
 	if (cc_count < MAX_NUMBER_OF_CONC_CONNECTIONS)
 		cc_count = cc_count +
 				policy_mgr_get_mode_specific_conn_info(
@@ -1795,6 +1806,9 @@ static void __policy_mgr_check_sta_ap_concurrent_ch_intf(void *data)
 	}
 	if (cc_count <= MAX_NUMBER_OF_CONC_CONNECTIONS)
 		for (i = 0; i < cc_count; i++) {
+			if (i >= go_index_start &&
+			    !policy_mgr_go_scc_enforced(psoc))
+				continue;
 			status = pm_ctx->hdd_cbacks.
 				wlan_hdd_get_channel_for_sap_restart
 					(psoc, vdev_id[i], &ch_freq);
@@ -1941,22 +1955,6 @@ QDF_STATUS policy_mgr_valid_sap_conc_channel_check(
 	uint32_t temp_ch_freq = 0;
 	struct policy_mgr_psoc_priv_obj *pm_ctx;
 	bool sta_sap_scc_on_dfs_chan;
-	struct wlan_objmgr_vdev *vdev;
-	enum QDF_OPMODE vdev_opmode;
-	bool enable_srd_channel;
-
-	vdev = wlan_objmgr_get_vdev_by_id_from_psoc(psoc, sap_vdev_id,
-						    WLAN_POLICY_MGR_ID);
-	if (!vdev) {
-		policy_mgr_err("vdev is NULL");
-		return QDF_STATUS_E_INVAL;
-	}
-
-	vdev_opmode = wlan_vdev_mlme_get_opmode(vdev);
-	wlan_objmgr_vdev_release_ref(vdev, WLAN_POLICY_MGR_ID);
-
-	wlan_mlme_get_srd_master_mode_for_vdev(psoc, vdev_opmode,
-					       &enable_srd_channel);
 
 	pm_ctx = policy_mgr_get_context(psoc);
 	if (!pm_ctx) {
@@ -1998,7 +1996,8 @@ QDF_STATUS policy_mgr_valid_sap_conc_channel_check(
 							    ch_freq) ||
 		    !(policy_mgr_sta_sap_scc_on_lte_coex_chan(psoc) ||
 		      policy_mgr_is_safe_channel(psoc, ch_freq)) ||
-		    (!enable_srd_channel &&
+		    (!wlan_reg_is_etsi13_srd_chan_allowed_master_mode(
+								pm_ctx->pdev) &&
 		     wlan_reg_is_etsi13_srd_chan_for_freq(pm_ctx->pdev,
 							  ch_freq))) {
 			if (wlan_reg_is_dfs_for_freq(pm_ctx->pdev, ch_freq) &&

@@ -1935,6 +1935,15 @@ qdf_nbuf_t dp_tx_send_msdu_multiple(struct dp_vdev *vdev, qdf_nbuf_t nbuf,
 				/* Check with MCL if this is needed */
 				/* nbuf = msdu_info->u.tso_info.curr_seg->nbuf;
 				 */
+			} else if (qdf_unlikely(msdu_info->num_seg - i > 1)) {
+				/*
+				 * curr_seg reach end case, if msdu_info
+				 * ->num_seg is larger than tso_seg_list
+				 * list, never to queue pkts with the
+				 * same tso segment info of which lead
+				 * memory double free
+				 */
+				dp_info("TSO seg reach end, should stop in next loop");
 			}
 		}
 
@@ -1953,6 +1962,17 @@ qdf_nbuf_t dp_tx_send_msdu_multiple(struct dp_vdev *vdev, qdf_nbuf_t nbuf,
 			tid_stats = &pdev->stats.tid_stats.
 				    tid_tx_stats[tx_q->ring_id][msdu_info->tid];
 			tid_stats->swdrop_cnt[TX_HW_ENQUEUE]++;
+
+			if (msdu_info->frm_type == dp_tx_frm_tso) {
+				/*
+				 * If this is a jumbo nbuf, then increment the number of
+				 * nbuf users for each additional segment of the msdu.
+				 * This will ensure that the skb is freed only after
+				 * receiving tx completion for all segments of an nbuf
+				 */
+				qdf_nbuf_inc_users(nbuf);
+				dp_tx_comp_free_buf(soc, tx_desc);
+			}
 
 			dp_tx_desc_release(tx_desc, tx_q->desc_pool_id);
 			if (msdu_info->frm_type == dp_tx_frm_me) {

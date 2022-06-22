@@ -484,6 +484,7 @@ struct fastrpc_file {
 	uint32_t ws_timeout;
 	/* To indicate attempt has been made to allocate memory for debug_buf */
 	int debug_buf_alloced_attempted;
+	/* Flag to indicate dynamic process creation status*/
 	bool in_process_create;
 };
 
@@ -2569,7 +2570,7 @@ static int fastrpc_init_process(struct fastrpc_file *fl,
 		spin_lock(&fl->hlock);
 		if (fl->in_process_create) {
 			err = -EALREADY;
-			pr_err("Already in create dynamic process\n");
+			pr_err("Already in create init process\n");
 			spin_unlock(&fl->hlock);
 			return err;
 		}

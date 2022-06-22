@@ -95,6 +95,7 @@ struct pm8008_regulator {
 	int			min_dropout_uv;
 	int			step_rate;
 	bool			enable_ocp_broadcast;
+	struct work_struct	notify_clients_work;
 };
 
 static struct regulator_data reg_data[] = {

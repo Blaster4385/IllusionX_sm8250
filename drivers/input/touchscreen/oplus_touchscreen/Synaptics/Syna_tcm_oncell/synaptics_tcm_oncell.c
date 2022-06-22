@@ -9,6 +9,8 @@
 #include <linux/regulator/consumer.h>
 #include "synaptics_tcm_oncell.h"
 
+
+
 DECLARE_COMPLETION(response_complete);
 DECLARE_COMPLETION(report_complete);
 
@@ -796,14 +798,14 @@ static void syna_tcm_dispatch_report(struct syna_tcm_data *tcm_info)
         }
 
         if (*tcm_info->in_suspend) {
-            if ((touch_data->lpwg_gesture == TOUCH_HOLD_UP) || (touch_data->lpwg_gesture == TOUCH_HOLD_DOWN)) {
+			if ((touch_data->lpwg_gesture == TOUCH_HOLD_UP) || (touch_data->lpwg_gesture == TOUCH_HOLD_DOWN)) {
                 syna_set_trigger_reason(tcm_info, IRQ_FINGERPRINT);
                 goto exit;
-            }
+			}
             syna_set_trigger_reason(tcm_info, IRQ_GESTURE);
         } else {
             syna_set_trigger_reason(tcm_info, IRQ_TOUCH);
-            if ((touch_data->lpwg_gesture == TOUCH_HOLD_UP) || (touch_data->lpwg_gesture == TOUCH_HOLD_DOWN)) {
+			if ((touch_data->lpwg_gesture == TOUCH_HOLD_UP) || (touch_data->lpwg_gesture == TOUCH_HOLD_DOWN)) {
                 syna_set_trigger_reason(tcm_info, IRQ_FINGERPRINT);
                 goto exit;
             }
@@ -1977,15 +1979,15 @@ static void syna_rate_white_list_ctrl(void *chip_data, int value)
 	if (*tcm_info->in_suspend || tcm_info->game_mode) {
 		return;
 	}
-	//0:ignore 1:120hz 2:90hz
+	/* 0:ignore 1:120hz 2:90hz */
 	switch (value) {
-	case 0: // 60Hz
+	case 0: /* 60Hz */
 		fps = 60;
 		break;
-	case 1: // 120Hz
+	case 1: /* 120Hz */
 		fps = 120;
 		break;
-	case 2: // 90hz
+	case 2: /* 90hz */
 		fps = 90;
 		break;
 	default:
@@ -1993,7 +1995,7 @@ static void syna_rate_white_list_ctrl(void *chip_data, int value)
 	}
 	for (i = 0; i < tcm_info->fps_report_rate_num; i = i + 2) {
 		if (fps == tcm_info->fps_report_rate_array[i]) {
-			send_value =tcm_info->fps_report_rate_array[i + 1];
+			send_value = tcm_info->fps_report_rate_array[i + 1];
 		}
 	}
 	retval = syna_tcm_set_dynamic_config(tcm_info,
@@ -2164,33 +2166,33 @@ static int syna_get_touch_points(void *chip_data, struct point_info *points, int
 static int syna_tcm_set_gesture_mode(struct syna_tcm_data *tcm_info, bool enable)
 {
     int retval = 0;
-    int state = tcm_info->gesture_state;
-    int config = 0xFFFF;
+	int state = tcm_info->gesture_state;
+	int config = 0xFFFF;
     /*this command may take too much time, if needed can add flag to skip this */
     TPD_INFO("%s: enable(%d)\n", __func__, enable);
 
-    if (tcm_info->black_gesture_indep) {
-        if (enable) {
-            SET_GESTURE_BIT(state, DouTap, config, 0)
-            SET_GESTURE_BIT(state, UpVee, config, 2)
-            SET_GESTURE_BIT(state, DownVee, config, 1)
-            SET_GESTURE_BIT(state, LeftVee, config, 3)
-            SET_GESTURE_BIT(state, RightVee, config, 4)
-            SET_GESTURE_BIT(state, Circle, config, 5)
-            SET_GESTURE_BIT(state, DouSwip, config, 6)
-            SET_GESTURE_BIT(state, Left2RightSwip, config, 7)
-            SET_GESTURE_BIT(state, Right2LeftSwip, config, 8)
-            SET_GESTURE_BIT(state, Up2DownSwip, config, 9)
-            SET_GESTURE_BIT(state, Down2UpSwip, config, 10)
-            SET_GESTURE_BIT(state, Mgestrue, config, 11)
-            SET_GESTURE_BIT(state, Wgestrue, config, 12)
-            SET_GESTURE_BIT(state, SingleTap, config, 13)
-            SET_GESTURE_BIT(state, Heart, config, 14)
-        } else {
-            config = 0x0;
-        }
-    }
-    TPD_INFO("%s: gesture config:%x\n", __func__, config);
+	if (tcm_info->black_gesture_indep) {
+		if (enable) {
+			SET_GESTURE_BIT(state, DouTap, config, 0)
+			SET_GESTURE_BIT(state, UpVee, config, 2)
+			SET_GESTURE_BIT(state, DownVee, config, 1)
+			SET_GESTURE_BIT(state, LeftVee, config, 3)
+			SET_GESTURE_BIT(state, RightVee, config, 4)
+			SET_GESTURE_BIT(state, Circle, config, 5)
+			SET_GESTURE_BIT(state, DouSwip, config, 6)
+			SET_GESTURE_BIT(state, Left2RightSwip, config, 7)
+			SET_GESTURE_BIT(state, Right2LeftSwip, config, 8)
+			SET_GESTURE_BIT(state, Up2DownSwip, config, 9)
+			SET_GESTURE_BIT(state, Down2UpSwip, config, 10)
+			SET_GESTURE_BIT(state, Mgestrue, config, 11)
+			SET_GESTURE_BIT(state, Wgestrue, config, 12)
+			SET_GESTURE_BIT(state, SingleTap, config, 13)
+			SET_GESTURE_BIT(state, Heart, config, 14)
+		} else {
+			config = 0x0;
+		}
+	}
+	TPD_INFO("%s: gesture config:%x\n", __func__, config);
 
     if (enable) {
         retval = syna_tcm_sleep(tcm_info, false);
@@ -2355,17 +2357,17 @@ static int syna_corner_limit_handle(struct syna_tcm_data *tcm_info)
             return ret;
         }
         if (tcm_info->fingerprint_and_grip_param_equal_19805) {
-            ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0x88);
-            if (ret < 0) {
+			ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0x88);
+			if (ret < 0) {
                 TPD_INFO("%s:failed to set DC_GRIP_DARK_ZONE_X\n", __func__);
                 return ret;
-            }
+			}
         } else {
-            ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0xFF);
-            if (ret < 0) {
+			ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0xFF);
+			if (ret < 0) {
                 TPD_INFO("%s:failed to set DC_GRIP_DARK_ZONE_X\n", __func__);
                 return ret;
-            }
+			}
         }
         ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_Y, 0x44);
         if (ret < 0) {
@@ -2399,17 +2401,17 @@ static int syna_corner_limit_handle(struct syna_tcm_data *tcm_info)
             return ret;
         }
         if (tcm_info->fingerprint_and_grip_param_equal_19805) {
-            ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0x88);
-            if (ret < 0) {
+			ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0x88);
+			if (ret < 0) {
                 TPD_INFO("%s:failed to set DC_GRIP_DARK_ZONE_X\n", __func__);
                 return ret;
-            }
+			}
         } else {
-            ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0xFF);
-            if (ret < 0) {
+			ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_X, 0xFF);
+			if (ret < 0) {
                 TPD_INFO("%s:failed to set DC_GRIP_DARK_ZONE_X\n", __func__);
                 return ret;
-            }
+			}
         }
         ret = syna_tcm_set_dynamic_config(tcm_info, DC_GRIP_DARK_ZONE_Y, 0x44);
         if (ret < 0) {
@@ -2599,7 +2601,7 @@ static fw_check_state syna_fw_check(void *chip_data, struct resolution_info *res
     }
 
     if (panel_data->manufacture_info.version) {
-        sprintf(panel_data->manufacture_info.version, "0x%s", tcm_info->app_info.customer_config_id);
+        snprintf(panel_data->manufacture_info.version, MAX_DEVICE_VERSION_LENGTH, "0x%s", tcm_info->app_info.customer_config_id);
     }
 
     retval = syna_tcm_get_dynamic_config(tcm_info, DC_NOISE_LENGTH, &config);
@@ -2693,22 +2695,22 @@ static void syna_tcm_enable_fingerprint(void *chip_data, uint32_t enable)
 
     if (enable) {
         if (tcm_info->fingerprint_and_grip_param_equal_19805) {
-            retval = syna_tcm_set_dynamic_config(tcm_info, DC_TOUCH_HOLD, 0x07);
-            if (retval < 0) {
+		retval = syna_tcm_set_dynamic_config(tcm_info, DC_TOUCH_HOLD, 0x07);
+			if (retval < 0) {
                 TPD_INFO("Failed to set dynamic touch and hold config\n");
                 return;
-            }
+			}
         } else {
-            retval = syna_tcm_set_dynamic_config(tcm_info, DC_TOUCH_HOLD, *tcm_info->in_suspend ? 0x01 : 0x02);
-            if (retval < 0) {
+			retval = syna_tcm_set_dynamic_config(tcm_info, DC_TOUCH_HOLD, *tcm_info->in_suspend ? 0x01 : 0x02);
+			if (retval < 0) {
                 TPD_INFO("Failed to set dynamic touch and hold config\n");
                 return;
-            }
-            retval = syna_tcm_enable_report(tcm_info, REPORT_TOUCH_HOLD, *tcm_info->in_suspend ? false : true);
-            if (retval < 0) {
+			}
+			retval = syna_tcm_enable_report(tcm_info, REPORT_TOUCH_HOLD, *tcm_info->in_suspend ? false : true);
+			if (retval < 0) {
                 TPD_INFO("Failed to set enable touch and hold report\n");
                 return;
-            }
+			}
         }
     } else {
         retval = syna_tcm_set_dynamic_config(tcm_info, DC_TOUCH_HOLD, 0x00);
@@ -2717,11 +2719,11 @@ static void syna_tcm_enable_fingerprint(void *chip_data, uint32_t enable)
             return;
         }
         if (!tcm_info->fingerprint_and_grip_param_equal_19805) {
-            retval = syna_tcm_enable_report(tcm_info, REPORT_TOUCH_HOLD, false);
-            if (retval < 0) {
+			retval = syna_tcm_enable_report(tcm_info, REPORT_TOUCH_HOLD, false);
+			if (retval < 0) {
                 TPD_INFO("Failed to set disable touch and hold report\n");
                 return;
-            }
+			}
         }
     }
 
@@ -2758,94 +2760,6 @@ static void syna_tcm_fingerprint_info(void *chip_data, struct fp_underscreen_inf
     }
 
     return;
-}
-
-static void syna_tcm_get_health_info(void *chip_data, struct monitor_data *mon_data)
-{
-    struct syna_tcm_data *tcm_info = (struct syna_tcm_data *)chip_data;
-    struct health_info *health_info = (struct health_info *)tcm_info->report.buffer.buf;
-    int data_length = tcm_info->report.buffer.data_length;
-    struct health_info *health_local = &tcm_info->health_info;
-    int i = 0;
-
-    if (data_length < 20) {
-        TPD_INFO("%s: invalid health debug buf length\n", __func__);
-        return;
-    }
-
-    if (health_info->grip_count != 0 && health_local->grip_count != health_info->grip_count) {
-        mon_data->grip_report++;
-    }
-    if (health_info->baseline_err != 0 && health_local->baseline_err != health_info->baseline_err) {
-        switch(health_info->baseline_err) {
-        case BASE_NEGATIVE_FINGER:
-            mon_data->reserve1++;
-            break;
-        case BASE_MUTUAL_SELF_CAP:
-            mon_data->reserve2++;
-            break;
-        case BASE_ENERGY_RATIO:
-            mon_data->reserve3++;
-            break;
-        case BASE_RXABS_BASELINE:
-            mon_data->reserve4++;
-            break;
-        case BASE_TXABS_BASELINE:
-            mon_data->reserve5++;
-            break;
-        default:
-            break;
-        }
-    }
-    if (health_info->noise_state >= 2 && health_local->noise_state != health_info->noise_state) {
-        mon_data->noise_count++;
-    }
-    if (health_info->shield_mode != 0 && health_local->shield_mode != health_info->shield_mode) {
-        switch(health_info->shield_mode) {
-        case SHIELD_PALM:
-            mon_data->shield_palm++;
-            break;
-        case SHIELD_GRIP:
-            mon_data->shield_edge++;
-            break;
-        case SHIELD_METAL:
-            mon_data->shield_metal++;
-            break;
-        case SHIELD_MOISTURE:
-            mon_data->shield_water++;
-            break;
-        case SHIELD_ESD:
-            mon_data->shield_esd++;
-            break;
-        default:
-            break;
-        }
-    }
-    if (health_info->reset_reason != 0) {
-        switch(health_info->reset_reason) {
-        case RST_HARD:
-            mon_data->hard_rst++;
-            break;
-        case RST_INST:
-            mon_data->inst_rst++;
-            break;
-        case RST_PARITY:
-            mon_data->parity_rst++;
-            break;
-        case RST_WD:
-            mon_data->wd_rst++;
-            break;
-        case RST_OTHER:
-            mon_data->other_rst++;
-            break;
-        }
-    }
-    memcpy(health_local, health_info, sizeof(struct health_info));
-    if (tp_debug != 0) {
-        for (i = 0; i < data_length; i++) {
-            TPD_INFO("[0x%x], ", tcm_info->report.buffer.buf[i]);
-        }
-    }
 }
 
 static int syna_tcm_erase_flash(struct syna_tcm_data *tcm_info, unsigned int page_start, unsigned int page_count)
@@ -4658,10 +4572,10 @@ static int syna_tcm_sensitive_lv_set(void *chip_data, int level)
 
 static void syna_s3908_set_gesture_state(void *chip_data, int state)
 {
-    struct syna_tcm_data *tcm_info = (struct syna_tcm_data *)chip_data;
+	struct syna_tcm_data *tcm_info = (struct syna_tcm_data *)chip_data;
 
-    TPD_INFO("%s:state:%d!\n", __func__, state);
-    tcm_info->gesture_state = state;
+	TPD_INFO("%s:state:%d!\n", __func__, state);
+	tcm_info->gesture_state = state;
 }
 
 
@@ -4682,7 +4596,6 @@ static struct oplus_touchpanel_operations syna_tcm_ops = {
     .reinit_device             = syna_tcm_reinit_device,
     .enable_fingerprint        = syna_tcm_enable_fingerprint,
     .screenon_fingerprint_info = syna_tcm_fingerprint_info,
-    .health_report             = syna_tcm_get_health_info,
     .set_touch_direction       = syna_set_touch_direction,
     .get_touch_direction       = syna_get_touch_direction,
     .freq_hop_trigger          = syna_freq_hop_trigger,
@@ -4710,7 +4623,7 @@ static void init_chip_dts(struct device *dev, void *chip_data)
 	if (!chip_np) {
 		tcm_info->display_refresh_rate = 60;
 		tcm_info->game_rate = 1;
-		//default :1:120hz 2:180hz is for 19101 19191 20131
+		/* default :1:120hz 2:180hz is for 19101 19191 20131 */
 		tcm_info->fps_report_rate_num = 6;
 		tcm_info->fps_report_rate_array[0] = 60;
 		tcm_info->fps_report_rate_array[1] = 1;
@@ -4739,7 +4652,7 @@ static void init_chip_dts(struct device *dev, void *chip_data)
 	tcm_info->fps_report_rate_num = rc;
 
 	if (tcm_info->fps_report_rate_num > 0 && tcm_info->fps_report_rate_num <= FPS_REPORT_NUM
-		&& !(tcm_info->fps_report_rate_num % 2) ) {
+		&& !(tcm_info->fps_report_rate_num % 2)) {
 		rc = of_property_read_u32_array(chip_np, "fps_report_rate", temp_array, tcm_info->fps_report_rate_num);
 		if (rc) {
 			TPD_INFO("fps_report_rate not specified %d\n", rc);
@@ -4750,7 +4663,7 @@ static void init_chip_dts(struct device *dev, void *chip_data)
 			}
 		}
 	} else {
-	    //default :1:120hz 2:180hz is for 19101 19191 20131
+	    /* default :1:120hz 2:180hz is for 19101 19191 20131 */
 	    tcm_info->fps_report_rate_num = 6;
 		tcm_info->fps_report_rate_array[0] = 60;
 		tcm_info->fps_report_rate_array[1] = 1;
@@ -4807,6 +4720,10 @@ static int syna_tcm_probe(struct i2c_client *client, const struct i2c_device_id 
     i2c_set_clientdata(client, ts);
     ts->ts_ops = &syna_tcm_ops;
     ts->debug_info_ops = &syna_debug_proc_ops;
+	tcm_info->calibration_support = of_property_read_bool(ts->dev->of_node, "calibration_support");
+	TPD_INFO("calibration_support %d\n", tcm_info->calibration_support);
+
+	ts->calibration_support = tcm_info->calibration_support;
 
     //4. init member of tcm_info
     tcm_info->client = client;
@@ -4884,7 +4801,7 @@ static int syna_tcm_probe(struct i2c_client *client, const struct i2c_device_id 
     }
     ts->mode_switch_type = SINGLE;
     init_chip_dts(ts->dev, tcm_info);
-    tcm_info->black_gesture_indep = ts->black_gesture_indep_support;
+	tcm_info->black_gesture_indep = ts->black_gesture_indep_support;
 
     //10. create synaptics common file
     synaptics_create_proc(ts, tcm_info->syna_ops);

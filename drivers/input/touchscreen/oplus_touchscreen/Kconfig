@@ -44,8 +44,51 @@ config TOUCHPANEL_SYNAPTICS
 	---help---
 	say Y to enable driver for Touchpanel using Synaptics_IC
 
+config TOUCHPANEL_FOCAL
+#	default y
+	bool "TP Synaptics_IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using FOCALTECK_IC
+
+config TOUCHPANEL_GOODIX
+#	default y
+	bool "TP Synaptics_IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using GOODIX_IC
+
+config TOUCHPANEL_NOVA
+#	default y
+	bool "TP Nova_IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using NOVATECK_IC
+config TOUCHPANEL_HIMAX
+#	default y
+	bool "TP HIMAX_IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using HIMAX_IC
+
+config TOUCHPANEL_SAMSUNG
+#	default y
+	bool "TP samsung IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using samsung IC
+
+config TOUCHPANEL_ILITEK
+#	default y
+	bool "TP ilitek IC enable or not for OPLUS"
+	---help---
+	say Y to enable driver for Touchpanel using ilitek IC
+	
+source "drivers/input/touchscreen/oplus_touchscreen/util_interface/Kconfig"
+
 if TOUCHPANEL_SYNAPTICS
 source "drivers/input/touchscreen/oplus_touchscreen/Synaptics/Kconfig"
 endif
 
-source "drivers/input/touchscreen/oplus_touchscreen/util_interface/Kconfig"
+if TOUCHPANEL_GOODIX
+source "drivers/input/touchscreen/oplus_touchscreen/Goodix/Kconfig"
+endif
+
+if TOUCHPANEL_SAMSUNG
+source "drivers/input/touchscreen/oplus_touchscreen/Samsung/Kconfig"
+endif

@@ -484,12 +484,12 @@ struct syna_tcm_data {
     int *in_suspend;
     u16 default_noise_length;
     uint16_t game_rate;
-    unsigned int fps_report_rate_num;
-    u32 fps_report_rate_array[FPS_REPORT_NUM];
+	unsigned int fps_report_rate_num;
+	u32 fps_report_rate_array[FPS_REPORT_NUM];
     uint8_t touch_direction;
     int display_refresh_rate;
     bool game_mode;
-    int fingerprint_and_grip_param_equal_19805;
+	int fingerprint_and_grip_param_equal_19805;
 
     unsigned short ubl_addr;
     u32 trigger_reason;
@@ -517,8 +517,9 @@ struct syna_tcm_data {
     struct syna_tcm_boot_info boot_info;
     struct syna_tcm_touch_info touch_info;
     struct syna_tcm_identification id_info;
-    int gesture_state;
-    bool black_gesture_indep;
+	int gesture_state;
+	bool black_gesture_indep;
+	bool calibration_support;
 };
 
 struct device_hcd {

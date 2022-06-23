@@ -127,3 +127,6 @@ OPLUS_FEATURE_WIFI_ROUTERBOOST=1
 ifneq ($(OPLUS_FEATURE_WIFI_ROUTERBOOST),)
 obj-y				+= oplus_router_boost/
 endif #/* OPLUS_FEATURE_WIFI_ROUTERBOOST */
+
+obj-y                           += oplus_modules/
+

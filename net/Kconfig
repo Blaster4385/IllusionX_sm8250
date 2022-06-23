@@ -479,3 +479,5 @@ source "net/oplus_score/Kconfig"
 
 
 source "net/oplus_connectivity_sla/Kconfig"
+
+source "net/oplus_modules/Kconfig"

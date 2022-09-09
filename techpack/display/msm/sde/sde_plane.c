@@ -3632,7 +3632,7 @@ static void _sde_plane_install_properties(struct drm_plane *plane,
 			"prefill_time", 0x0, 0, ~0, 0,
 			PLANE_PROP_PREFILL_TIME);
 
-	info = vzalloc(sizeof(struct sde_kms_info));
+	info = kzalloc(sizeof(struct sde_kms_info), GFP_KERNEL);
 	if (!info) {
 		SDE_ERROR("failed to allocate info memory\n");
 		return;
@@ -3743,7 +3743,7 @@ static void _sde_plane_install_properties(struct drm_plane *plane,
 			info->data, SDE_KMS_INFO_DATALEN(info),
 			PLANE_PROP_INFO);
 
-	vfree(info);
+	kfree(info);
 
 	if (psde->features & BIT(SDE_SSPP_MEMCOLOR)) {
 		snprintf(feature_name, sizeof(feature_name), "%s%d",

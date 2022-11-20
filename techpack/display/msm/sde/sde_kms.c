@@ -1475,6 +1475,7 @@ static int _sde_kms_setup_displays(struct drm_device *dev,
 		// enable qsync on/off cmds
 		.prepare_commit = dsi_display_pre_commit,
 #endif
+		.get_qsync_min_fps = dsi_display_get_qsync_min_fps,
 	};
 	static const struct sde_connector_ops wb_ops = {
 		.post_init =    sde_wb_connector_post_init,

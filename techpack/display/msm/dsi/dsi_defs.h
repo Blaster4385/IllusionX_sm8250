@@ -388,6 +388,8 @@ enum dsi_cmd_set_type {
 	DSI_GAMMA_LOWBL_COMMAND,
 /* add for optimizing the display effect under low backlight brightness */
 	DSI_CMD_DIMMING_GAMMA,
+	DSI_CMD_SET_FPS60,
+	DSI_CMD_SET_FPS120,
 #if defined(OPLUS_FEATURE_PXLW_IRIS5)
 	DSI_CMD_SET_ABYP,
 #endif

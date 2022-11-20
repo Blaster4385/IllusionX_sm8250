@@ -2126,8 +2126,7 @@ struct sde_rm_rsvp *_sde_rm_poll_get_rsvp_nxt_locked(struct sde_rm *rm,
 		usleep_range(sleep, sleep * 2);
 		mutex_lock(&rm->rm_lock);
 	}
-
-	/* make sure to get latest rsvp_next to avoid use after free issues */
+	/* make sure to get latest rsvp_next to avoid use after free issues  */
 	return _sde_rm_get_rsvp_nxt(rm, enc);
 }
 
@@ -2190,11 +2189,13 @@ int sde_rm_reserve(
 		rsvp_cur = _sde_rm_get_rsvp(rm, enc);
 		if (rsvp_nxt) {
 			SDE_ERROR("poll timeout cur %d nxt %d enc %d\n",
-				(rsvp_cur) ? rsvp_cur->seq : -1,
-				rsvp_nxt->seq, enc->base.id);
+				rsvp_cur->seq, rsvp_nxt->seq, enc->base.id);
+			#ifdef OPLUS_BUG_STABILITY
 			SDE_MM_ERROR("[sde error] poll timeout cur %d nxt %d enc %d\n",
-                                (rsvp_cur) ? rsvp_cur->seq : -1,
-                                rsvp_nxt->seq, enc->base.id);
+				rsvp_cur->seq, rsvp_nxt->seq, enc->base.id);
+			#endif
+			SDE_EVT32(rsvp_cur->seq, rsvp_nxt->seq,
+					 enc->base.id, SDE_EVTLOG_ERROR);
 			SDE_EVT32(enc->base.id, (rsvp_cur) ? rsvp_cur->seq : -1,
 					rsvp_nxt->seq, SDE_EVTLOG_ERROR);
 			ret = -EINVAL;

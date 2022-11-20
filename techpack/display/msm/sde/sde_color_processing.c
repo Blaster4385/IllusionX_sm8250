@@ -1371,6 +1371,11 @@ static void _sde_cp_crtc_enable_hist_irq(struct sde_crtc *sde_crtc)
 	spin_unlock_irqrestore(&node->state_lock, flags);
 }
 
+#ifdef OPLUS_BUG_STABILITY
+extern struct drm_msm_pcc oplus_save_pcc;
+extern bool oplus_pcc_enabled;
+extern bool oplus_skip_pcc;
+#endif
 static int sde_cp_crtc_checkfeature(struct sde_cp_node *prop_node,
 	struct sde_crtc *sde_crtc, struct sde_crtc_state *sde_crtc_state)
 {
@@ -1434,12 +1439,6 @@ static int sde_cp_crtc_checkfeature(struct sde_cp_node *prop_node,
 
 	return ret;
 }
-
-#ifdef OPLUS_BUG_STABILITY
-extern struct drm_msm_pcc oplus_save_pcc;
-extern bool oplus_pcc_enabled;
-extern bool oplus_skip_pcc;
-#endif
 
 static void sde_cp_crtc_setfeature(struct sde_cp_node *prop_node,
 				   struct sde_crtc *sde_crtc)
@@ -1789,11 +1788,11 @@ void sde_cp_crtc_apply_properties(struct drm_crtc *crtc)
 	struct sde_cp_node *prop_node = NULL, *n = NULL;
 	struct sde_hw_ctl *ctl;
 	u32 num_mixers = 0, i = 0;
-	int rc = 0;
-	bool need_flush = false;
 	#ifdef OPLUS_BUG_STABILITY
 	bool dirty_pcc = false;
 	#endif /* OPLUS_BUG_STABILITY */
+	int rc = 0;
+	bool need_flush = false;
 
 	if (!crtc || !crtc->dev) {
 		DRM_ERROR("invalid crtc %pK dev %pK\n", crtc,
@@ -1815,14 +1814,6 @@ void sde_cp_crtc_apply_properties(struct drm_crtc *crtc)
 
 	mutex_lock(&sde_crtc->crtc_cp_lock);
 
-	if (list_empty(&sde_crtc->dirty_list) &&
-			list_empty(&sde_crtc->ad_dirty) &&
-			list_empty(&sde_crtc->ad_active) &&
-			list_empty(&sde_crtc->active_list)) {
-		DRM_DEBUG_DRIVER("all lists are empty\n");
-		goto exit;
-	}
-
 	#ifdef OPLUS_BUG_STABILITY
 	dirty_pcc = sde_cp_crtc_update_pcc(crtc);
 	if (dirty_pcc) {
@@ -1834,18 +1825,13 @@ void sde_cp_crtc_apply_properties(struct drm_crtc *crtc)
 	 * early return. If ad properties are active then we need to issue
 	 * dspp flush.
 	 **/
-	#ifdef OPLUS_BUG_STABILITY
-	if (!dirty_pcc && list_empty(&sde_crtc->dirty_list) &&
-		list_empty(&sde_crtc->ad_dirty)) {
-	#else
+
 	if (list_empty(&sde_crtc->dirty_list) &&
-		list_empty(&sde_crtc->ad_dirty)) {
-	#endif
-		if (list_empty(&sde_crtc->ad_active)) {
-			DRM_DEBUG_DRIVER("Dirty list is empty\n");
-			goto exit;
-		}
-		set_dspp_flush = true;
+			list_empty(&sde_crtc->ad_dirty) &&
+			list_empty(&sde_crtc->ad_active) &&
+			list_empty(&sde_crtc->active_list)) {
+		DRM_DEBUG_DRIVER("all lists are empty\n");
+		goto exit;
 	}
 
 	rc = sde_cp_crtc_set_pu_features(crtc, &need_flush);

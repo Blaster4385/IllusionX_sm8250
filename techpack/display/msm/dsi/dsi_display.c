@@ -283,7 +283,12 @@ int dsi_display_set_backlight(struct drm_connector *connector,
 		pr_err("aod backlight level changed %d -> %d\n",
 		      panel->bl_config.bl_level, bl_lvl);
 	}
-
+#ifdef OPLUS_FEATURE_AOD_RAMLESS
+	if (dsi_display->panel->oplus_priv.is_aod_ramless) {
+		panel->bl_config.bl_level = bl_lvl;
+		DSI_DEBUG("debug: bl_config.bl_level=%u\n", panel->bl_config.bl_level);
+	}
+#endif
 	/* Add some delay to avoid screen flash */
 	if (panel->need_power_on_backlight && bl_lvl) {
 		panel->need_power_on_backlight = false;
@@ -300,7 +305,9 @@ int dsi_display_set_backlight(struct drm_connector *connector,
 		rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
 			DSI_CORE_CLK, DSI_CLK_OFF);
 
-		atomic_set(&panel->esd_pending, 0);
+		if (!panel->oplus_priv.esd_err_flag_enabled) {
+			atomic_set(&panel->esd_pending, 0);
+		}
 
 		if (rc) {
 			pr_err("[%s] failed to send DSI_CMD_POST_ON_BACKLIGHT cmds, rc=%d\n",
@@ -321,7 +328,12 @@ int dsi_display_set_backlight(struct drm_connector *connector,
 	bl_scale = panel->bl_config.bl_scale;
 	bl_temp = bl_lvl * bl_scale / MAX_BL_SCALE_LEVEL;
 
-	bl_scale_sv = panel->bl_config.bl_scale_sv;
+#ifdef OPLUS_BUG_STABILITY
+	if (panel->oplus_priv.is_raw_backlight)
+		bl_scale_sv = MAX_SV_BL_SCALE_LEVEL;
+	else
+		bl_scale_sv = panel->bl_config.bl_scale_sv;
+#endif /* OPLUS_BUG_STABILITY */
 	bl_temp = (u32)bl_temp * bl_scale_sv / MAX_SV_BL_SCALE_LEVEL;
 
 	DSI_DEBUG("bl_lvl = %u, bl_scale = %u, bl_scale_sv = %u, bl_level = %u\n",
@@ -1117,7 +1129,7 @@ int dsi_display_check_status(struct drm_connector *connector, void *display,
 		goto release_panel_lock;
 
 #ifdef OPLUS_BUG_STABILITY
-	if (atomic_read(&panel->esd_pending)) {
+	if (atomic_read(&panel->esd_pending) && !panel->oplus_priv.esd_err_flag_enabled) {
 		DSI_WARN("Skip the check because esd is pending\n");
 		goto release_panel_lock;
 	}

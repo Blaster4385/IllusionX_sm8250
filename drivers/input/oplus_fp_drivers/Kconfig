@@ -18,7 +18,6 @@ config OPLUS_FINGERPRINT_QCOM
 config OPLUS_FINGERPRINT_GOODIX_OPTICAL
        default n
        tristate "Fingerprint base on goodix optical chip"
-
 config OPLUS_FINGERPRINT_JIIOV_OPTICAL
        default n
        tristate "Fingerprint base on jiiov optical chip"

@@ -106,6 +106,7 @@ msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/dsi_phy.o \
 	dsi/dsi_panel.o \
 	dsi/dsi_clk_manager.o \
 	dsi/dsi_display_test.o \
+	dsi/ktz8866_init.o \
 
 #ifeq ($(OPLUS_FEATURE_PXLW_IRIS5),y)
 msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/iris/dsi_iris5_ioctl.o \

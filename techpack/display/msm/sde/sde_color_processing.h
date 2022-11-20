@@ -206,6 +206,10 @@ int sde_cp_ltm_off_event_handler(struct drm_crtc *crtc_drm, bool en,
  */
 void sde_cp_mode_switch_prop_dirty(struct drm_crtc *crtc_drm);
 
+#ifdef OPLUS_BUG_STABILITY
+struct sde_kms *get_kms_(struct drm_crtc *crtc);
+#endif
+
 /**
  * sde_cp_crtc_enable(): enable color processing info in the crtc.
  *                     Should be called during crtc enable.
@@ -219,9 +223,4 @@ void sde_cp_crtc_enable(struct drm_crtc *crtc);
  * @crtc:  Pointer to drm_crtc.
  */
 void sde_cp_crtc_disable(struct drm_crtc *crtc);
-
-#ifdef OPLUS_BUG_STABILITY
-struct sde_kms *get_kms_(struct drm_crtc *crtc);
-#endif
-
 #endif /*_SDE_COLOR_PROCESSING_H */

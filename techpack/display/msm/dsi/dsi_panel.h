@@ -132,6 +132,10 @@ struct dsi_backlight_config {
 #endif /* OPLUS_BUG_STABILITY */
 
 	u32 bl_level;
+#ifdef OPLUS_BUG_STABILITY
+	u32 oplus_raw_bl;
+#endif /* OPLUS_BUG_STABILITY */
+
 	u32 bl_scale;
 	u32 bl_scale_sv;
 	bool bl_inverted_dbv;
@@ -140,6 +144,8 @@ struct dsi_backlight_config {
 #ifdef OPLUS_BUG_STABILITY
 	u32 bl_lvl_backup;
 #endif /* OPLUS_BUG_STABILITY */
+	u32 bl_dcs_subtype;
+
 	int en_gpio;
 	/* PWM params */
 	struct pwm_device *pwm_bl;
@@ -205,8 +211,10 @@ struct dsi_panel_oplus_privite {
 	bool bl_interpolate_remap_nosub;
 	bool bl_interpolate_alpha_dc_nosub;
 	bool is_oplus_project;
+	bool is_raw_backlight;
 	bool dfps_idle_off;
 	bool aod_on_fod_off;
+	bool esd_err_flag_enabled;
 #ifdef OPLUS_FEATURE_AOD_RAMLESS
 	bool is_aod_ramless;
 #endif /* OPLUS_FEATURE_AOD_RAMLESS */
@@ -227,6 +235,18 @@ struct dsi_panel_oplus_privite {
 	bool low_light_gamma_is_adjusted;
 	u32 low_light_adjust_gamma_level;
 	bool oplus_fp_hbm_config_flag;
+/********************************************
+	fp_type usage:
+	bit(0):lcd capacitive fingerprint(aod/fod are not supported)
+	bit(1):oled capacitive fingerprint(only support aod)
+	bit(2):optical fingerprint old solution(dim layer and pressed icon are controlled by kernel)
+	bit(3):optical fingerprint new solution(dim layer and pressed icon are not controlled by kernel)
+	bit(4):local hbm
+	bit(5):pressed icon brightness adaptive
+	bit(6):ultrasonic fingerprint
+	bit(7):ultra low power aod
+********************************************/
+	u32 fp_type;
 };
 #endif /* OPLUS_BUG_STABILITY */
 
@@ -292,6 +312,7 @@ struct dsi_panel {
 	int panel_id2;
 	atomic_t esd_pending;
 	bool is_dc_set_color_mode;
+	bool nt36523w_ktz8866;
 #endif
 	int vddr_gpio;
 	int panel_test_gpio;
@@ -426,8 +447,11 @@ void dsi_panel_ext_bridge_put(struct dsi_panel *panel);
 
 void dsi_panel_calc_dsi_transfer_time(struct dsi_host_common_cfg *config,
 		struct dsi_display_mode *mode, u32 frame_threshold_us);
+
 #ifdef OPLUS_BUG_STABILITY
 int dsi_panel_tx_cmd_set(struct dsi_panel *panel,
 			   enum dsi_cmd_set_type type);
+int dsi_panel_fps60_cmd_set(struct dsi_panel *panel);
+int dsi_panel_fps120_cmd_set(struct dsi_panel *panel);
 #endif
 #endif /* _DSI_PANEL_H_ */

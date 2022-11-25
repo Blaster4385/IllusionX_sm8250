@@ -72,10 +72,22 @@ static int sec_enable_black_gesture(struct chip_data_s6sy771 *chip_info, bool en
     int ret = 0;
     int i = 0;
 
-    TPD_INFO("%s, enable = %d\n", __func__, enable);
+	bool single_tap_support_a = 0;
+    bool ear_sense_support_a = 0;
+	struct touchpanel_data *ts = i2c_get_clientdata(chip_info->client);
+
+    if (ts) {
+		single_tap_support_a = ts->single_tap_support;
+        ear_sense_support_a = ts->ear_sense_support;
+	}
+
+	TPD_INFO("%s, enable = %d,single_tap_support_a = %d,ear_sense_support_a =%d\n", __func__, enable, single_tap_support_a, ear_sense_support_a);
 
     if (enable) {
-        touch_i2c_write_word(chip_info->client, SEC_CMD_WAKEUP_GESTURE_MODE, 0xFF1F);
+        if (single_tap_support_a) {
+                touch_i2c_write_word(chip_info->client, SEC_CMD_WAKEUP_GESTURE_MODE, 0xFFFF);}
+        else {
+                touch_i2c_write_word(chip_info->client, SEC_CMD_WAKEUP_GESTURE_MODE, 0xFF1F);}
         for (i = 0; i < 20; i++) {
             touch_i2c_write_byte(chip_info->client, SEC_CMD_SET_POWER_MODE, 0x01);
             sec_mdelay(10);
@@ -126,11 +138,21 @@ static void sec_enable_gesture_mask(void *chip_data, uint32_t enable)
     int ret = -1;
     int i = 0;
 
-    TPD_INFO("%s, enable = %d\n", __func__, enable);
+	bool single_tap_support_a = 0;
+	struct touchpanel_data *ts = i2c_get_clientdata(chip_info->client);
+
+	if (ts) {
+		single_tap_support_a = ts->single_tap_support;
+	}
+
+        TPD_INFO("%s, enable = %d,single_tap_support_a =%d\n", __func__, enable, single_tap_support_a);
 
     if (enable) {
         for (i = 0; i < 20; i++) {
-            touch_i2c_write_word(chip_info->client, SEC_CMD_WAKEUP_GESTURE_MODE, 0xFF1F);
+                if (single_tap_support_a) {
+                touch_i2c_write_word(chip_info->client, SEC_CMD_WAKEUP_GESTURE_MODE, 0xFFFF);}
+                else {
+                touch_i2c_write_word(chip_info->client, SEC_CMD_WAKEUP_GESTURE_MODE, 0xFF1F);}
             touch_i2c_write_byte(chip_info->client, SEC_CMD_SET_POWER_MODE, 0x01);
             sec_mdelay(10);
             ret = touch_i2c_read_byte(chip_info->client, SEC_CMD_SET_POWER_MODE);
@@ -1277,12 +1299,19 @@ static int sec_get_gesture_info(void *chip_data, struct gesture_info *gesture)
     struct sec_gesture_status *p_event_gesture = NULL;
     struct chip_data_s6sy771 *chip_info = (struct chip_data_s6sy771 *)chip_data;
 
+	bool ear_sense_support_a = 0;
+	struct touchpanel_data *ts = i2c_get_clientdata(chip_info->client);
+
     p_event_gesture = (struct sec_gesture_status *)chip_info->first_event;
     if (p_event_gesture->coordLen > 18) {
         p_event_gesture->coordLen = 18;
     }
 
-    if (p_event_gesture->gestureId == GESTURE_EARSENSE) {
+	if (ts) {
+		ear_sense_support_a = ts->ear_sense_support;
+	}
+
+	if ((p_event_gesture->gestureId == GESTURE_EARSENSE) && ear_sense_support_a) {
         TPD_DETAIL("earsense gesture: away from panel\n");
         return 0;
     }
@@ -1438,6 +1467,12 @@ static int sec_get_gesture_info(void *chip_data, struct gesture_info *gesture)
         gesture->Point_3rd.y   = (coord[10] << 4) | ((coord[11] >> 0) & 0x0F);
         gesture->Point_end.x   = (coord[12] << 4) | ((coord[14] >> 4) & 0x0F);
         gesture->Point_end.y   = (coord[13] << 4) | ((coord[14] >> 0) & 0x0F);
+        break;
+
+	case GESTURE_SINGLE_TAP:
+        gesture->gesture_type  = SingleTap;
+        gesture->Point_start.x = (coord[0] << 4) | ((coord[2] >> 4) & 0x0F);
+        gesture->Point_start.y = (coord[1] << 4) | ((coord[2] >> 0) & 0x0F);
         break;
 
     default:

@@ -1410,13 +1410,23 @@ static int sec_get_gesture_info(void *chip_data, struct gesture_info *gesture)
         gesture->Point_end.x   = (coord[12] << 4) | ((coord[14] >> 4) & 0x0F);
         gesture->Point_end.y   = (coord[13] << 4) | ((coord[14] >> 0) & 0x0F);
         break;
-
 	case GESTURE_SINGLE_TAP:
 		gesture->gesture_type  = SingleTap;
 		gesture->Point_start.x = (coord[0] << 4) | ((coord[2] >> 4) & 0x0F);
 		gesture->Point_start.y = (coord[1] << 4) | ((coord[2] >> 0) & 0x0F);
 		break;
 
+	case GESTURE_S:
+		gesture->gesture_type  = SGESTRUE;
+		gesture->Point_start.x = (coord[0] << 4) | ((coord[2] >> 4) & 0x0F);
+		gesture->Point_start.y = (coord[1] << 4) | ((coord[2] >> 0) & 0x0F);
+		gesture->Point_1st.x   = (coord[3] << 4) | ((coord[5] >> 4) & 0x0F);
+		gesture->Point_1st.y   = (coord[4] << 4) | ((coord[5] >> 0) & 0x0F);
+		gesture->Point_2nd.x   = (coord[6] << 4) | ((coord[8] >> 4) & 0x0F);
+		gesture->Point_2nd.y   = (coord[7] << 4) | ((coord[8] >> 0) & 0x0F);
+		gesture->Point_end.x   = (coord[9] << 4) | ((coord[11] >> 4) & 0x0F);
+		gesture->Point_end.y   = (coord[10] << 4) | ((coord[11] >> 0) & 0x0F);
+		break;
     default:
         gesture->gesture_type = UnkownGesture;
         break;

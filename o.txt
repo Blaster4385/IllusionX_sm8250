@@ -1,0 +1,758 @@
+commit 6ae3d903c49e044f7392beec2b589e87b20d74ae
+Author: Blaster4385 <venkateshchaturvedi12@gmail.com>
+Date:   Sun Nov 20 22:59:12 2022 +0530
+
+    Revert "drivers: touchscreen: Import changes from OOS13 source"
+    
+    This reverts commit 7993fabcd08c1dd987540ca55240c9aa3eb01af5.
+    
+    A
+
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/focal_drivers_ft8006.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/focal_drivers_ft8006.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/focal_drivers_ft8006.h b/drivers/input/touchscreen/oplus_touchscreen/Focal/FT8006/focal_drivers_ft8006.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Focal/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Focal/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/focal_common.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/focal_common.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/focal_common.h b/drivers/input/touchscreen/oplus_touchscreen/Focal/focal_common.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/focal_drivers_ft3518.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/focal_drivers_ft3518.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/focal_test_ft3518.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/focal_test_ft3518.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/ft3518_core.h b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3518/ft3518_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/ft3681_core.h b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/ft3681_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/ft3681_driver.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/ft3681_driver.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/ft3681_test.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft3681/ft3681_test.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/focal_drivers_ft8006s_aa.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/focal_drivers_ft8006s_aa.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/focal_test_ft8006s_aa.c b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/focal_test_ft8006s_aa.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/ft8006s_aa_core.h b/drivers/input/touchscreen/oplus_touchscreen/Focal/ft8006s_aa/ft8006s_aa_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/goodix_drivers_gt9286.c b/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/goodix_drivers_gt9286.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/goodix_drivers_gt9286.h b/drivers/input/touchscreen/oplus_touchscreen/Goodix/GT9286/goodix_drivers_gt9286.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/gt1x_generic_oplus.h b/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/gt1x_generic_oplus.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/gt1x_oplus.c b/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/gt1x_oplus.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/gt1x_oplus.h b/drivers/input/touchscreen/oplus_touchscreen/Goodix/Goodix_gt5688/gt1x_oplus.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Himax/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Himax/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/himax_common.c b/drivers/input/touchscreen/oplus_touchscreen/Himax/himax_common.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/himax_common.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/himax_common.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/hx83102d_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/hx83102d_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/hx83102d_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/hx83102d_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83102d_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/hx83112a_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/hx83112a_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/hx83112a_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/hx83112a_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112a_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/hx83112b.c b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/hx83112b.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/hx83112b.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b/hx83112b.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/hx83112b_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/hx83112b_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/hx83112b_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/hx83112b_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112b_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/hx83112f_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/hx83112f_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/hx83112f_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/hx83112f_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Himax/hx83112f_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/nvt_drivers_nt36523_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/nvt_drivers_nt36523_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/nvt_drivers_nt36523_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/nvt_drivers_nt36523_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/nvt_limit_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/nvt_limit_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36523_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/nvt_drivers_nt36525.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/nvt_drivers_nt36525.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/nvt_drivers_nt36525.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525/nvt_drivers_nt36525.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/nvt_drivers_nt36525b_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/nvt_drivers_nt36525b_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/nvt_drivers_nt36525b_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/nvt_drivers_nt36525b_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/nvt_limit_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/nvt_limit_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525B_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/mtk_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/mtk_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_drivers_nt36525_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_drivers_nt36525_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_drivers_nt36525_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_drivers_nt36525_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_firmware.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_firmware.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_limit_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/nvt_limit_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36525_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/nvt_drivers_nt36672.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/nvt_drivers_nt36672.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/nvt_drivers_nt36672.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672/nvt_drivers_nt36672.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/mtk_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/mtk_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/nvt_drivers_nt36672c_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/nvt_drivers_nt36672c_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/nvt_drivers_nt36672c_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/nvt_drivers_nt36672c_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/nvt_limit_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/nvt_limit_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672C_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/mtk_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/mtk_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_drivers_nt36672_noflash.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_drivers_nt36672_noflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_drivers_nt36672_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_drivers_nt36672_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_firmware.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_firmware.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_limit_noflash.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/nvt_limit_noflash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/oplus_spi.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/NT36672_noflash/oplus_spi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/novatek_common.c b/drivers/input/touchscreen/oplus_touchscreen/Novatek/novatek_common.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Novatek/novatek_common.h b/drivers/input/touchscreen/oplus_touchscreen/Novatek/novatek_common.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/sec_drivers_s6d7at0.c b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/sec_drivers_s6d7at0.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/sec_drivers_s6d7at0.h b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6D7AT0/sec_drivers_s6d7at0.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/sec_drivers_s6sy761.c b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/sec_drivers_s6sy761.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/sec_drivers_s6sy761.h b/drivers/input/touchscreen/oplus_touchscreen/Samsung/S6SY761/sec_drivers_s6sy761.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S1302_virtal_key/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S1302_virtal_key/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S1302_virtal_key/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S1302_virtal_key/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S1302_virtal_key/synaptics_touch_key.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S1302_virtal_key/synaptics_touch_key.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/synaptics_drivers_s3320.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/synaptics_drivers_s3320.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/synaptics_drivers_s3320_17001.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/synaptics_drivers_s3320_17001.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/synaptics_s3320.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3320/synaptics_s3320.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/synaptics_drivers_s3508.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/synaptics_drivers_s3508.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/synaptics_s3508.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S3508/synaptics_s3508.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/synaptics_drivers_s4322.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/synaptics_drivers_s4322.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/synaptics_s4322.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/S4322/synaptics_s4322.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_core.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_core.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_core.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_device.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_device.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_recovery.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/Syna_tcm/synaptics_tcm_recovery.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_core.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_core.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_core.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_device.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_device.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_recovery.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_recovery.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_zeroflash.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4160/synaptics_tcm_zeroflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/synaptics_drivers_td4310.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/synaptics_drivers_td4310.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/synaptics_td4310.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4310/synaptics_td4310.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_core.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_core.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_core.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_device.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_device.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_diagnostics.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_diagnostics.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_recovery.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_recovery.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_reflash.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_reflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_spi.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_spi.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_testing.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_testing.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_testing.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_testing.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_touch.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_touch.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_zeroflash.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320/synaptics_tcm_zeroflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/Makefile b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_core.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_core.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_core.h b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_device.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_device.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_recovery.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_recovery.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_zeroflash.c b/drivers/input/touchscreen/oplus_touchscreen/Synaptics/TD4320_noflash/synaptics_tcm_zeroflash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/Makefile b/drivers/input/touchscreen/oplus_touchscreen/chipone/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_config.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_config.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_core.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_core.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_core.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_core.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_firmware.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_firmware.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sfctrl.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sfctrl.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sfctrlv2.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sfctrlv2.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_spi_flash.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_spi_flash.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_spi_flash.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_spi_flash.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_strerror.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_strerror.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_strerror.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_strerror.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sysfs.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sysfs.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sysfs.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_sysfs.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_test.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_test.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_test.h b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_test.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_tool.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_tool.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_vendor_driver.c b/drivers/input/touchscreen/oplus_touchscreen/chipone/cts_vendor_driver.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/ilitek/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/Makefile b/drivers/input/touchscreen/oplus_touchscreen/ilitek/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/Makefile b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_fw.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_fw.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_ic.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_ic.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_mp.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_mp.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_node.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_node.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_qcom.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek7807s/ili7807s_qcom.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/FW_NF_ILI9881H_INNOLUX.ili b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/FW_NF_ILI9881H_INNOLUX.ili
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/FW_NF_ILI9881H_INNOLUX_18171.ili b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/FW_NF_ILI9881H_INNOLUX_18171.ili
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/Makefile b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/data_transfer.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/data_transfer.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/data_transfer.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/data_transfer.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/finger_report.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/finger_report.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/finger_report.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/finger_report.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/firmware.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/firmware.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/firmware.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/firmware.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_common.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_common.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_drivers_ili9881h.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_drivers_ili9881h.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_fw.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_fw.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_ili9881h.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/ilitek_ili9881h.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/mp_test.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/mp_test.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/mp_test.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/mp_test.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/protocol.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/protocol.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/protocol.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/protocol.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/userspace.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h/userspace.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/Makefile b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/firmware.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/firmware.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/firmware.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/firmware.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/ilitek_common.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/ilitek_common.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/ilitek_drivers_ili9881h.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/ilitek_drivers_ili9881h.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/mp_test.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/mp_test.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/mp_test.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/mp_test.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/protocol.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/protocol.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/protocol.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/protocol.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/userspace.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v2/userspace.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/Makefile b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_fw.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_fw.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_ic.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_ic.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_mp.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_mp.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_node.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_node.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_plat_qcom.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9881h_v3/ilitek_plat_qcom.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/Kconfig b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/Kconfig
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/Makefile b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/Makefile
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n.h b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_fw.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_fw.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_ic.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_ic.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_mp.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_mp.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_node.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_node.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_qcom.c b/drivers/input/touchscreen/oplus_touchscreen/ilitek/ilitek9882n/ili9882n_qcom.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/touchpanel_common_driver.c b/drivers/input/touchscreen/oplus_touchscreen/touchpanel_common_driver.c
+index 7fdeba3fce58..35ebc7db19c5 100755
+--- a/drivers/input/touchscreen/oplus_touchscreen/touchpanel_common_driver.c
++++ b/drivers/input/touchscreen/oplus_touchscreen/touchpanel_common_driver.c
+@@ -1670,7 +1670,7 @@ void tp_gpio_current_leakage_handler(bool normal)
+ }
+ EXPORT_SYMBOL(tp_gpio_current_leakage_handler);
+ 
+-bool tp_boot_mode_normal()
++bool tp_boot_mode_normal(void)
+ {
+     if (!g_tp) {
+         return false;
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/touchpanel_exception.c b/drivers/input/touchscreen/oplus_touchscreen/touchpanel_exception.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/touchpanel_exception.h b/drivers/input/touchscreen/oplus_touchscreen/touchpanel_exception.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/touchpanel_healthinfo.c b/drivers/input/touchscreen/oplus_touchscreen/touchpanel_healthinfo.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/input/touchscreen/oplus_touchscreen/touchpanel_healthinfo.h b/drivers/input/touchscreen/oplus_touchscreen/touchpanel_healthinfo.h
+old mode 100644
+new mode 100755

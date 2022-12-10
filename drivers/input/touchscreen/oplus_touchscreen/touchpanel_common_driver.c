@@ -538,6 +538,7 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
              gesture_info_temp.gesture_type == Up2DownSwip ? "up to down |" :
              gesture_info_temp.gesture_type == Down2UpSwip ? "down to up |" :
              gesture_info_temp.gesture_type == Mgestrue ? "(M)" :
+             gesture_info_temp.gesture_type == SGESTRUE ? "(S)" :
              gesture_info_temp.gesture_type == Wgestrue ? "(W)" :
              gesture_info_temp.gesture_type == FingerprintDown ? "(fingerprintdown)" :
              gesture_info_temp.gesture_type == FingerprintUp ? "(fingerprintup)" :
@@ -6290,7 +6291,7 @@ static int init_input_device(struct touchpanel_data *ts)
         set_bit(KEY_POWER, ts->input_dev->keybit);
 #endif //end of CONFIG_OPLUS_TP_APK
         set_bit(KEY_WAKEUP, ts->input_dev->keybit);
-        for (i = UpVee; i <= Heart; i++) {
+        for (i = UpVee; i <= SGESTRUE; i++) {
             set_bit(KEY_GESTURE_START + i, ts->input_dev->keybit);
         }
     }

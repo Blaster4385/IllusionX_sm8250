@@ -9,6 +9,9 @@
 # Exit on error
 set -e
 
+# Hack for github actions
+git config --global --add safe.directory /github/workspace
+
 KERNEL_DIR="${PWD}"
 cd "${KERNEL_DIR}"
 CHEAD="$(git rev-parse --short HEAD)"

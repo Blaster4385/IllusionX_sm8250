@@ -34,6 +34,7 @@ CLANG_DIR="/mnt/workdir/neutron-clang"
 cd "${CLANG_DIR}"
 
 curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+chmod a+x antman
 ./antman -S
 
 cd "${KERNEL_DIR}"

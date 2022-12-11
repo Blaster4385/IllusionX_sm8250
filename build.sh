@@ -9,6 +9,8 @@
 # Exit on error
 set -e
 
+export CI_BUILD=$1
+
 # Hack for github actions
 git config --global --add safe.directory /github/workspace
 
@@ -28,6 +30,7 @@ PARSE_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 PARSE_ORIGIN="$(git config --get remote.origin.url)"
 COMMIT_POINT="$(git log --pretty=format:'%h : %s' -1)"
 
+if [ "$CI_BUILD" = "true" ]; then
 # Setup Neutron Clang
 mkdir -p "/mnt/workdir/neutron-clang"
 CLANG_DIR="/mnt/workdir/neutron-clang"
@@ -38,6 +41,9 @@ chmod a+x antman
 ./antman -S
 
 cd "${KERNEL_DIR}"
+else
+CLANG_DIR="${HOME}"/toolchains/neutron-clang
+fi
 
 CSTRING=$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 COMP_PATH="$CLANG_DIR/bin:${PATH}"
@@ -74,7 +80,11 @@ tg_ship() {
 }
 
 #Versioning
+if [ "$CI_BUILD" = "true" ]; then
+KERNEL="IllusionX"
+else
 KERNEL="[TEST]IllusionX"
+fi
 DEVICE="oneplus-sm8250"
 KERNELTYPE="$CONFIG_LOCALVERSION"
 KERNELNAME="${KERNEL}-${DEVICE}-${KERNELTYPE}-$(date +%y%m%d-%H%M)"
@@ -92,8 +102,11 @@ build_failed() {
 # Building
 makekernel() {
     export PATH="${COMP_PATH}"
-    make O=out ARCH=arm64 CC=clang ${DEFCONFIG}
-    make -j$(nproc --all) CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- O=out ARCH=arm64 AS=llvm-as AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=1
+    export ARCH=arm64
+    export CROSS_COMPILE=aarch64-linux-gnu-
+    export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+    make O=out CC=clang LLVM=1 LLVM_IAS=1 ${DEFCONFIG}
+    make O=out CC=clang AS=llvm-as AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=1 -j$(nproc --all)
     packingkernel
 }
 
@@ -126,14 +139,15 @@ packingkernel() {
             "" \
             "<b>Device:</b> ${DEVICE}" \
             "<b>Version:</b> ${KERNELTYPE}" \
-            "<b>Commit Head:</b> ${CHEAD}" \
+            "<b>Latest commit:</b> ${COMMIT_POINT}" \
             "<b>Time elapsed:</b> $((DIFF / 60)):$((DIFF % 60))" \
             "" \
             "Leave a comment below if you encounter any bugs!"
 }
 
+if [ "$CI_BUILD" = "true" ]; then
 # Starting
-tg_cast "<b>$DRONE_BUILD_NUMBER CI Build Triggered</b>" \
+tg_cast "<b>CI Build Triggered</b>" \
         "Compiling with $(nproc --all) CPUs" \
 	"" \
         "Compiler: <code>${CSTRING}</code>" \
@@ -142,8 +156,19 @@ tg_cast "<b>$DRONE_BUILD_NUMBER CI Build Triggered</b>" \
 	"Linux Version: <code>$(make kernelversion)</code>" \
 	"Branch: <code>${DRONE_BRANCH}</code>" \
 	"Clocked at: <code>$(date +%Y%m%d-%H%M)</code>" \
-	"Latest commit: <code>${COMMIT_POINT}</code>" \
-	"Log: https://cloud.drone.io/Blaster4385/kernel_realme_RMX1851/$DRONE_BUILD_NUMBER"
+	"Latest commit: <code>${COMMIT_POINT}</code>"
+else
+tg_cast "<b>Test Build Triggered</b>" \
+        "Compiling with $(nproc --all) CPUs" \
+	"" \
+        "Compiler: <code>${CSTRING}</code>" \
+	"Device: ${DEVICE}" \
+	"Kernel: <code>${KERNEL}</code>" \
+	"Linux Version: <code>$(make kernelversion)</code>" \
+	"Branch: <code>${DRONE_BRANCH}</code>" \
+	"Clocked at: <code>$(date +%Y%m%d-%H%M)</code>" \
+	"Latest commit: <code>${COMMIT_POINT}</code>"
+fi
 
 START=$(date +"%s")
 makekernel

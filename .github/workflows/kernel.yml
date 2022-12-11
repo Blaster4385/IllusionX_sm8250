@@ -1,0 +1,21 @@
+# Github action to build and upload kernel
+# This runs the build.sh script to build the kernel
+# This runs on the latest Arch Linux docker image
+name: IllusionX-Pipeline
+on:
+  push:
+    branches:
+      - oos13
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Kernel Pipeline
+        uses: docker://panchajanya1999/archlinux:latest
+        with:
+          entrypoint: bash
+          args: build.sh
+        env:
+          TG_TOKEN: ${{ secrets.TOKEN }}
+          CHANNEL_ID: ${{ secrets.CHATID }}

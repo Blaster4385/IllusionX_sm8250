@@ -1,5 +1,0 @@
-menu "Qualcomm RmNet Extensions"
-
-source "techpack/data/rmnet/Kconfig"
-
-endmenu

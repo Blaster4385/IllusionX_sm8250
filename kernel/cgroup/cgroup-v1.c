@@ -549,13 +549,10 @@ static ssize_t __cgroup1_procs_write(struct kernfs_open_file *of,
 		!memcmp(of->kn->parent->name, "top-app", sizeof("top-app")) &&
 		is_zygote_pid(task->parent->pid)) {
 	    switch (kp_active_mode()) {
-		case 1:
-          cpu_input_boost_kick_max(250);
-		  break;
 		case 2:
-		  cpu_input_boost_kick_max(500);
+          cpu_input_boost_kick_max(500);
 		  break;
-		default:
+		case 3:
 		  cpu_input_boost_kick_max(1000);
 		  break;
 		}

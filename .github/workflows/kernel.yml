@@ -15,7 +15,7 @@ jobs:
         uses: docker://panchajanya1999/archlinux:latest
         with:
           entrypoint: bash
-          args: build.sh
+          args: build.sh true
         env:
           TG_TOKEN: ${{ secrets.TOKEN }}
           CHANNEL_ID: ${{ secrets.CHATID }}

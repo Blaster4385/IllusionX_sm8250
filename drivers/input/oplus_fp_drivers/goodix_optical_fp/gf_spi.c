@@ -8,6 +8,8 @@
 #include <linux/clk.h>
 #include <linux/compat.h>
 #include <linux/cpufreq.h>
+#include <linux/cpu_input_boost.h>
+#include <linux/devfreq_boost.h>
 #include <linux/delay.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -730,6 +732,7 @@ static struct notifier_block goodix_noti_block = {
     .notifier_call = goodix_fb_state_chg_callback,
 };
 
+extern int kp_active_mode(void);
 static int gf_opticalfp_irq_handler(struct fp_underscreen_info *tp_info)
 {
     char msg = 0;
@@ -739,6 +742,20 @@ static int gf_opticalfp_irq_handler(struct fp_underscreen_info *tp_info)
     }
     wake_lock_timeout(&fp_wakelock, msecs_to_jiffies(WAKELOCK_HOLD_TIME));
     if (1 == tp_info->touch_state) {
+	        switch (kp_active_mode()) {
+		case 1:
+		  cpu_input_boost_kick_max(500);
+		  devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 500);
+		  break;
+		case 2:
+		  cpu_input_boost_kick_max(750);
+		  devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 750);
+		  break;
+		default:
+		  cpu_input_boost_kick_max(1000);
+		  devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 1000);
+		  break;
+		}
         msg = GF_NET_EVENT_TP_TOUCHDOWN;
         sendnlmsg(&msg);
         lasttouchmode = tp_info->touch_state;

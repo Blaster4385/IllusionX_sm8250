@@ -25,7 +25,7 @@ static void gtx8_check_setting_group(struct gtx8_ts_test *ts_test, struct short_
  * Between set_doze_false and set_doze_true, do not reset
  * IC!
 */
-static int goodix_set_i2c_doze_mode(struct i2c_client *client, int enable)
+static inline int goodix_set_i2c_doze_mode(struct i2c_client *client, int enable)
 {
 #define GTP_REG_DOZE_CTRL     0x30F0
 #define GTP_REG_DOZE_STAT     0x3100
@@ -108,7 +108,7 @@ exit:
  * goodix_i2c_read_wrapper
  *
  * */
-static int gt9886_i2c_read(struct i2c_client *client, u16 addr, s32 len, u8 *buffer)
+static inline int gt9886_i2c_read(struct i2c_client *client, u16 addr, s32 len, u8 *buffer)
 {
     int ret = -EINVAL;
 
@@ -123,7 +123,7 @@ static int gt9886_i2c_read(struct i2c_client *client, u16 addr, s32 len, u8 *buf
     return ret;
 }
 
-static int gt9886_i2c_write(struct i2c_client *client, u16 addr, s32 len, u8 *buffer)
+static inline int gt9886_i2c_write(struct i2c_client *client, u16 addr, s32 len, u8 *buffer)
 {
     int ret = -EINVAL;
 
@@ -147,7 +147,7 @@ static int gt9886_i2c_write(struct i2c_client *client, u16 addr, s32 len, u8 *bu
  *@len    : data length we want to read
  return  0: success, non-0: failed
 */
-static int goodix_i2c_read_dbl_check(struct i2c_client *client, u16 addr, u8 *buffer, s32 len)
+static inline int goodix_i2c_read_dbl_check(struct i2c_client *client, u16 addr, u8 *buffer, s32 len)
 {
     u8 buf[16] = {0};
     u8 confirm_buf[16] = {0};
@@ -274,7 +274,7 @@ exit:
 
 
 /********* Start of function that work for oplus_touchpanel_operations callbacks***************/
-static int goodix_clear_irq(void *chip_data)
+static inline int goodix_clear_irq(void *chip_data)
 {
     int ret = -1;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -290,7 +290,7 @@ static int goodix_clear_irq(void *chip_data)
     return ret;
 }
 
-static void getSpecialCornerPoint(uint8_t *buf, int n, struct Coordinate *point)
+static inline void getSpecialCornerPoint(uint8_t *buf, int n, struct Coordinate *point)
 {
     int x, y, i;
 
@@ -321,7 +321,7 @@ static void getSpecialCornerPoint(uint8_t *buf, int n, struct Coordinate *point)
     }
 }
 
-static int clockWise(uint8_t *buf, int n)
+static inline int clockWise(uint8_t *buf, int n)
 {
     int i, j, k;
     int count = 0;
@@ -357,14 +357,14 @@ static int clockWise(uint8_t *buf, int n)
         return 0;
 }
 
-static void goodix_esd_check_enable(struct chip_data_gt9886 *chip_info, bool enable)
+static inline void goodix_esd_check_enable(struct chip_data_gt9886 *chip_info, bool enable)
 {
     TPD_INFO("%s %s\n", __func__, enable ? "enable" : "disable");
     /* enable/disable esd check flag */
     chip_info->esd_check_enabled = enable;
 }
 
-static int goodix_enter_sleep(struct chip_data_gt9886 *chip_info, bool config)
+static inline int goodix_enter_sleep(struct chip_data_gt9886 *chip_info, bool config)
 {
     s32 retry = 0;
 
@@ -386,7 +386,7 @@ static int goodix_enter_sleep(struct chip_data_gt9886 *chip_info, bool config)
     return -1;
 }
 
-static int goodix_enable_gesture(struct chip_data_gt9886 *chip_info, bool enable)
+static inline int goodix_enable_gesture(struct chip_data_gt9886 *chip_info, bool enable)
 {
     int ret = -1;
 
@@ -406,7 +406,7 @@ static int goodix_enable_gesture(struct chip_data_gt9886 *chip_info, bool enable
 }
 
 
-static int goodix_enable_edge_limit(struct chip_data_gt9886 *chip_info, int state)
+static inline int goodix_enable_edge_limit(struct chip_data_gt9886 *chip_info, int state)
 {
     int ret = -1;
 
@@ -426,7 +426,7 @@ static int goodix_enable_edge_limit(struct chip_data_gt9886 *chip_info, int stat
 }
 
 
-static int goodix_enable_charge_mode(struct chip_data_gt9886 *chip_info, bool enable)
+static inline int goodix_enable_charge_mode(struct chip_data_gt9886 *chip_info, bool enable)
 {
     int ret = -1;
 
@@ -441,7 +441,7 @@ static int goodix_enable_charge_mode(struct chip_data_gt9886 *chip_info, bool en
     return ret;
 }
 
-static int goodix_enable_game_mode(struct chip_data_gt9886 *chip_info, bool enable)
+static inline int goodix_enable_game_mode(struct chip_data_gt9886 *chip_info, bool enable)
 {
     int ret = 0;
 
@@ -457,7 +457,7 @@ static int goodix_enable_game_mode(struct chip_data_gt9886 *chip_info, bool enab
     return ret;
 }
 
-static int goodix_reset_esd_status(struct chip_data_gt9886 *chip_info)
+static inline int goodix_reset_esd_status(struct chip_data_gt9886 *chip_info)
 {
     /* reset esd state */
     u8 value = 0xAA;
@@ -541,7 +541,7 @@ static s32 goodix_read_version(struct chip_data_gt9886 *chip_info, struct panel_
     return patch_id;
 }
 
-static int goodix_check_cfg_valid(u8 *cfg, int length)
+static inline int goodix_check_cfg_valid(u8 *cfg, int length)
 {
     int ret;
     u8 bag_num;
@@ -604,7 +604,7 @@ exit:
 }
 
 
-static int goodix_wait_cfg_cmd_ready(struct chip_data_gt9886 *chip_info,
+static inline int goodix_wait_cfg_cmd_ready(struct chip_data_gt9886 *chip_info,
                                      u8 right_cmd, u8 send_cmd)
 {
     int try_times = 0;
@@ -635,7 +635,7 @@ static int goodix_wait_cfg_cmd_ready(struct chip_data_gt9886 *chip_info,
 }
 
 
-static int goodix_send_large_config(struct chip_data_gt9886 *chip_info, u8 *config, int cfg_len)
+static inline int goodix_send_large_config(struct chip_data_gt9886 *chip_info, u8 *config, int cfg_len)
 {
     int r = 0;
     int try_times = 0;
@@ -828,7 +828,7 @@ void goodix_reset_via_gpio(struct chip_data_gt9886 *chip_info)
     msleep(20);
 }
 
-static int goodix_reset(void *chip_data)
+static inline int goodix_reset(void *chip_data)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -875,7 +875,7 @@ int goodix_get_channel_num(struct i2c_client *client, u32 *sen_num, u32 *drv_num
 
 
 /********* Start of implementation of oplus_touchpanel_operations callbacks********************/
-static int goodix_ftm_process(void *chip_data)
+static inline int goodix_ftm_process(void *chip_data)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
 
@@ -889,7 +889,7 @@ static int goodix_ftm_process(void *chip_data)
     return 0;
 }
 
-static int goodix_get_vendor(void *chip_data, struct panel_info *panel_data)
+static inline int goodix_get_vendor(void *chip_data, struct panel_info *panel_data)
 {
     int len = 0;
     char manu_temp[MAX_DEVICE_MANU_LENGTH] = "HD_";
@@ -905,7 +905,7 @@ static int goodix_get_vendor(void *chip_data, struct panel_info *panel_data)
     return 0;
 }
 
-static int goodix_get_chip_info(void *chip_data)
+static inline int goodix_get_chip_info(void *chip_data)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
     struct goodix_register   *reg_info = &chip_info->reg_info;
@@ -935,7 +935,7 @@ static int goodix_get_chip_info(void *chip_data)
     return 0;
 }
 
-static int goodix_power_control(void *chip_data, bool enable)
+static inline int goodix_power_control(void *chip_data, bool enable)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -1017,7 +1017,7 @@ static fw_check_state goodix_fw_check(void *chip_data, struct resolution_info *r
  *    and firmware data.
  * return: 0 - OK, < 0 - error
  */
-static int goodix_parse_firmware(struct firmware_data *fw_data)
+static inline int goodix_parse_firmware(struct firmware_data *fw_data)
 {
     const struct firmware *firmware;
     struct firmware_info *fw_info;
@@ -1112,7 +1112,7 @@ err_size:
  * return: 0 firmware in the touch device needs to be updated
  *            < 0 no need to update firmware
  */
-static int goodix_check_update(struct i2c_client *client,
+static inline int goodix_check_update(struct i2c_client *client,
                                const struct firmware_info *fw_info)
 {
     int r = 0;
@@ -1186,7 +1186,7 @@ exit:
  * return: 0 write success and confirm ok
  *           < 0 failed
  */
-static int goodix_reg_write_confirm(struct i2c_client *client,
+static inline int goodix_reg_write_confirm(struct i2c_client *client,
                                     unsigned int addr, unsigned char *data, unsigned int len)
 {
     u8 *cfm, cfm_buf[32];
@@ -1232,7 +1232,7 @@ exit:
  * @fw_data: firmware data
  * return 0 ok, <0 error
  */
-static int goodix_load_isp(struct i2c_client *client, struct firmware_data *fw_data)
+static inline int goodix_load_isp(struct i2c_client *client, struct firmware_data *fw_data)
 {
     struct fw_subsys_info *fw_isp;
     u8 reg_val[8] = {0x00};
@@ -1323,7 +1323,7 @@ static int goodix_load_isp(struct i2c_client *client, struct firmware_data *fw_d
     }
 }
 
-static int goodix_update_prepare(void *chip_data, struct fw_update_ctrl *fwu_ctrl)
+static inline int goodix_update_prepare(void *chip_data, struct fw_update_ctrl *fwu_ctrl)
 {
     u8 reg_val[4] = { 0x00 };
     u8 temp_buf[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -1423,7 +1423,7 @@ static inline u16 checksum_be16(u8 *data, u32 size)
  * @size: packet size
  * @data: packet data
  */
-static int goodix_format_fw_packet(u8 *pkt, u32 flash_addr,
+static inline int goodix_format_fw_packet(u8 *pkt, u32 flash_addr,
                                    u16 len, const u8 *data)
 {
     u16 checksum;
@@ -1452,7 +1452,7 @@ static int goodix_format_fw_packet(u8 *pkt, u32 flash_addr,
  * @pkt: firmware packet
  * return 0 ok, <0 error
  */
-static int goodix_send_fw_packet(struct i2c_client *client, u8 type,
+static inline int goodix_send_fw_packet(struct i2c_client *client, u8 type,
                                  u8 *pkt, u32 len)
 {
     u8 reg_val[4];
@@ -1544,7 +1544,7 @@ static int goodix_send_fw_packet(struct i2c_client *client, u8 type,
  * @subsys: subsystem infomation
  * return: 0 ok, < 0 error
  */
-static int goodix_flash_subsystem(struct i2c_client *client, struct fw_subsys_info *subsys)
+static inline int goodix_flash_subsystem(struct i2c_client *client, struct fw_subsys_info *subsys)
 {
     u16 data_size, offset;
     u32 total_size;
@@ -1603,7 +1603,7 @@ exit:
  * @fw_data: firmware data
  * return: 0 ok, < 0 error
  */
-static int goodix_flash_firmware(struct i2c_client *client, struct firmware_data *fw_data)
+static inline int goodix_flash_firmware(struct i2c_client *client, struct firmware_data *fw_data)
 {
     struct fw_update_ctrl *fw_ctrl;
     struct firmware_info  *fw_info;
@@ -1647,7 +1647,7 @@ exit_flash:
  * @fwu_ctrl: pointer to fw_update_ctrl structrue
  * return: 0 ok, < 0 error
  */
-static int goodix_update_finish(void *chip_data, struct fw_update_ctrl *fwu_ctrl)
+static inline int goodix_update_finish(void *chip_data, struct fw_update_ctrl *fwu_ctrl)
 {
     u8 reg_val[8] = {0};
     int r = 0;
@@ -1690,7 +1690,7 @@ u32 getUint(u8 *buffer, int len)
     return num;
 }
 
-static int gtx8_parse_cfg_data(const struct firmware *cfg_bin, char *cfg_type, u8 *cfg, int *cfg_len, u8 sid)
+static inline int gtx8_parse_cfg_data(const struct firmware *cfg_bin, char *cfg_type, u8 *cfg, int *cfg_len, u8 sid)
 {
     int i = 0, config_status = 0, one_cfg_count = 0;
     int cfgPackageLen = 0;
@@ -1775,7 +1775,7 @@ exit:
     return RESULT_ERR;
 }
 
-static int gtx8_get_cfg_data(void *chip_data_info, const struct firmware *cfg_bin,
+static inline int gtx8_get_cfg_data(void *chip_data_info, const struct firmware *cfg_bin,
                              char *config_name, struct gtx8_ts_config *config)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data_info;
@@ -1821,7 +1821,7 @@ exit:
 }
 
 
-static int gtx8_get_cfg_parms(void *chip_data_info, const struct firmware *firmware)
+static inline int gtx8_get_cfg_parms(void *chip_data_info, const struct firmware *firmware)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data_info;
     int ret = 0;
@@ -1885,7 +1885,7 @@ exit:
 //return value:
 //      0: operate success
 //      other: failed
-static int gtx8_get_fw_parms(void *chip_data_info, const struct firmware *firmware, struct firmware *fw_firmware)
+static inline int gtx8_get_fw_parms(void *chip_data_info, const struct firmware *firmware, struct firmware *fw_firmware)
 {
     //struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data_info;
     int ret = 0;
@@ -2095,7 +2095,7 @@ err_parse_fw:
 }
 /*****************end of GT9886's update function********************/
 
-static u32 goodix_u32_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
+static inline u32 goodix_u32_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
 {
     int ret = -1;
     u8 touch_num = 0;
@@ -2210,7 +2210,7 @@ IGNORE_IDLETOACTIVE_IRQ:
     return IRQ_IGNORE;
 }
 
-static int goodix_get_touch_points(void *chip_data, struct point_info *points, int max_num)
+static inline int goodix_get_touch_points(void *chip_data, struct point_info *points, int max_num)
 {
     int ret, i;
     int touch_map = 0;
@@ -2260,7 +2260,7 @@ END_TOUCH:
     return touch_map;
 }
 
-static int goodix_get_gesture_info(void *chip_data, struct gesture_info *gesture)
+static inline int goodix_get_gesture_info(void *chip_data, struct gesture_info *gesture)
 {
     int ret = -1;
     int i;
@@ -2495,7 +2495,7 @@ END_GESTURE:
     return 0;
 }
 
-static void goodix_get_health_info(void *chip_data, struct monitor_data *mon_data)
+static inline void goodix_get_health_info(void *chip_data, struct monitor_data *mon_data)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
     struct goodix_health_info *health_info;
@@ -2601,7 +2601,7 @@ END_HEALTH:
     return;
 }
 
-static void goodix_get_health_info_v2(void *chip_data, struct monitor_data_v2 *mon_data_v2)
+static inline void goodix_get_health_info_v2(void *chip_data, struct monitor_data_v2 *mon_data_v2)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
     struct goodix_health_info *health_info;
@@ -2705,7 +2705,7 @@ END_HEALTH:
     return;
 }
 
-static int goodix_mode_switch(void *chip_data, work_mode mode, bool flag)
+static inline int goodix_mode_switch(void *chip_data, work_mode mode, bool flag)
 {
     int ret = -1;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -2763,7 +2763,7 @@ static int goodix_mode_switch(void *chip_data, work_mode mode, bool flag)
     return ret;
 }
 
-static int goodix_esd_handle(void *chip_data) //Jarvis:have not finished
+static inline int goodix_esd_handle(void *chip_data) //Jarvis:have not finished
 {
     s32 ret = -1;
     u8 esd_buf = 0;
@@ -2805,7 +2805,7 @@ static int goodix_esd_handle(void *chip_data) //Jarvis:have not finished
     return 0;
 }
 
-static void goodix_enable_fingerprint_underscreen(void *chip_data, uint32_t enable)
+static inline void goodix_enable_fingerprint_underscreen(void *chip_data, uint32_t enable)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -2820,7 +2820,7 @@ static void goodix_enable_fingerprint_underscreen(void *chip_data, uint32_t enab
     return;
 }
 
-static void goodix_enable_gesture_mask(void *chip_data, uint32_t enable)
+static inline void goodix_enable_gesture_mask(void *chip_data, uint32_t enable)
 {
     int ret = -1;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -2835,7 +2835,7 @@ static void goodix_enable_gesture_mask(void *chip_data, uint32_t enable)
     return;
 }
 
-static void goodix_screenon_fingerprint_info(void *chip_data, struct fp_underscreen_info *fp_tpinfo)
+static inline void goodix_screenon_fingerprint_info(void *chip_data, struct fp_underscreen_info *fp_tpinfo)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
 
@@ -2852,7 +2852,7 @@ static void goodix_screenon_fingerprint_info(void *chip_data, struct fp_underscr
     }
 }
 
-static int goodix_fw_handle(void *chip_data)
+static inline int goodix_fw_handle(void *chip_data)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -2863,35 +2863,35 @@ static int goodix_fw_handle(void *chip_data)
     return ret;
 }
 
-static void goodix_register_info_read(void *chip_data, uint16_t register_addr, uint8_t *result, uint8_t length)
+static inline void goodix_register_info_read(void *chip_data, uint16_t register_addr, uint8_t *result, uint8_t length)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
 
     gt9886_i2c_read(chip_info->client, register_addr, length, result);         /*read data*/
 }
 
-static void goodix_set_touch_direction(void *chip_data, uint8_t dir)
+static inline void goodix_set_touch_direction(void *chip_data, uint8_t dir)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
 
     chip_info->touch_direction = dir;
 }
 
-static uint8_t goodix_get_touch_direction(void *chip_data)
+static inline uint8_t goodix_get_touch_direction(void *chip_data)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
 
     return chip_info->touch_direction;
 }
 
-static void goodix_specific_resume_operate(void *chip_data)
+static inline void goodix_specific_resume_operate(void *chip_data)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
     TPD_DEBUG("%s call\n", __func__);
     goodix_esd_check_enable(chip_info, true);
 }
 
-static int goodix_enable_single_tap(void *chip_data, bool enable)
+static inline int goodix_enable_single_tap(void *chip_data, bool enable)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
     chip_info->single_tap_flag = enable;
@@ -2927,7 +2927,7 @@ static struct oplus_touchpanel_operations goodix_ops = {
 /********* End of implementation of oplus_touchpanel_operations callbacks**********************/
 
 /******** Start of implementation of debug_info_proc_operations callbacks*********************/
-static void goodix_debug_info_read(struct seq_file *s, void *chip_data, debug_type debug_type)
+static inline void goodix_debug_info_read(struct seq_file *s, void *chip_data, debug_type debug_type)
 {
     int ret = -1, i = 0, j = 0;
     u8 *kernel_buf = NULL;
@@ -3009,7 +3009,7 @@ read_data_exit:
     return;
 }
 
-static void goodix_detailed_debug_info_read(struct seq_file *s, void *chip_data, debug_type debug_type)
+static inline void goodix_detailed_debug_info_read(struct seq_file *s, void *chip_data, debug_type debug_type)
 {
     int ret = -1, i = 0, j = 0, retry = 0;
     u8 *kernel_buf = NULL;
@@ -3148,7 +3148,7 @@ read_data_exit:
     return;
 }
 
-static void goodix_down_diff_info_read(struct seq_file *s, void *chip_data)
+static inline void goodix_down_diff_info_read(struct seq_file *s, void *chip_data)
 {
     int ret = -1, i = 0, j = 0;
     u8 *kernel_buf = NULL;
@@ -3213,7 +3213,7 @@ exit:
 }
 
 //proc/touchpanel/debug_info/delta
-static void goodix_delta_read(struct seq_file *s, void *chip_data)
+static inline void goodix_delta_read(struct seq_file *s, void *chip_data)
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
 
@@ -3228,13 +3228,13 @@ static void goodix_delta_read(struct seq_file *s, void *chip_data)
 }
 
 //proc/touchpanel/debug_info/baseline
-static void goodix_baseline_read(struct seq_file *s, void *chip_data)
+static inline void goodix_baseline_read(struct seq_file *s, void *chip_data)
 {
     goodix_debug_info_read(s, chip_data, GTP_RAWDATA);
 }
 
 //proc/touchpanel/debug_info/main_register
-static void goodix_main_register_read(struct seq_file *s, void *chip_data)//Jarvis:need change to GT9886's register
+static inline void goodix_main_register_read(struct seq_file *s, void *chip_data)//Jarvis:need change to GT9886's register
 {
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
     int ret = 0;
@@ -3282,7 +3282,7 @@ static struct debug_info_proc_operations debug_info_proc_ops = {
 
 
 /* success return config length else return -1 */
-static int goodix_do_read_config(void *chip_data, u32 base_addr, u8 *buf)
+static inline int goodix_do_read_config(void *chip_data, u32 base_addr, u8 *buf)
 {
     int sub_bags = 0;
     int offset = 0;
@@ -3408,7 +3408,7 @@ exit:
     return ret;
 }
 
-static void goodix_config_info_read(struct seq_file *s, void *chip_data)
+static inline void goodix_config_info_read(struct seq_file *s, void *chip_data)
 {
     int ret = 0, i = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -3465,7 +3465,7 @@ exit:
 }
 /*************** End of callback of proc/Goodix/config_version node***************************/
 
-static u8 goodix_config_version_read(struct chip_data_gt9886 *chip_info)
+static inline u8 goodix_config_version_read(struct chip_data_gt9886 *chip_info)
 {
     int ret = 0, i = 0;
     u8 cmd_flag;
@@ -3534,7 +3534,7 @@ exit:
 * offset         : offset inside sub-bag
 * Return         : int(return offset with config[0], < 0 failed)
 *******************************************************************************/
-static int gtx8_get_cfg_value(u8 *config, u8 *buf, u8 len, u8 sub_bag_num, u8 offset)
+static inline int gtx8_get_cfg_value(u8 *config, u8 *buf, u8 len, u8 sub_bag_num, u8 offset)
 {
     u8 *sub_bag_ptr = NULL;
     u8 i = 0;
@@ -3571,7 +3571,7 @@ static int gtx8_get_cfg_value(u8 *config, u8 *buf, u8 len, u8 sub_bag_num, u8 of
 * Output         : u8* config
 * Return         : none
 *******************************************************************************/
-static void cfg_update_chksum(u8 *config, u16 cfg_len)
+static inline void cfg_update_chksum(u8 *config, u16 cfg_len)
 {
     u16 pack_map_len_arr[100];
     u16 packNum = 0;
@@ -3603,7 +3603,7 @@ static void cfg_update_chksum(u8 *config, u16 cfg_len)
     }
 }
 
-static int disable_hopping(struct gtx8_ts_test *ts_test, struct goodix_ts_config *test_config)
+static inline int disable_hopping(struct gtx8_ts_test *ts_test, struct goodix_ts_config *test_config)
 {
     int ret = 0;
     u8 value = 0;
@@ -3623,7 +3623,7 @@ static int disable_hopping(struct gtx8_ts_test *ts_test, struct goodix_ts_config
     return ret;
 }
 
-static int init_test_config(struct gtx8_ts_test *ts_test)
+static inline int init_test_config(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)ts_test->ts;
@@ -3645,7 +3645,7 @@ static int init_test_config(struct gtx8_ts_test *ts_test)
     return ret;
 }
 
-static void gtx8_print_testdata(struct gtx8_ts_test *ts_test)
+static inline void gtx8_print_testdata(struct gtx8_ts_test *ts_test)
 {
     struct ts_test_params *test_params = NULL;
     int i = 0;
@@ -3682,7 +3682,7 @@ static void gtx8_print_testdata(struct gtx8_ts_test *ts_test)
     }
 }
 
-static void gtx8_print_test_params(struct gtx8_ts_test *ts_test)
+static inline void gtx8_print_test_params(struct gtx8_ts_test *ts_test)
 {
     struct ts_test_params *test_params = NULL;
     int i = 0;
@@ -3731,7 +3731,7 @@ static void gtx8_print_test_params(struct gtx8_ts_test *ts_test)
     }
 }
 
-static int gtx8_init_testlimits(struct gtx8_ts_test *ts_test)
+static inline int gtx8_init_testlimits(struct gtx8_ts_test *ts_test)
 {
     struct goodix_testdata *p_testdata = ts_test->p_testdata;
     struct test_item_info *p_test_item_info = NULL;
@@ -3859,7 +3859,7 @@ INIT_LIMIT_END:
     return ret;
 }
 
-static int gtx8_init_params(struct gtx8_ts_test *ts_test)
+static inline int gtx8_init_params(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     struct ts_test_params *test_params = &ts_test->test_params;
@@ -3880,7 +3880,7 @@ static int gtx8_init_params(struct gtx8_ts_test *ts_test)
 }
 
 /* init cmd data*/
-static int gtx8_init_cmds(struct gtx8_ts_test *ts_test)
+static inline int gtx8_init_cmds(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)ts_test->ts;
@@ -3910,7 +3910,7 @@ static int gtx8_init_cmds(struct gtx8_ts_test *ts_test)
  *
  * read original config data
  */
-static int gtx8_cache_origconfig(struct gtx8_ts_test *ts_test)
+static inline int gtx8_cache_origconfig(struct gtx8_ts_test *ts_test)
 {
     int ret = -ENODEV;
     u8 checksum = 0;
@@ -3943,7 +3943,7 @@ static int gtx8_cache_origconfig(struct gtx8_ts_test *ts_test)
  *
  * preparation before tp test
  */
-static int gtx8_tptest_prepare(struct gtx8_ts_test *ts_test)
+static inline int gtx8_tptest_prepare(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)ts_test->ts;
@@ -3989,7 +3989,7 @@ static int gtx8_tptest_prepare(struct gtx8_ts_test *ts_test)
  *
  * finish test
  */
-static int gtx8_tptest_finish(struct gtx8_ts_test *ts_test)
+static inline int gtx8_tptest_finish(struct gtx8_ts_test *ts_test)
 {
     int ret = RESULT_ERR;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)ts_test->ts;
@@ -4009,7 +4009,7 @@ static int gtx8_tptest_finish(struct gtx8_ts_test *ts_test)
     return ret;
 }
 
-static int normandy_sync_read_rawdata(struct i2c_client *client,
+static inline int normandy_sync_read_rawdata(struct i2c_client *client,
                                       unsigned int sync_addr, unsigned char sync_mask,
                                       unsigned int reg_addr, unsigned char *data,
                                       unsigned int len)
@@ -4060,7 +4060,7 @@ static int normandy_sync_read_rawdata(struct i2c_client *client,
 /**
  * gtx8_cache_rawdata - cache rawdata
  */
-static int gtx8_cache_rawdata(struct gtx8_ts_test *ts_test)
+static inline int gtx8_cache_rawdata(struct gtx8_ts_test *ts_test)
 {
     int j = 0;
     int i = 0;
@@ -4107,7 +4107,7 @@ cache_exit:
 /**
  * gtx8_cache_selfrawdata - cache selfrawdata
  */
-static int gtx8_cache_self_rawdata(struct gtx8_ts_test *ts_test)
+static inline int gtx8_cache_self_rawdata(struct gtx8_ts_test *ts_test)
 {
     int i = 0, j = 0;
     int ret = -EINVAL;
@@ -4155,7 +4155,7 @@ cache_exit:
 /**
  * gtx8_noisetest_prepare- noisetest prepare
  */
-static int gtx8_noisetest_prepare(struct gtx8_ts_test *ts_test)
+static inline int gtx8_noisetest_prepare(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     u32 noise_data_size = 0;
@@ -4203,7 +4203,7 @@ static int gtx8_noisetest_prepare(struct gtx8_ts_test *ts_test)
 /**
  * gtx8_cache_noisedata- cache noisedata
  */
-static int gtx8_cache_noisedata(struct gtx8_ts_test *ts_test)
+static inline int gtx8_cache_noisedata(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     int ret1 = 0;
@@ -4247,7 +4247,7 @@ static int gtx8_cache_noisedata(struct gtx8_ts_test *ts_test)
 /**
  * gtx8_analyse_noisedata- analyse noisedata
  */
-static void gtx8_analyse_noisedata(struct gtx8_ts_test *ts_test)
+static inline void gtx8_analyse_noisedata(struct gtx8_ts_test *ts_test)
 {
     int i = 0;
     u32 find_bad_node = 0;
@@ -4280,7 +4280,7 @@ static void gtx8_analyse_noisedata(struct gtx8_ts_test *ts_test)
 /**
  * gtx8_analyse_self_noisedata- analyse self noisedata
  */
-static void gtx8_analyse_self_noisedata(struct gtx8_ts_test *ts_test)
+static inline void gtx8_analyse_self_noisedata(struct gtx8_ts_test *ts_test)
 {
     int i = 0;
     u32 self_find_bad_node = 0;
@@ -4313,7 +4313,7 @@ static void gtx8_analyse_self_noisedata(struct gtx8_ts_test *ts_test)
 
 
 /* test noise data */
-static void gtx8_test_noisedata(struct gtx8_ts_test *ts_test)
+static inline void gtx8_test_noisedata(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     int test_cnt = 0;
@@ -4362,7 +4362,7 @@ noise_test_exit:
     return;
 }
 
-static int gtx8_self_rawcapacitance_test(struct ts_test_self_rawdata *rawdata,
+static inline int gtx8_self_rawcapacitance_test(struct ts_test_self_rawdata *rawdata,
         struct ts_test_params *test_params)
 {
     int i = 0;
@@ -4392,7 +4392,7 @@ static int gtx8_self_rawcapacitance_test(struct ts_test_self_rawdata *rawdata,
  *
  * parse test peremeters from dt
  */
-static int gtx8_captest_prepare(struct gtx8_ts_test *ts_test)
+static inline int gtx8_captest_prepare(struct gtx8_ts_test *ts_test)
 {
     int ret = -EINVAL;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)ts_test->ts;
@@ -4408,7 +4408,7 @@ static int gtx8_captest_prepare(struct gtx8_ts_test *ts_test)
     return ret;
 }
 
-static int gtx8_rawcapacitance_test(struct ts_test_rawdata *rawdata,
+static inline int gtx8_rawcapacitance_test(struct ts_test_rawdata *rawdata,
                                     struct ts_test_params *test_params)
 {
     int i = 0;
@@ -4433,7 +4433,7 @@ static int gtx8_rawcapacitance_test(struct ts_test_rawdata *rawdata,
     return ret;
 }
 
-static int gtx8_deltacapacitance_test(struct ts_test_rawdata *rawdata,
+static inline int gtx8_deltacapacitance_test(struct ts_test_rawdata *rawdata,
                                       struct ts_test_params *test_params)
 {
     int i = 0;
@@ -4509,7 +4509,7 @@ static int gtx8_deltacapacitance_test(struct ts_test_rawdata *rawdata,
 /* gtx8_rawdata_test
  * test rawdata with one frame
  */
-static void gtx8_rawdata_test(struct gtx8_ts_test *ts_test)
+static inline void gtx8_rawdata_test(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     /* read rawdata and calculate result,  statistics fail times */
@@ -4540,7 +4540,7 @@ static void gtx8_rawdata_test(struct gtx8_ts_test *ts_test)
     }
 }
 
-static void gtx8_capacitance_test(struct gtx8_ts_test *ts_test)
+static inline void gtx8_capacitance_test(struct gtx8_ts_test *ts_test)
 {
     int ret = 0;
     u8 buf[1];
@@ -4594,7 +4594,7 @@ capac_test_exit:
     return;
 }
 
-static void gtx8_intgpio_test(struct gtx8_ts_test *p_gtx8_ts_test)
+static inline void gtx8_intgpio_test(struct gtx8_ts_test *p_gtx8_ts_test)
 {
     /*for interrupt pin test*/
     int eint_status = 0, eint_count = 0, read_gpio_num = 0;//not test int pin
@@ -4624,7 +4624,7 @@ static void gtx8_intgpio_test(struct gtx8_ts_test *p_gtx8_ts_test)
 
 
 /* short test */
-static int gtx8_short_test_prepare(struct gtx8_ts_test *ts_test)
+static inline int gtx8_short_test_prepare(struct gtx8_ts_test *ts_test)
 {
     int ret = 0, i = 0, retry = GTX8_RETRY_NUM_3;
     u8 data[MAX_DRV_NUM + MAX_SEN_NUM] = {0};
@@ -4723,7 +4723,7 @@ static int gtx8_short_test_prepare(struct gtx8_ts_test *ts_test)
     return 0;
 }
 
-static u32 map_die2pin(struct ts_test_params *test_params, u32 chn_num)
+static inline u32 map_die2pin(struct ts_test_params *test_params, u32 chn_num)
 {
     int i = 0;
     u32 res = 255;
@@ -4757,7 +4757,7 @@ static u32 map_die2pin(struct ts_test_params *test_params, u32 chn_num)
     return res;
 }
 
-static int gtx8_check_resistance_to_gnd(struct ts_test_params *test_params,
+static inline int gtx8_check_resistance_to_gnd(struct ts_test_params *test_params,
                                         u16 adc_signal, u32 pos)
 {
     long r = 0;
@@ -4802,7 +4802,7 @@ static int gtx8_check_resistance_to_gnd(struct ts_test_params *test_params,
     return NO_ERR;
 }
 
-static u32 gtx8_short_resistance_calc(struct gtx8_ts_test *ts_test,
+static inline u32 gtx8_short_resistance_calc(struct gtx8_ts_test *ts_test,
                                       struct short_record *r_data, u16 self_capdata, u8 flag)
 {
     u16 lineDrvNum = 0, lineSenNum = 0;
@@ -4843,7 +4843,7 @@ static u32 gtx8_short_resistance_calc(struct gtx8_ts_test *ts_test,
     return r >= 0 ? r : 0;
 }
 
-static int gtx8_shortcircut_analysis(struct gtx8_ts_test *ts_test)
+static inline int gtx8_shortcircut_analysis(struct gtx8_ts_test *ts_test)
 {
     int ret = 0, err = 0;
     u32 r_threshold = 0, short_r = 0;
@@ -5084,7 +5084,7 @@ shortcircut_analysis_error:
     return -EINVAL;
 }
 
-static void gtx8_shortcircut_test(struct gtx8_ts_test *ts_test)
+static inline void gtx8_shortcircut_test(struct gtx8_ts_test *ts_test)
 {
     int i = 0;
     int ret = 0;
@@ -5143,7 +5143,7 @@ static void gtx8_shortcircut_test(struct gtx8_ts_test *ts_test)
 }
 
 
-static void gtx8_check_setting_group(struct gtx8_ts_test *ts_test, struct short_record *r_data)
+static inline void gtx8_check_setting_group(struct gtx8_ts_test *ts_test, struct short_record *r_data)
 {
     u32 dMaster = 0;
     u32 dSlave = 0;
@@ -5237,7 +5237,7 @@ static void gtx8_check_setting_group(struct gtx8_ts_test *ts_test, struct short_
         r_data->group2 = 0;
 }
 
-static void gtx8_put_test_result(
+static inline void gtx8_put_test_result(
     struct gtx8_ts_test *ts_test)
 {
     uint8_t  data_buf[64];
@@ -5410,7 +5410,7 @@ static void gtx8_put_test_result(
 }
 
 
-static void goodix_auto_test(struct seq_file *s, void *chip_data, struct goodix_testdata *p_testdata)
+static inline void goodix_auto_test(struct seq_file *s, void *chip_data, struct goodix_testdata *p_testdata)
 {
     int ret = 0;
     struct gtx8_ts_test *gts_test = NULL;
@@ -5536,7 +5536,7 @@ exit_finish:
 }
 /*************** End of atuo test func***************************/
 
-static int goodix_set_health_info_state (void *chip_data, uint8_t enable)
+static inline int goodix_set_health_info_state (void *chip_data, uint8_t enable)
 {
     int ret = 0;
     struct chip_data_gt9886 *chip_info = (struct chip_data_gt9886 *)chip_data;
@@ -5555,7 +5555,7 @@ static int goodix_set_health_info_state (void *chip_data, uint8_t enable)
     return ret;
 }
 
-static int goodix_get_health_info_state (void *chip_data)
+static inline int goodix_get_health_info_state (void *chip_data)
 {
     TPD_INFO("%s enter\n", __func__);
     return 0;
@@ -5569,7 +5569,7 @@ struct goodix_proc_operations goodix_gt9886_proc_ops = {
 };
 
 /*********** Start of I2C Driver and Implementation of it's callbacks*************************/
-static int goodix_tp_probe(struct i2c_client *client, const struct i2c_device_id *id)
+static inline int goodix_tp_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
     struct chip_data_gt9886 *chip_info = NULL;
     struct touchpanel_data *ts = NULL;
@@ -5673,7 +5673,7 @@ ts_malloc_failed:
     return ret;
 }
 
-static int goodix_tp_remove(struct i2c_client *client)
+static inline int goodix_tp_remove(struct i2c_client *client)
 {
     struct touchpanel_data *ts = i2c_get_clientdata(client);
 
@@ -5683,7 +5683,7 @@ static int goodix_tp_remove(struct i2c_client *client)
     return 0;
 }
 
-static int goodix_i2c_suspend(struct device *dev)
+static inline int goodix_i2c_suspend(struct device *dev)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -5693,7 +5693,7 @@ static int goodix_i2c_suspend(struct device *dev)
     return 0;
 }
 
-static int goodix_i2c_resume(struct device *dev)
+static inline int goodix_i2c_resume(struct device *dev)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -5734,7 +5734,7 @@ static struct i2c_driver tp_i2c_driver = {
 /******************* End of I2C Driver and It's dev_pm_ops***********************/
 
 /***********************Start of module init and exit****************************/
-static int __init tp_driver_init(void)
+static inline int __init tp_driver_init(void)
 {
     TPD_INFO("%s is called\n", __func__);
 
@@ -5750,7 +5750,7 @@ static int __init tp_driver_init(void)
 }
 
 
-static void __exit tp_driver_exit(void)
+static inline void __exit tp_driver_exit(void)
 {
     i2c_del_driver(&tp_i2c_driver);
 

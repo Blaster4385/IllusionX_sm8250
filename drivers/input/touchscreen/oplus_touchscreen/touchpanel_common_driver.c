@@ -55,17 +55,17 @@
 /*******Part0:LOG TAG Declear************************/
 #define TPD_PRINT_POINT_NUM 150
 #define TPD_DEVICE "touchpanel"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_INFO(a, arg...)  pr_debug_once("[TP]"TPD_DEVICE ": " a, ##arg)
 #define TPD_DEBUG(a, arg...)\
     do{\
         if (LEVEL_DEBUG == tp_debug)\
-            pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+            pr_debug_once("[TP]"TPD_DEVICE ": " a, ##arg);\
     }while(0)
 
 #define TPD_DETAIL(a, arg...)\
     do{\
         if (LEVEL_BASIC != tp_debug)\
-            pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+            pr_debug_once("[TP]"TPD_DEVICE ": " a, ##arg);\
     }while(0)
 
 #define TPD_SPECIFIC_PRINT(count, a, arg...)\
@@ -140,7 +140,7 @@ __attribute__((weak)) int reconfig_power_control(struct touchpanel_data *ts)
  * 1 : gesture
  * 2 : sleep
  */
-static int tp_status(struct touchpanel_data *ts)
+static inline int tp_status(struct touchpanel_data *ts)
 {
     if (!!ts) {
         if (ts->suspend_state == TP_SPEEDUP_RESUME_COMPLETE) {
@@ -162,7 +162,7 @@ static int tp_status(struct touchpanel_data *ts)
  * switch work mode based on current params(gesture_enable, limit_enable, glove_enable)
  * Do not care the result: Return void type
  */
-void operate_mode_switch(struct touchpanel_data *ts)
+inline void operate_mode_switch(struct touchpanel_data *ts)
 {
 
     if (!ts->ts_ops->mode_switch) {
@@ -266,7 +266,7 @@ void operate_mode_switch(struct touchpanel_data *ts)
     }
 }
 
-static void tp_touch_down(struct touchpanel_data *ts, struct point_info points, int touch_report_num, int id)
+static inline void tp_touch_down(struct touchpanel_data *ts, struct point_info points, int touch_report_num, int id)
 {
     static int last_width_major;
     static int point_num = 0;
@@ -276,11 +276,7 @@ static void tp_touch_down(struct touchpanel_data *ts, struct point_info points, 
 
     input_report_key(ts->input_dev, BTN_TOUCH, 1);
     input_report_key(ts->input_dev, BTN_TOOL_FINGER, 1);
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if (ts->boot_mode == RECOVERY_BOOT)
-#else
     if (ts->boot_mode == MSM_BOOT_MODE__RECOVERY)
-#endif
     {
         input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, points.z);
     } else {
@@ -370,11 +366,7 @@ void notify_pen_state(int state)
         return;
     }
 
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if ((g_tp->boot_mode == META_BOOT || g_tp->boot_mode == FACTORY_BOOT))
-#else
     if ((g_tp->boot_mode == MSM_BOOT_MODE__FACTORY || g_tp->boot_mode == MSM_BOOT_MODE__RF || g_tp->boot_mode == MSM_BOOT_MODE__WLAN))
-#endif
     {
         TPD_INFO("Ftm mode, no need to notify pen state\n");
         return;
@@ -395,7 +387,7 @@ void notify_pen_state(int state)
 }
 EXPORT_SYMBOL(notify_pen_state);
 
-static void tp_touch_up(struct touchpanel_data *ts)
+static inline void tp_touch_up(struct touchpanel_data *ts)
 {
     if (ts->input_dev == NULL)
         return;
@@ -412,7 +404,7 @@ static void tp_touch_up(struct touchpanel_data *ts)
 #endif
 }
 
-static void tp_exception_handle(struct touchpanel_data *ts)
+static inline void tp_exception_handle(struct touchpanel_data *ts)
 {
     if (!ts->ts_ops->reset) {
         TPD_INFO("not support ts->ts_ops->reset callback\n");
@@ -434,7 +426,7 @@ static void tp_exception_handle(struct touchpanel_data *ts)
 	}
 }
 
-static void tp_fw_auto_reset_handle(struct touchpanel_data *ts)
+static inline void tp_fw_auto_reset_handle(struct touchpanel_data *ts)
 {
     TPD_INFO("%s\n", __func__);
 
@@ -454,7 +446,7 @@ static void tp_fw_auto_reset_handle(struct touchpanel_data *ts)
     tp_touch_release(ts);
 }
 
-static void tp_geture_info_transform(struct gesture_info *gesture, struct resolution_info *resolution_info)
+static inline void tp_geture_info_transform(struct gesture_info *gesture, struct resolution_info *resolution_info)
 {
     gesture->Point_start.x = gesture->Point_start.x * resolution_info->LCD_WIDTH  / (resolution_info->max_x);
     gesture->Point_start.y = gesture->Point_start.y * resolution_info->LCD_HEIGHT / (resolution_info->max_y);
@@ -500,7 +492,7 @@ int sec_double_tap(struct gesture_info *gesture)
     return 0;
 }
 
-static void tp_gesture_handle(struct touchpanel_data *ts)
+static inline void tp_gesture_handle(struct touchpanel_data *ts)
 {
     struct gesture_info gesture_info_temp;
 
@@ -602,7 +594,7 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
     }
 }
 
-void tp_touch_btnkey_release(void)
+inline void tp_touch_btnkey_release(void)
 {
     struct touchpanel_data *ts = g_tp;
 
@@ -615,7 +607,7 @@ void tp_touch_btnkey_release(void)
     tp_btnkey_release(ts);
 }
 
-static void tp_touch_release(struct touchpanel_data *ts)
+static inline void tp_touch_release(struct touchpanel_data *ts)
 {
 #ifdef TYPE_B_PROTOCOL
 
@@ -646,7 +638,7 @@ static void tp_touch_release(struct touchpanel_data *ts)
     ts->irq_slot = 0;
 }
 
-static bool edge_point_process(struct touchpanel_data *ts, struct point_info points)
+static inline bool edge_point_process(struct touchpanel_data *ts, struct point_info points)
 {
     if (ts->limit_edge) {
         if (points.x > ts->edge_limit.left_x2 && points.x < ts->edge_limit.right_x2) {
@@ -672,7 +664,7 @@ static bool edge_point_process(struct touchpanel_data *ts, struct point_info poi
     return false;
 }
 
-static bool corner_point_process(struct touchpanel_data *ts, struct corner_info *corner, struct point_info *points, int i)
+static inline bool corner_point_process(struct touchpanel_data *ts, struct corner_info *corner, struct point_info *points, int i)
 {
     int j;
     if (ts->limit_corner) {
@@ -741,7 +733,7 @@ static bool corner_point_process(struct touchpanel_data *ts, struct corner_info 
     return false;
 }
 
-static int touch_elimination_caculate(struct touchpanel_data *ts, int obj_attention, struct point_info *points)
+static inline int touch_elimination_caculate(struct touchpanel_data *ts, int obj_attention, struct point_info *points)
 {
     int i = 0, total_cnt = 0, unit = 0, max_array_x = 0, max_array_y = 0;
     uint16_t left_edge_bit = 0, right_edge_bit = 0;
@@ -879,7 +871,7 @@ static int touch_elimination_caculate(struct touchpanel_data *ts, int obj_attent
     return obj_attention;
 }
 
-static void tp_touch_handle(struct touchpanel_data *ts)
+static inline void tp_touch_handle(struct touchpanel_data *ts)
 {
     int i = 0;
     uint8_t finger_num = 0, touch_near_edge = 0, finger_num_center = 0;
@@ -1026,7 +1018,7 @@ static void tp_touch_handle(struct touchpanel_data *ts)
     }
 }
 
-static void tp_btnkey_release(struct touchpanel_data *ts)
+static inline void tp_btnkey_release(struct touchpanel_data *ts)
 {
     if (CHK_BIT(ts->vk_bitmap, BIT_MENU))
         input_report_key_oplus(ts->kpd_input_dev, KEY_MENU, 0);
@@ -1037,7 +1029,7 @@ static void tp_btnkey_release(struct touchpanel_data *ts)
     input_sync(ts->kpd_input_dev);
 }
 
-static void tp_btnkey_handle(struct touchpanel_data *ts)
+static inline void tp_btnkey_handle(struct touchpanel_data *ts)
 {
     u8 touch_state = 0;
 
@@ -1062,7 +1054,7 @@ static void tp_btnkey_handle(struct touchpanel_data *ts)
     input_sync(ts->kpd_input_dev);
 }
 
-static void tp_config_handle(struct touchpanel_data *ts)
+static inline void tp_config_handle(struct touchpanel_data *ts)
 {
     int ret = 0;
     if (!ts->ts_ops->fw_handle) {
@@ -1073,7 +1065,7 @@ static void tp_config_handle(struct touchpanel_data *ts)
     ret = ts->ts_ops->fw_handle(ts->chip_data);
 }
 
-static void health_monitor_handle(struct touchpanel_data *ts)
+static inline void health_monitor_handle(struct touchpanel_data *ts)
 {
     if (ts->health_monitor_v2_support) {
         if (!ts->ts_ops->health_report_v2) {
@@ -1091,7 +1083,7 @@ static void health_monitor_handle(struct touchpanel_data *ts)
     }
 }
 
-static void tp_face_detect_handle(struct touchpanel_data *ts)
+static inline void tp_face_detect_handle(struct touchpanel_data *ts)
 {
     int ps_state = 0;
 
@@ -1112,7 +1104,7 @@ static void tp_face_detect_handle(struct touchpanel_data *ts)
     }
 }
 
-static void tp_fingerprint_handle(struct touchpanel_data *ts)
+static inline void tp_fingerprint_handle(struct touchpanel_data *ts)
 {
     struct fp_underscreen_info fp_tpinfo;
 
@@ -1154,7 +1146,7 @@ static void tp_fingerprint_handle(struct touchpanel_data *ts)
     }
 }
 
-static void tp_pen_handle(struct touchpanel_data *ts)
+static inline void tp_pen_handle(struct touchpanel_data *ts)
 {
 	struct pen_info pen_info;
 	static int point_num = 0;
@@ -1207,18 +1199,14 @@ static void tp_pen_handle(struct touchpanel_data *ts)
 	input_sync(ts->pen_input_dev);
 }
 
-static void tp_async_work_callback(void)
+static inline void tp_async_work_callback(void)
 {
     struct touchpanel_data *ts = g_tp;
 
     if (ts == NULL)
         return;
 
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if ((ts->boot_mode == META_BOOT || ts->boot_mode == FACTORY_BOOT))
-#else
     if ((ts->boot_mode == MSM_BOOT_MODE__FACTORY || ts->boot_mode == MSM_BOOT_MODE__RF || ts->boot_mode == MSM_BOOT_MODE__WLAN))
-#endif
     {
         TPD_INFO("%s: in ftm mode, no need to call back\n", __func__);
         return;
@@ -1238,7 +1226,7 @@ static void tp_async_work_callback(void)
     queue_work(ts->async_workqueue, &ts->async_work);
 }
 
-static void tp_async_work_lock(struct work_struct *work)
+static inline void tp_async_work_lock(struct work_struct *work)
 {
     struct touchpanel_data *ts = container_of(work, struct touchpanel_data, async_work);
     mutex_lock(&ts->mutex);
@@ -1248,7 +1236,7 @@ static void tp_async_work_lock(struct work_struct *work)
     mutex_unlock(&ts->mutex);
 }
 
-static void tp_work_common_callback(void)
+static inline void tp_work_common_callback(void)
 {
     struct touchpanel_data *ts;
 
@@ -1258,7 +1246,7 @@ static void tp_work_common_callback(void)
     tp_work_func(ts);
 }
 
-static void tp_work_func(struct touchpanel_data *ts)
+static inline void tp_work_func(struct touchpanel_data *ts)
 {
     u32 cur_event = 0;
     if (!ts->ts_ops->trigger_reason && !ts->ts_ops->u32_trigger_reason) {
@@ -1309,22 +1297,19 @@ static void tp_work_func(struct touchpanel_data *ts)
     }
 }
 
-static void tp_work_func_unlock(struct touchpanel_data *ts)
+static inline void tp_work_func_unlock(struct touchpanel_data *ts)
 {
     if (ts->ts_ops->irq_handle_unlock) {
         ts->ts_ops->irq_handle_unlock(ts->chip_data);
     }
 }
 
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-extern void primary_display_esd_check_enable(int enable);
-#endif
 void __attribute__((weak)) display_esd_check_enable_bytouchpanel(bool enable)
 {
     return;
 }
 
-static void tp_fw_update_work(struct work_struct *work)
+static inline void tp_fw_update_work(struct work_struct *work)
 {
     const struct firmware *fw = NULL;
     int ret, fw_update_result = 0;
@@ -1362,9 +1347,6 @@ static void tp_fw_update_work(struct work_struct *work)
     }
 
     display_esd_check_enable_bytouchpanel(0);
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    primary_display_esd_check_enable(0); //avoid rst pulled to low while updating
-#endif
 
     if (ts->ts_ops->fw_update) {
         do {
@@ -1459,9 +1441,6 @@ EXIT:
     ts->loading_fw = false;
 
     display_esd_check_enable_bytouchpanel(1);
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    primary_display_esd_check_enable(1); //avoid rst pulled to low while updating
-#endif
 
     if (ts->esd_handle_support) {
         esd_handle_switch(&ts->esd_info, true);
@@ -1492,7 +1471,7 @@ EXIT:
 }
 
 #ifndef TPD_USE_EINT
-static enum hrtimer_restart touchpanel_timer_func(struct hrtimer *timer)
+static inline enum hrtimer_restart touchpanel_timer_func(struct hrtimer *timer)
 {
     struct touchpanel_data *ts = container_of(timer, struct touchpanel_data, timer);
 
@@ -1504,7 +1483,7 @@ static enum hrtimer_restart touchpanel_timer_func(struct hrtimer *timer)
     return HRTIMER_NORESTART;
 }
 #else
-static irqreturn_t tp_irq_thread_fn(int irq, void *dev_id)
+static inline irqreturn_t tp_irq_thread_fn(int irq, void *dev_id)
 {
     struct touchpanel_data *ts = (struct touchpanel_data *)dev_id;
     if (ts->ts_ops->tp_irq_throw_away) {
@@ -1574,7 +1553,7 @@ static irqreturn_t tp_irq_thread_fn(int irq, void *dev_id)
 }
 #endif
 
-static void tp_freq_hop_work(struct work_struct *work)
+static inline void tp_freq_hop_work(struct work_struct *work)
 {
     struct touchpanel_data *ts = container_of(work, struct touchpanel_data,
                                  freq_hop_info.freq_hop_work.work);
@@ -1596,7 +1575,7 @@ static void tp_freq_hop_work(struct work_struct *work)
     }
 }
 
-static void tp_freq_hop_simulate(struct touchpanel_data *ts, int freq_hop_freq)
+static inline void tp_freq_hop_simulate(struct touchpanel_data *ts, int freq_hop_freq)
 {
     TPD_INFO("%s is called.\n", __func__);
     ts->freq_hop_info.freq_hop_freq = freq_hop_freq;
@@ -1730,14 +1709,9 @@ bool tp_boot_mode_normal(void)
     if (!g_tp) {
         return false;
     }
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if ((g_tp->boot_mode == META_BOOT || \
-        g_tp->boot_mode == FACTORY_BOOT)) {
-#else
     if ((g_tp->boot_mode == MSM_BOOT_MODE__FACTORY || \
         g_tp->boot_mode == MSM_BOOT_MODE__RF || \
         g_tp->boot_mode == MSM_BOOT_MODE__WLAN)) {
-#endif
         return false;
     }
     return true;
@@ -1748,7 +1722,7 @@ EXPORT_SYMBOL(tp_boot_mode_normal);
  *    gesture_enable = 0 : disable dt2w
  *    gesture_enable = 1 : enable dt2w
  */
-static ssize_t proc_gesture_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_gesture_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -1780,7 +1754,7 @@ static ssize_t proc_gesture_control_write(struct file *file, const char __user *
     return count;
 }
 
-static ssize_t proc_gesture_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_gesture_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
 	int value = 0;
@@ -1805,7 +1779,7 @@ static ssize_t proc_gesture_control_read(struct file *file, char __user *user_bu
  *    bit1: 1 for enable bit gesture, 0 for disable bit gesture
  *    bit2: 1 for enable bit gesture, 0 for disable bit gesture
  */
-static ssize_t proc_gesture_control_indep_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_gesture_control_indep_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[9] = {0};
@@ -1836,7 +1810,7 @@ static ssize_t proc_gesture_control_indep_write(struct file *file, const char __
     return count;
 }
 
-static ssize_t proc_gesture_control_indep_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_gesture_control_indep_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -1854,7 +1828,7 @@ static ssize_t proc_gesture_control_indep_read(struct file *file, char __user *u
     return ret;
 }
 
-static ssize_t proc_coordinate_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_coordinate_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -1891,7 +1865,7 @@ static const struct file_operations proc_gesture_control_indep_fops = {
     .owner = THIS_MODULE,
 };
 
-static int ts_str_to_int(char *in, int start_pos, int end_pos) {
+static inline int ts_str_to_int(char *in, int start_pos, int end_pos) {
 	int i = 0, value = 0;
 
 	if (start_pos > end_pos) {
@@ -1907,7 +1881,7 @@ static int ts_str_to_int(char *in, int start_pos, int end_pos) {
 }
 
 
-static int ts_str_parse(char *in, char *name, unsigned int max_len, unsigned int *array,
+static inline int ts_str_parse(char *in, char *name, unsigned int max_len, unsigned int *array,
                                unsigned int array_max) {
 	int i = 0, in_cnt = 0, name_index = 0;
 	int start_pos = 0, value_cnt = 0;
@@ -1957,7 +1931,7 @@ static int ts_str_parse(char *in, char *name, unsigned int max_len, unsigned int
 	return value_cnt;
 }
 
-static int proc_game_para_control_read(struct seq_file *s, void *v)
+static inline int proc_game_para_control_read(struct seq_file *s, void *v)
 {
 	struct touchpanel_data *ts = s->private;
 	int i = 0;
@@ -2017,11 +1991,11 @@ static int proc_game_para_control_read(struct seq_file *s, void *v)
 	return 0;
 }
 
-static int proc_game_para_control_open(struct inode *inode, struct file *file) {
+static inline int proc_game_para_control_open(struct inode *inode, struct file *file) {
 	return single_open(file, proc_game_para_control_read, PDE_DATA(inode));
 }
 
-static ssize_t proc_game_para_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_game_para_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
 	char buf[PAGESIZE] = {0};
 	char get_buf[PAGESIZE] = {0};
@@ -2112,7 +2086,7 @@ static const struct file_operations proc_coordinate_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_ps_status_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_ps_status_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -2145,7 +2119,7 @@ static ssize_t proc_ps_status_write(struct file *file, const char __user *buffer
     return count;
 }
 
-static ssize_t proc_ps_support_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_ps_support_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -2175,7 +2149,7 @@ static const struct file_operations proc_write_ps_status_fops = {
  * noise_level:0, disable the game_switch;
  * noise_level:a, enable the game_switch;
  */
-static ssize_t proc_game_switch_write(struct file *file,
+static inline ssize_t proc_game_switch_write(struct file *file,
                                       const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
@@ -2237,7 +2211,7 @@ static ssize_t proc_game_switch_write(struct file *file,
 }
 
 
-static ssize_t proc_game_switch_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_game_switch_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
 	int ret = 0;
 	char page[PAGESIZE] = {0};
@@ -2266,7 +2240,7 @@ static const struct file_operations proc_game_switch_fops = {
 };
 
 //proc/touchpanel/black_screen_test
-static ssize_t proc_black_screen_test_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_black_screen_test_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     int retry = 20;
@@ -2321,7 +2295,7 @@ OUT:
     return ret;
 }
 
-static ssize_t proc_black_screen_test_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_black_screen_test_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -2352,7 +2326,7 @@ static const struct file_operations proc_black_screen_test_fops = {
 };
 
 //proc/touchpanel/irq_depth
-static ssize_t proc_get_irq_depth_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_get_irq_depth_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -2374,7 +2348,7 @@ static ssize_t proc_get_irq_depth_read(struct file *file, char __user *user_buf,
     return ret;
 }
 
-static ssize_t proc_irq_status_write(struct file *file, const char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_irq_status_write(struct file *file, const char __user *user_buf, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -2406,7 +2380,7 @@ static const struct file_operations proc_get_irq_depth_fops = {
     .write = proc_irq_status_write,
 };
 
-static ssize_t proc_glove_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_glove_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int ret = 0 ;
     char buf[3] = {0};
@@ -2449,7 +2423,7 @@ static ssize_t proc_glove_control_write(struct file *file, const char __user *bu
     return count;
 }
 
-static ssize_t proc_glove_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_glove_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -2472,7 +2446,7 @@ static const struct file_operations proc_glove_control_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t cap_vk_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
+static inline ssize_t cap_vk_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
     struct button_map *button_map;
     if (!g_tp)
@@ -2505,7 +2479,7 @@ static struct attribute_group properties_attr_group = {
     .attrs = properties_attrs,
 };
 
-static ssize_t proc_debug_control_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_debug_control_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
     uint8_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -2517,7 +2491,7 @@ static ssize_t proc_debug_control_read(struct file *file, char __user *buf, size
     return ret;
 }
 
-static ssize_t proc_debug_control_write(struct file *file, const char __user *buf, size_t count, loff_t *lo)
+static inline ssize_t proc_debug_control_write(struct file *file, const char __user *buf, size_t count, loff_t *lo)
 {
 #ifdef CONFIG_OPLUS_TP_APK
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
@@ -2563,7 +2537,7 @@ static const struct file_operations proc_debug_control_ops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_limit_area_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_limit_area_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -2580,7 +2554,7 @@ static ssize_t proc_limit_area_read(struct file *file, char __user *user_buf, si
     return ret;
 }
 
-static ssize_t proc_limit_area_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_limit_area_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[8];
     int temp;
@@ -2633,7 +2607,7 @@ static const struct file_operations proc_limit_area_ops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_limit_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_limit_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -2650,7 +2624,7 @@ static ssize_t proc_limit_control_read(struct file *file, char __user *user_buf,
     return ret;
 }
 
-static ssize_t proc_limit_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_limit_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[8] = {0};
     int ret = 0, temp = 0;
@@ -2705,7 +2679,7 @@ static const struct file_operations proc_limit_control_ops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_dir_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_dir_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -2720,7 +2694,7 @@ static ssize_t proc_dir_control_read(struct file *file, char __user *user_buf, s
     return ret;
 }
 
-static ssize_t proc_dir_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_dir_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[8] = {0};
     int temp = 0;
@@ -2794,7 +2768,7 @@ static const struct file_operations touch_dir_proc_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_limit_valid_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_limit_valid_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -2810,7 +2784,7 @@ static ssize_t proc_limit_valid_read(struct file *file, char __user *user_buf, s
     return ret;
 }
 
-static ssize_t proc_limit_valid_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_limit_valid_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[8] = {0};
     int temp = 0;
@@ -2843,7 +2817,7 @@ static const struct file_operations limit_valid_proc_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_noise_modetest_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_noise_modetest_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -2858,7 +2832,7 @@ static ssize_t proc_noise_modetest_read(struct file *file, char __user *user_buf
     return ret;
 }
 
-static ssize_t proc_noise_modetest_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_noise_modetest_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[8] = {0};
     int temp = 0;
@@ -2893,7 +2867,7 @@ static const struct file_operations proc_noise_modetest_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_fw_update_write(struct file *file, const char __user *page, size_t size, loff_t *lo)
+static inline ssize_t proc_fw_update_write(struct file *file, const char __user *page, size_t size, loff_t *lo)
 {
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
     int val = 0;
@@ -2904,11 +2878,7 @@ static ssize_t proc_fw_update_write(struct file *file, const char __user *page, 
     if (size > 2)
         return size;
 
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if (ts->boot_mode == KERNEL_POWER_OFF_CHARGING_BOOT)
-#else
     if (ts->boot_mode == MSM_BOOT_MODE__CHARGE)
-#endif
     {
         TPD_INFO("boot mode is MSM_BOOT_MODE__CHARGE,not need update tp firmware\n");
         return size;
@@ -2949,7 +2919,7 @@ static const struct file_operations proc_fw_update_ops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_aging_test_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_aging_test_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
     uint8_t ret = 0;
@@ -2974,7 +2944,7 @@ static ssize_t proc_aging_test_read(struct file *file, char __user *user_buf, si
  * tp_aging_test = 2 : enable normal test
  * tp_aging_test = 3 : enable aging test
  */
-static ssize_t proc_aging_test_write(struct file *file, const char __user *page, size_t size, loff_t *lo)
+static inline ssize_t proc_aging_test_write(struct file *file, const char __user *page, size_t size, loff_t *lo)
 {
 	struct touchpanel_data *ts = PDE_DATA(file_inode(file));
 	int val = 0;
@@ -3021,7 +2991,7 @@ static const struct file_operations proc_aging_test_ops = {
     .owner = THIS_MODULE,
 };
 
-static int tp_test_limit_switch(struct touchpanel_data *ts)
+static inline int tp_test_limit_switch(struct touchpanel_data *ts)
 {
 	char *p_node = NULL;
 	char *postfix = "_AGING";
@@ -3058,7 +3028,7 @@ EXIT:
 	return -1;
 }
 
-static int request_test_limit(const struct firmware **fw,
+static inline int request_test_limit(const struct firmware **fw,
 	char *test_limit_name, struct device *device)
 {
 	int ret = 0;
@@ -3100,7 +3070,7 @@ int request_real_test_limit(struct touchpanel_data *ts,
 	return ret;
 }
 
-static ssize_t proc_finger_protect_result_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_finger_protect_result_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     uint8_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -3122,7 +3092,7 @@ static const struct file_operations proc_finger_protect_result = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_finger_protect_trigger_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_finger_protect_trigger_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int op = 0;
     char buf[4] = {0};
@@ -3161,7 +3131,7 @@ static const struct file_operations proc_finger_protect_trigger = {
     .owner = THIS_MODULE,
 };
 
-void lcd_wakeup_finger_protect(bool wakeup)
+inline void lcd_wakeup_finger_protect(bool wakeup)
 {
     TPD_INFO("%s wakeup=%d\n", __func__, wakeup);
     if (g_tp != NULL) {
@@ -3178,7 +3148,7 @@ void lcd_wakeup_finger_protect(bool wakeup)
     }
 }
 
-static int finger_protect_handler(void *data)
+static inline int finger_protect_handler(void *data)
 {
     struct touchpanel_data *ts = (struct touchpanel_data *)data;
     if (!ts) {
@@ -3219,7 +3189,7 @@ static int finger_protect_handler(void *data)
 //proc/touchpanel/oplus_register_info node use info:
 //first choose register_add and lenght, example: echo 000e,1 > oplus_register_info
 //second read: cat oplus_register_info
-static ssize_t proc_register_info_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_register_info_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     int i = 0;
@@ -3255,7 +3225,7 @@ static ssize_t proc_register_info_read(struct file *file, char __user *user_buf,
 }
 
 //write info: echo 000e,1 > oplus_register_info
-static ssize_t proc_register_info_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_register_info_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int addr = 0, length = 0;
     char buf[16] = {0};
@@ -3290,7 +3260,7 @@ static const struct file_operations proc_register_info_fops = {
     .write = proc_register_info_write,
 };
 
-static ssize_t proc_incell_panel_info_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_incell_panel_info_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     uint8_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -3311,7 +3281,7 @@ static const struct file_operations proc_incell_panel_fops = {
     .read = proc_incell_panel_info_read,
 };
 
-static ssize_t proc_report_point_first_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_report_point_first_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3337,7 +3307,7 @@ static ssize_t proc_report_point_first_read(struct file *file, char __user *user
     return ret;
 }
 
-static ssize_t proc_report_point_first_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_report_point_first_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -3382,7 +3352,7 @@ static const struct file_operations report_point_first_proc_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_rate_white_list_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_rate_white_list_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0 ;
     char buf[4] = {0};
@@ -3426,7 +3396,7 @@ static ssize_t proc_rate_white_list_write(struct file *file, const char __user *
     return count;
 }
 
-static ssize_t proc_rate_white_list_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_rate_white_list_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3448,7 +3418,7 @@ static const struct file_operations proc_rate_white_list_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_switch_usb_state_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_switch_usb_state_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int usb_state = 0 ;
     char buf[4] = {0};
@@ -3470,11 +3440,7 @@ static ssize_t proc_switch_usb_state_write(struct file *file, const char __user 
         return count;
     }
     sscanf(buf, "%d", &usb_state);
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if ((ts->boot_mode == META_BOOT || ts->boot_mode == FACTORY_BOOT))
-#else
     if ((ts->boot_mode == MSM_BOOT_MODE__FACTORY || ts->boot_mode == MSM_BOOT_MODE__RF || ts->boot_mode == MSM_BOOT_MODE__WLAN))
-#endif
     {
         TPD_INFO("Ftm mode, do not switch usb state\n");
         return count;
@@ -3509,7 +3475,7 @@ static ssize_t proc_switch_usb_state_write(struct file *file, const char __user 
     return count;
 }
 
-static ssize_t proc_switch_usb_state_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_switch_usb_state_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3531,7 +3497,7 @@ static const struct file_operations proc_switch_usb_state_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_wireless_charge_detect_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_wireless_charge_detect_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int wireless_state = 0 ;
     char buf[4] = {0};
@@ -3553,11 +3519,8 @@ static ssize_t proc_wireless_charge_detect_write(struct file *file, const char _
         return count;
     }
     sscanf(buf, "%d", &wireless_state);
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if ((ts->boot_mode == META_BOOT || ts->boot_mode == FACTORY_BOOT))
-#else
+
     if ((ts->boot_mode == MSM_BOOT_MODE__FACTORY || ts->boot_mode == MSM_BOOT_MODE__RF || ts->boot_mode == MSM_BOOT_MODE__WLAN))
-#endif
     {
         TPD_INFO("Ftm mode, do not switch wireless state\n");
         return count;
@@ -3577,7 +3540,7 @@ static ssize_t proc_wireless_charge_detect_write(struct file *file, const char _
     return count;
 }
 
-static ssize_t proc_wireless_charge_detect_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_wireless_charge_detect_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3600,7 +3563,7 @@ static const struct file_operations proc_wireless_charge_detect_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_smooth_level_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_smooth_level_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0, raw_level = 0;
     char buf[5] = {0};
@@ -3665,7 +3628,7 @@ static ssize_t proc_smooth_level_write(struct file *file, const char __user *buf
     return count;
 }
 
-static ssize_t proc_smooth_level_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_smooth_level_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3689,7 +3652,7 @@ static const struct file_operations proc_smooth_level_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_sensitive_level_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_sensitive_level_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0, raw_level = 0;
     char buf[5] = {0};
@@ -3748,7 +3711,7 @@ static ssize_t proc_sensitive_level_write(struct file *file, const char __user *
     return count;
 }
 
-static ssize_t proc_sensitive_level_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_sensitive_level_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3770,7 +3733,7 @@ static const struct file_operations proc_sensitive_level_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_optimized_time_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_optimized_time_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[5] = {0};
@@ -3794,7 +3757,7 @@ static ssize_t proc_optimized_time_write(struct file *file, const char __user *b
     return count;
 }
 
-static ssize_t proc_optimized_time_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_optimized_time_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3816,7 +3779,7 @@ static const struct file_operations proc_optimized_time_fops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_pencil_connect_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_pencil_connect_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[5] = {0};
@@ -3849,7 +3812,7 @@ static ssize_t proc_pencil_connect_write(struct file *file, const char __user *b
     return count;
 }
 
-static ssize_t proc_pencil_connect_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_pencil_connect_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -3871,7 +3834,7 @@ static const struct file_operations proc_pencil_connect_fops = {
     .owner = THIS_MODULE,
 };
 
-static int calibrate_fops_read_func(struct seq_file *s, void *v)
+static inline int calibrate_fops_read_func(struct seq_file *s, void *v)
 {
 	struct touchpanel_data *ts = s->private;
 
@@ -3894,7 +3857,7 @@ static int calibrate_fops_read_func(struct seq_file *s, void *v)
 	return 0;
 }
 
-static int proc_calibrate_fops_open(struct inode *inode, struct file *file)
+static inline int proc_calibrate_fops_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, calibrate_fops_read_func, PDE_DATA(inode));
 }
@@ -3906,7 +3869,7 @@ static const struct file_operations proc_calibrate_fops = {
 	.release = single_release,
 };
 
-static int cal_status_read_func(struct seq_file *s, void *v)
+static inline int cal_status_read_func(struct seq_file *s, void *v)
 {
 	bool cal_needed = false;
 	struct touchpanel_data *ts = s->private;
@@ -3929,7 +3892,7 @@ static int cal_status_read_func(struct seq_file *s, void *v)
 	return 0;
 }
 
-static int proc_cal_status_fops_open(struct inode *inode, struct file *file)
+static inline int proc_cal_status_fops_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, cal_status_read_func, PDE_DATA(inode));
 }
@@ -3941,7 +3904,7 @@ static const struct file_operations proc_cal_status_fops = {
 	.release = single_release,
 };
 
-static ssize_t proc_curved_size_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_curved_size_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -4487,7 +4450,7 @@ static const struct file_operations proc_touch_apk_fops = {
  * we need to set touchpanel_data struct as private_data to those file_inode
  * Returning zero(success) or negative errno(failed)
  */
-static int init_touchpanel_proc(struct touchpanel_data *ts)
+static inline int init_touchpanel_proc(struct touchpanel_data *ts)
 {
     int ret = 0;
     struct proc_dir_entry *prEntry_tp = NULL;
@@ -4750,7 +4713,7 @@ static int init_touchpanel_proc(struct touchpanel_data *ts)
 }
 
 //proc/touchpanel/debug_info/baseline
-static int tp_baseline_debug_read_func(struct seq_file *s, void *v)
+static inline int tp_baseline_debug_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -4814,7 +4777,7 @@ static int tp_baseline_debug_read_func(struct seq_file *s, void *v)
 
 }
 
-static int data_baseline_open(struct inode *inode, struct file *file)
+static inline int data_baseline_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_baseline_debug_read_func, PDE_DATA(inode));
 }
@@ -4826,7 +4789,7 @@ static const struct file_operations tp_baseline_data_proc_fops = {
     .release = single_release,
 };
 
-void tp_delta_debug_read_func_another(void) {
+inline void tp_delta_debug_read_func_another(void) {
 	struct seq_file *s = NULL;
 	struct touchpanel_data *ts = g_tp;
 	struct debug_info_proc_operations *debug_info_ops;
@@ -4865,7 +4828,7 @@ void tp_delta_debug_read_func_another(void) {
 }
 
 //proc/touchpanel/debug_info/delta
-static int tp_delta_debug_read_func(struct seq_file *s, void *v)
+static inline int tp_delta_debug_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -4909,7 +4872,7 @@ static int tp_delta_debug_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int data_delta_open(struct inode *inode, struct file *file)
+static inline int data_delta_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_delta_debug_read_func, PDE_DATA(inode));
 }
@@ -4922,7 +4885,7 @@ static const struct file_operations tp_delta_data_proc_fops = {
 };
 
 //proc/touchpanel/debug_info/self_delta
-static int tp_self_delta_debug_read_func(struct seq_file *s, void *v)
+static inline int tp_self_delta_debug_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -4960,7 +4923,7 @@ static int tp_self_delta_debug_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int data_self_delta_open(struct inode *inode, struct file *file)
+static inline int data_self_delta_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_self_delta_debug_read_func, PDE_DATA(inode));
 }
@@ -4973,7 +4936,7 @@ static const struct file_operations tp_self_delta_data_proc_fops = {
 };
 
 //proc/touchpanel/debug_info/self_raw
-static int tp_self_raw_debug_read_func(struct seq_file *s, void *v)
+static inline int tp_self_raw_debug_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -5011,7 +4974,7 @@ static int tp_self_raw_debug_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int data_self_raw_open(struct inode *inode, struct file *file)
+static inline int data_self_raw_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_self_raw_debug_read_func, PDE_DATA(inode));
 }
@@ -5024,7 +4987,7 @@ static const struct file_operations tp_self_raw_data_proc_fops = {
 };
 
 //proc/touchpanel/debug_info/main_register
-static int tp_main_register_read_func(struct seq_file *s, void *v)
+static inline int tp_main_register_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -5067,7 +5030,7 @@ static int tp_main_register_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int main_register_open(struct inode *inode, struct file *file)
+static inline int main_register_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_main_register_read_func, PDE_DATA(inode));
 }
@@ -5080,7 +5043,7 @@ static const struct file_operations tp_main_register_proc_fops = {
 };
 
 //proc/touchpanel/debug_info/reserve
-static int tp_reserve_read_func(struct seq_file *s, void *v)
+static inline int tp_reserve_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -5119,7 +5082,7 @@ static int tp_reserve_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int reserve_open(struct inode *inode, struct file *file)
+static inline int reserve_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_reserve_read_func, PDE_DATA(inode));
 }
@@ -5132,7 +5095,7 @@ static const struct file_operations tp_reserve_proc_fops = {
 };
 
 //proc/touchpanel/debug_info/data_limit
-static int tp_limit_data_read_func(struct seq_file *s, void *v)
+static inline int tp_limit_data_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -5151,7 +5114,7 @@ static int tp_limit_data_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int limit_data_open(struct inode *inode, struct file *file)
+static inline int limit_data_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_limit_data_read_func, PDE_DATA(inode));
 }
@@ -5164,7 +5127,7 @@ static const struct file_operations tp_limit_data_proc_fops = {
 };
 
 //proc/touchpanel/debug_info/abs_doze
-static int tp_abs_doze_read_func(struct seq_file *s, void *v)
+static inline int tp_abs_doze_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct debug_info_proc_operations *debug_info_ops;
@@ -5203,7 +5166,7 @@ static int tp_abs_doze_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int abs_doze_open(struct inode *inode, struct file *file)
+static inline int abs_doze_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_abs_doze_read_func, PDE_DATA(inode));
 }
@@ -5217,7 +5180,7 @@ static const struct file_operations tp_abs_doze_proc_fops = {
 
 
 //proc/touchpanel/debug_info/freq_hop_simulate
-static ssize_t proc_freq_hop_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_freq_hop_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0 ;
     char buf[4] = {0};
@@ -5252,7 +5215,7 @@ static ssize_t proc_freq_hop_write(struct file *file, const char __user *buffer,
     return count;
 }
 
-static ssize_t proc_freq_hop_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_freq_hop_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5275,7 +5238,7 @@ static const struct file_operations proc_freq_hop_fops = {
 };
 
 //proc/touchpanel/debug_info/snr
-static ssize_t proc_snr_write(struct file *file, const char __user *buf, size_t count, loff_t *lo)
+static inline ssize_t proc_snr_write(struct file *file, const char __user *buf, size_t count, loff_t *lo)
 {
 	struct touchpanel_data *ts = PDE_DATA(file_inode(file));
 	int tmp = 0;
@@ -5309,7 +5272,7 @@ static ssize_t proc_snr_write(struct file *file, const char __user *buf, size_t 
 }
 
 #define SNR_NODE_READ_TIMES 100
-static int tp_baseline_snr_read_func(struct seq_file *s, void *v)
+static inline int tp_baseline_snr_read_func(struct seq_file *s, void *v)
 {
 	struct touchpanel_data *ts = s->private;
 	struct debug_info_proc_operations *debug_info_ops = NULL;
@@ -5362,7 +5325,7 @@ static int tp_baseline_snr_read_func(struct seq_file *s, void *v)
 	return 0;
 }
 
-static int proc_snr_open(struct inode *inode, struct file *file)
+static inline int proc_snr_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, tp_baseline_snr_read_func, PDE_DATA(inode));
 }
@@ -5383,7 +5346,7 @@ static const struct file_operations proc_snr_ops = {
 #endif
 
 //write function of /proc/touchpanel/earsense/palm_control
-static ssize_t proc_earsense_palm_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_palm_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -5417,7 +5380,7 @@ static ssize_t proc_earsense_palm_control_write(struct file *file, const char __
 }
 
 //read function of /proc/touchpanel/earsense/palm_control
-static ssize_t proc_earsense_palm_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_palm_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5442,7 +5405,7 @@ static const struct file_operations tp_earsense_palm_control_fops = {
 };
 
 // write function of /proc/touchpanel/earsense/es_enable
-static ssize_t proc_earsense_es_enable_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_es_enable_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     bool state_changed = true;
@@ -5482,7 +5445,7 @@ static ssize_t proc_earsense_es_enable_write(struct file *file, const char __use
 }
 
 // read function of /proc/touchpanel/earsense/es_enable
-static ssize_t proc_earsense_es_enable_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_es_enable_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5507,7 +5470,7 @@ static const struct file_operations tp_earsense_es_enable_fops = {
 };
 
 // read function of /proc/touchpanel/earsense/es_touch_count
-static ssize_t proc_earsense_touchcnt_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_touchcnt_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5533,7 +5496,7 @@ static const struct file_operations tp_earsense_es_touchcnt_fops = {
 };
 
 // read function of /proc/touchpanel/earsense/rawdata
-static ssize_t proc_earsense_rawdata_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_rawdata_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
@@ -5583,7 +5546,7 @@ static const struct file_operations tp_earsense_rawdata_fops = {
 };
 
 // read function of /proc/touchpanel/earsense/delta
-static ssize_t proc_earsense_delta_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_delta_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
@@ -5621,7 +5584,7 @@ static const struct file_operations tp_earsense_delta_fops = {
 };
 
 // read function of /proc/touchpanel/earsense/hover_selfdata
-static ssize_t proc_earsense_selfdata_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_earsense_selfdata_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
@@ -5671,7 +5634,7 @@ static const struct file_operations tp_earsense_selfdata_fops = {
 };
 
 // write function of /proc/touchpanel/earsense/es_enable
-static ssize_t proc_fd_enable_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_fd_enable_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -5709,7 +5672,7 @@ static ssize_t proc_fd_enable_write(struct file *file, const char __user *buffer
 }
 
 // read function of /proc/touchpanel/fd_enable
-static ssize_t proc_fd_enable_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_fd_enable_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5734,7 +5697,7 @@ static const struct file_operations tp_fd_enable_fops = {
 };
 
 // write function of /proc/touchpanel/fp_enable
-static ssize_t proc_fp_enable_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_fp_enable_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int value = 0;
     char buf[4] = {0};
@@ -5776,7 +5739,7 @@ static ssize_t proc_fp_enable_write(struct file *file, const char __user *buffer
 }
 
 // read function of /proc/touchpanel/fp_enable
-static ssize_t proc_fp_enable_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_fp_enable_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5801,7 +5764,7 @@ static const struct file_operations tp_fp_enable_fops = {
 };
 
 // read function of /proc/touchpanel/event_num
-static ssize_t proc_event_num_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_event_num_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     const char *devname = NULL;
@@ -5832,7 +5795,7 @@ static const struct file_operations tp_event_num_fops = {
 };
 
 // read function of /proc/touchpanel/fd_touch_count
-static ssize_t proc_fd_touch_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_fd_touch_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     int ret = 0;
     char page[PAGESIZE] = {0};
@@ -5858,7 +5821,7 @@ static const struct file_operations fd_touch_num_fops = {
 };
 
 //proc/touchpanel/debug_info/health_monitor
-static int tp_health_monitor_read_func(struct seq_file *s, void *v)
+static inline int tp_health_monitor_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct monitor_data *mon_data = &ts->monitor_data;
@@ -5900,7 +5863,7 @@ static int tp_health_monitor_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static ssize_t health_monitor_control(struct file *file, const char __user *buf, size_t count, loff_t *lo)
+static inline ssize_t health_monitor_control(struct file *file, const char __user *buf, size_t count, loff_t *lo)
 {
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
     char buffer[4] = {0};
@@ -5946,7 +5909,7 @@ static ssize_t health_monitor_control(struct file *file, const char __user *buf,
     return count;
 }
 
-static int health_monitor_open(struct inode *inode, struct file *file)
+static inline int health_monitor_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_health_monitor_read_func, PDE_DATA(inode));
 }
@@ -6019,7 +5982,7 @@ static const struct file_operations tp_gesture_rate_proc_fops = {
 #endif
 
 //proc/touchpanel/debug_info
-static int init_debug_info_proc(struct touchpanel_data *ts)
+static inline int init_debug_info_proc(struct touchpanel_data *ts)
 {
     int ret = 0;
     struct proc_dir_entry *prEntry_debug_info = NULL;
@@ -6223,7 +6186,7 @@ static int init_debug_info_proc(struct touchpanel_data *ts)
  * we should using this function setting input report capbility && register input device
  * Returning zero(success) or negative errno(failed)
  */
-static int init_input_device(struct touchpanel_data *ts)
+static inline int init_input_device(struct touchpanel_data *ts)
 {
     int ret = 0, i = 0;
     struct kobject *vk_properties_kobj;
@@ -6382,7 +6345,7 @@ static int init_input_device(struct touchpanel_data *ts)
  * if we have the default label, we just use it, or we must get tp_type from other place and match it.
  * Do not care the result : Returning void type
  */
-static void init_panel_config(struct device_node *parent, struct touchpanel_data *ts)
+static inline void init_panel_config(struct device_node *parent, struct touchpanel_data *ts)
 {
     const char *label = NULL;
     char *vendor = NULL;
@@ -6478,7 +6441,7 @@ static void init_panel_config(struct device_node *parent, struct touchpanel_data
  * If there is any Resource needed by chip_data, we can add a call-back func in this function
  * Do not care the result : Returning void type
  */
-static int init_parse_dts(struct device *dev, struct touchpanel_data *ts)
+static inline int init_parse_dts(struct device *dev, struct touchpanel_data *ts)
 {
     int rc;
     struct device_node *np;
@@ -7166,7 +7129,7 @@ int tp_powercontrol_2v8(struct hw_resource *hw_res, bool on)
 }
 
 
-static void esd_handle_func(struct work_struct *work)
+static inline void esd_handle_func(struct work_struct *work)
 {
     int ret = 0;
     struct touchpanel_data *ts = container_of(work, struct touchpanel_data,
@@ -7218,7 +7181,7 @@ ESD_END:
  *     true:open;
  *     false:close;
  */
-void esd_handle_switch(struct esd_information *esd_info, bool on)
+inline void esd_handle_switch(struct esd_information *esd_info, bool on)
 {
     mutex_lock(&esd_info->esd_lock);
 
@@ -7241,7 +7204,7 @@ void esd_handle_switch(struct esd_information *esd_info, bool on)
     mutex_unlock(&esd_info->esd_lock);
 }
 
-static void tp_rate_calc(struct touchpanel_data *ts, tp_rate tp_rate_type)
+static inline void tp_rate_calc(struct touchpanel_data *ts, tp_rate tp_rate_type)
 {
     switch(tp_rate_type){
         case TP_RATE_START:
@@ -7320,7 +7283,7 @@ int tp_register_irq_func(struct touchpanel_data *ts)
 }
 
 //work schdule for reading&update delta
-static void touch_read_delta(struct work_struct *work)
+static inline void touch_read_delta(struct work_struct *work)
 {
     struct touchpanel_data *ts = container_of(work, struct touchpanel_data, read_delta_work);
 
@@ -7352,7 +7315,7 @@ static void tp_async_secdebug (void *data)
 }
 #endif
 
-static int init_thermal(struct touchpanel_data *ts)
+static inline int init_thermal(struct touchpanel_data *ts)
 {
 	int rc = 0;
 
@@ -7369,7 +7332,7 @@ static int init_thermal(struct touchpanel_data *ts)
 	return rc;
 }
 
-static void tp_get_thermal_work(struct work_struct *work)
+static inline void tp_get_thermal_work(struct work_struct *work)
 {
 	struct touchpanel_data *ts = container_of(work, struct touchpanel_data,
 				get_thermal_work);
@@ -7408,7 +7371,7 @@ End:
 	hrtimer_start(&ts->thermal_timer, ktime_set(10, 0), HRTIMER_MODE_REL);
 }
 
-static enum hrtimer_restart ts_get_thermal_func(struct hrtimer *timer)
+static inline enum hrtimer_restart ts_get_thermal_func(struct hrtimer *timer)
 {
 	struct touchpanel_data *ts = container_of(timer, struct touchpanel_data, thermal_timer);
 
@@ -7569,11 +7532,7 @@ int register_common_touch_device(struct touchpanel_data *pdata)
 
     //step9 : FTM process
     ts->boot_mode = get_boot_mode();
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-    if ((ts->boot_mode == META_BOOT || ts->boot_mode == FACTORY_BOOT))
-#else
     if ((ts->boot_mode == MSM_BOOT_MODE__FACTORY || ts->boot_mode == MSM_BOOT_MODE__RF || ts->boot_mode == MSM_BOOT_MODE__WLAN))
-#endif
     {
         ts->ts_ops->ftm_process(ts->chip_data);
         ret = -EFTM;
@@ -7887,7 +7846,7 @@ power_control_failed:
  * suspend function bind to LCD on/off status
  * Returning zero(sucess) or negative errno(failed)
  */
-static int tp_suspend(struct device *dev)
+static inline int tp_suspend(struct device *dev)
 {
     u64 start_time = 0;
     int ret;
@@ -8043,7 +8002,7 @@ NO_NEED_SUSPEND:
  * resume function bind to LCD on/off status, this fuction start thread to speedup screen on flow.
  * Do not care the result: Return void type
  */
-static void tp_resume(struct device *dev)
+static inline void tp_resume(struct device *dev)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -8106,7 +8065,7 @@ void lcd_trigger_tp_irq_reset(void)
 }
 EXPORT_SYMBOL(lcd_trigger_tp_irq_reset);
 
-void lcd_queue_load_tp_fw(void)
+inline void lcd_queue_load_tp_fw(void)
 {
     if (!g_tp)
         return;
@@ -8124,7 +8083,7 @@ void lcd_queue_load_tp_fw(void)
     }
 }
 
-static void lcd_trigger_load_tp_fw(struct work_struct *work)
+static inline void lcd_trigger_load_tp_fw(struct work_struct *work)
 {
     struct touchpanel_data *ts = container_of(work, struct touchpanel_data,
                                  lcd_trigger_load_tp_fw_work);
@@ -8176,7 +8135,7 @@ void lcd_wait_tp_resume_finished(void)
 }
 EXPORT_SYMBOL(lcd_wait_tp_resume_finished);
 
-static void lcd_tp_refresh_work(struct work_struct *work)
+static inline void lcd_tp_refresh_work(struct work_struct *work)
 {
     struct touchpanel_data *ts = container_of(work, struct touchpanel_data,
                                  tp_refresh_work);
@@ -8199,11 +8158,7 @@ void lcd_tp_refresh_switch(int fps)
     if (!g_tp)
         return;
 
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-	if ((g_tp->boot_mode == META_BOOT || g_tp->boot_mode == FACTORY_BOOT))
-#else
 	if ((g_tp->boot_mode == MSM_BOOT_MODE__FACTORY || g_tp->boot_mode == MSM_BOOT_MODE__RF || g_tp->boot_mode == MSM_BOOT_MODE__WLAN))
-#endif
 	{
 		TPD_INFO("%s: in ftm mode, no need to call back\n", __func__);
 		return;
@@ -8231,7 +8186,7 @@ EXPORT_SYMBOL(lcd_tp_refresh_switch);
  * do actully resume function
  * Do not care the result: Return void type
  */
-static void speedup_resume(struct work_struct *work)
+static inline void speedup_resume(struct work_struct *work)
 {
     int timed_out = 0;
     u64 start_time = 0;
@@ -8344,7 +8299,7 @@ static void speedup_resume(struct work_struct *work)
 }
 
 #if defined(CONFIG_FB) || defined(CONFIG_DRM_MSM)
-static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
+static inline int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
     int *blank;
     int timed_out = -1;
@@ -8443,7 +8398,7 @@ static int fb_notifier_callback(struct notifier_block *self, unsigned long event
 }
 #endif
 
-#if defined CONFIG_TOUCHPANEL_MTK_PLATFORM || defined CONFIG_TOUCHPANEL_NEW_SET_IRQ_WAKE
+#if defined CONFIG_TOUCHPANEL_NEW_SET_IRQ_WAKE
 void tp_i2c_suspend(struct touchpanel_data *ts)
 {
     ts->i2c_ready = false;
@@ -8478,7 +8433,7 @@ OUT:
 }
 
 #else
-void tp_i2c_suspend(struct touchpanel_data *ts)
+inline void tp_i2c_suspend(struct touchpanel_data *ts)
 {
     ts->i2c_ready = false;
     if (ts->black_gesture_support || ts->fingerprint_underscreen_support) {
@@ -8493,7 +8448,7 @@ void tp_i2c_suspend(struct touchpanel_data *ts)
     disable_irq(ts->irq);
 }
 
-void tp_i2c_resume(struct touchpanel_data *ts)
+inline void tp_i2c_resume(struct touchpanel_data *ts)
 {
     if (ts->black_gesture_support || ts->fingerprint_underscreen_support) {
         if ((ts->gesture_enable & 0x01) == 1 || ts->fp_enable) {
@@ -8557,7 +8512,7 @@ EXPORT_SYMBOL(tp_ftm_extra);
  * before report virtual key, detect whether touch_area has been touched
  * Do not care the result: Return void type
  */
-void input_report_key_oplus(struct input_dev *dev, unsigned int code, int value)
+inline void input_report_key_oplus(struct input_dev *dev, unsigned int code, int value)
 {
     if (value) {//report Key[down]
         if (g_tp) {
@@ -8571,7 +8526,7 @@ void input_report_key_oplus(struct input_dev *dev, unsigned int code, int value)
     }
 }
 
-void clear_view_touchdown_flag(void)
+inline void clear_view_touchdown_flag(void)
 {
     if (g_tp) {
         g_tp->view_area_touched = 0;

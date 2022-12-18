@@ -40,7 +40,7 @@ static struct mutex i2c_mutex;
  * Actully, This function call i2c_transfer for IIC transfer,
  * Returning transfer length(transfer success) or most likely negative errno(transfer error)
  */
-int touch_i2c_continue_read(struct i2c_client *client, unsigned short length, unsigned char *data)
+inline int touch_i2c_continue_read(struct i2c_client *client, unsigned short length, unsigned char *data)
 {
     int retval;
     unsigned char retry;
@@ -83,7 +83,7 @@ int touch_i2c_continue_read(struct i2c_client *client, unsigned short length, un
  * Returning transfer length(transfer success) or most likely negative errno(transfer error)
  */
 #ifndef CONFIG_HAVE_ARCH_VMAP_STACK
-int touch_i2c_read_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char *data)
+inline int touch_i2c_read_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char *data)
 {
     int retval;
     unsigned char retry;
@@ -128,7 +128,7 @@ int touch_i2c_read_block(struct i2c_client *client, u16 addr, unsigned short len
     return retval;
 }
 #else
-int touch_i2c_read_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char *data)
+inline int touch_i2c_read_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char *data)
 {
     int retval;
     unsigned char retry;
@@ -248,7 +248,7 @@ int touch_i2c_read_block(struct i2c_client *client, u16 addr, unsigned short len
  * Actully, This function call i2c_transfer for IIC transfer,
  * Returning transfer length(transfer success) or most likely negative errno(transfer error)
  */
-int touch_i2c_continue_write(struct i2c_client *client, unsigned short length, unsigned char *data)
+inline int touch_i2c_continue_write(struct i2c_client *client, unsigned short length, unsigned char *data)
 {
     int retval;
     unsigned char retry;
@@ -290,7 +290,7 @@ int touch_i2c_continue_write(struct i2c_client *client, unsigned short length, u
  * Returning transfer length(transfer success) or most likely negative errno(transfer error)
  */
 #ifndef CONFIG_HAVE_ARCH_VMAP_STACK
-int touch_i2c_write_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char const *data)
+inline int touch_i2c_write_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char const *data)
 {
     int retval;
     unsigned char retry;
@@ -344,7 +344,7 @@ int touch_i2c_write_block(struct i2c_client *client, u16 addr, unsigned short le
     return retval;
 }
 #else
-int touch_i2c_write_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char const *data)
+inline int touch_i2c_write_block(struct i2c_client *client, u16 addr, unsigned short length, unsigned char const *data)
 {
     int retval;
     unsigned char retry;
@@ -453,7 +453,7 @@ int touch_i2c_write_block(struct i2c_client *client, u16 addr, unsigned short le
  * Actully, This function call touch_i2c_read_block for IIC transfer,
  * Returning zero(transfer success) or most likely negative errno(transfer error)
  */
-int touch_i2c_read_byte(struct i2c_client *client, unsigned short addr)
+inline int touch_i2c_read_byte(struct i2c_client *client, unsigned short addr)
 {
     int retval = 0;
     unsigned char buf[2] = {0};
@@ -479,7 +479,7 @@ int touch_i2c_read_byte(struct i2c_client *client, unsigned short addr)
  * Actully, This function call touch_i2c_write_block for IIC transfer,
  * Returning zero(transfer success) or most likely negative errno(transfer error)
  */
-int touch_i2c_write_byte(struct i2c_client *client, unsigned short addr, unsigned char data)
+inline int touch_i2c_write_byte(struct i2c_client *client, unsigned short addr, unsigned char data)
 {
     int retval;
     int length_trans = 1;
@@ -505,7 +505,7 @@ int touch_i2c_write_byte(struct i2c_client *client, unsigned short addr, unsigne
  * Actully, This func call touch_i2c_Read_block for IIC transfer,
  * Returning negative errno else a 16-bit unsigned "word" received from the device.
  */
-int touch_i2c_read_word(struct i2c_client *client, unsigned short addr)
+inline int touch_i2c_read_word(struct i2c_client *client, unsigned short addr)
 {
     int retval;
     unsigned char buf[2] = {0};
@@ -530,7 +530,7 @@ int touch_i2c_read_word(struct i2c_client *client, unsigned short addr)
  * Actully, This function call touch_i2c_write_block for IIC transfer,
  * Returning zero(transfer success) or most likely negative errno(transfer error)
  */
-int touch_i2c_write_word(struct i2c_client *client, unsigned short addr, unsigned short data)
+inline int touch_i2c_write_word(struct i2c_client *client, unsigned short addr, unsigned short data)
 {
     int retval;
     int length_trans = 2;
@@ -559,7 +559,7 @@ int touch_i2c_write_word(struct i2c_client *client, unsigned short addr, unsigne
  * Actully, This function call i2c_transfer for IIC transfer,
  * Returning transfer msg length(transfer success) or most likely negative errno(transfer EIO error)
  */
-int touch_i2c_read(struct i2c_client *client, char *writebuf, int writelen, char *readbuf, int readlen)
+inline int touch_i2c_read(struct i2c_client *client, char *writebuf, int writelen, char *readbuf, int readlen)
 {
     int retval = 0;
     int retry = 0;
@@ -645,7 +645,7 @@ int touch_i2c_read(struct i2c_client *client, char *writebuf, int writelen, char
  * Actully, This function call i2c_transfer for IIC transfer,
  * Returning transfer msg length(transfer success) or most likely negative errno(transfer EIO error)
  */
-int touch_i2c_write(struct i2c_client *client, char *writebuf, int writelen)
+inline int touch_i2c_write(struct i2c_client *client, char *writebuf, int writelen)
 {
     int retval = 0;
     int retry = 0;
@@ -693,7 +693,7 @@ int touch_i2c_write(struct i2c_client *client, char *writebuf, int writelen)
  * Actully, This function don't have many operation, we just detect device address length && alloc DMA memory for MTK platform
  * Returning zero(sucess) or -ENOMEM(memory alloc failed)
  */
-int init_touch_interfaces(struct device *dev, bool flag_register_16bit)
+inline int init_touch_interfaces(struct device *dev, bool flag_register_16bit)
 {
     register_is_16bit = flag_register_16bit;
     mutex_init(&i2c_mutex);
@@ -702,7 +702,7 @@ int init_touch_interfaces(struct device *dev, bool flag_register_16bit)
 }
 
 #ifdef CONFIG_VMAP_STACK
-int32_t spi_read_write(struct spi_device *client, uint8_t *buf, size_t len, uint8_t *rbuf, SPI_RW rw)
+inline int32_t spi_read_write(struct spi_device *client, uint8_t *buf, size_t len, uint8_t *rbuf, SPI_RW rw)
 {
 
     struct spi_message m;
@@ -781,7 +781,7 @@ Description:
 return:
 	Executive outcomes. 0---succeed.
 *******************************************************/
-int32_t spi_read_write(struct spi_device *client, uint8_t *buf, size_t len, uint8_t *rbuf, SPI_RW rw)
+inline int32_t spi_read_write(struct spi_device *client, uint8_t *buf, size_t len, uint8_t *rbuf, SPI_RW rw)
 {
     struct spi_message m;
     struct spi_transfer t = {
@@ -826,7 +826,7 @@ Description:
 return:
 	Executive outcomes. 2---succeed. -5---I/O error
 *******************************************************/
-int32_t CTP_SPI_READ(struct spi_device *client, uint8_t *buf, uint16_t len)
+inline int32_t CTP_SPI_READ(struct spi_device *client, uint8_t *buf, uint16_t len)
 {
     int32_t ret = -1;
     int32_t retries = 0;
@@ -857,7 +857,7 @@ Description:
 return:
 	Executive outcomes. 1---succeed. -5---I/O error
 *******************************************************/
-int32_t CTP_SPI_WRITE(struct spi_device *client, uint8_t *buf, uint16_t len)
+inline int32_t CTP_SPI_WRITE(struct spi_device *client, uint8_t *buf, uint16_t len)
 {
     int32_t ret = -1;
     int32_t retries = 0;
@@ -885,7 +885,7 @@ Description:
 return:
 	Executive outcomes. 0---succeed. -5---I/O error
 *******************************************************/
-int spi_write_firmware(struct spi_device *client, u8 *fw, u32 *len_array, u8 array_len)
+inline int spi_write_firmware(struct spi_device *client, u8 *fw, u32 *len_array, u8 array_len)
 {
     int ret = 0;
     int retry = 0;

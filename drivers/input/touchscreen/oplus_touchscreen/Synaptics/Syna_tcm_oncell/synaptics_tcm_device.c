@@ -23,7 +23,7 @@ static struct device_hcd *g_device_hcd = NULL;
 
 static int rmidev_major_num;
 
-static void device_capture_touch_report(unsigned int count)
+static inline void device_capture_touch_report(unsigned int count)
 {
     int retval;
     unsigned char id;
@@ -58,7 +58,7 @@ static void device_capture_touch_report(unsigned int count)
         }
         retval = syna_tcm_alloc_mem(&g_device_hcd->report, remaining_size);
         if (retval < 0) {
-            pr_err("Failed to allocate memory for device_hcd->report.buf\n");
+            pr_debug("Failed to allocate memory for device_hcd->report.buf\n");
             report = false;
             goto exit;
         }
@@ -87,7 +87,7 @@ static void device_capture_touch_report(unsigned int count)
                                count - idx,
                                size);
         if (retval < 0) {
-            pr_err("Failed to copy touch report data\n");
+            pr_debug("Failed to copy touch report data\n");
             report = false;
             goto exit;
         } else {
@@ -118,7 +118,7 @@ exit:
     return;
 }
 
-static int device_capture_touch_report_config(unsigned int count)
+static inline int device_capture_touch_report_config(unsigned int count)
 {
     int retval;
     unsigned int size;
@@ -127,14 +127,14 @@ static int device_capture_touch_report_config(unsigned int count)
 
     if (g_device_hcd->raw_mode) {
         if (count < 3) {
-            pr_err("Invalid write data\n");
+            pr_debug("Invalid write data\n");
             return -EINVAL;
         }
 
         size = le2_to_uint(&g_device_hcd->out.buf[1]);
 
         if (count - 3 < size) {
-            pr_err("Incomplete write data\n");
+            pr_debug("Incomplete write data\n");
             return -EINVAL;
         }
 
@@ -155,7 +155,7 @@ static int device_capture_touch_report_config(unsigned int count)
 
     retval = syna_tcm_alloc_mem(&tcm_info->config, size);
     if (retval < 0) {
-        pr_err("Failed to allocate memory for tcm_info->config.buf\n");
+        pr_debug("Failed to allocate memory for tcm_info->config.buf\n");
         UNLOCK_BUFFER(tcm_info->config);
         return retval;
     }
@@ -166,7 +166,7 @@ static int device_capture_touch_report_config(unsigned int count)
                            size,
                            size);
     if (retval < 0) {
-        pr_err("Failed to copy touch report config data\n");
+        pr_debug("Failed to copy touch report config data\n");
         UNLOCK_BUFFER(tcm_info->config);
         return retval;
     }
@@ -179,16 +179,16 @@ static int device_capture_touch_report_config(unsigned int count)
 }
 
 #ifdef HAVE_UNLOCKED_IOCTL
-static long device_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+static inline long device_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 #else
-static int device_ioctl(struct inode *inp, struct file *filp, unsigned int cmd,
+static inline int device_ioctl(struct inode *inp, struct file *filp, unsigned int cmd,
                         unsigned long arg)
 #endif
 {
     int retval = 0;
     struct syna_tcm_data *tcm_info = g_device_hcd->tcm_info;
 
-    pr_info("%s: 0x%x\n", __func__, cmd);
+    pr_debug("%s: 0x%x\n", __func__, cmd);
 
     mutex_lock(&g_device_hcd->extif_mutex);
 
@@ -231,12 +231,12 @@ static int device_ioctl(struct inode *inp, struct file *filp, unsigned int cmd,
     return retval;
 }
 
-static loff_t device_llseek(struct file *filp, loff_t off, int whence)
+static inline loff_t device_llseek(struct file *filp, loff_t off, int whence)
 {
     return -EINVAL;
 }
 
-static ssize_t device_read(struct file *filp, char __user *buf,
+static inline ssize_t device_read(struct file *filp, char __user *buf,
                            size_t count, loff_t *f_pos)
 {
     int retval;
@@ -252,7 +252,7 @@ static ssize_t device_read(struct file *filp, char __user *buf,
     if (g_device_hcd->raw_mode) {
         retval = syna_tcm_alloc_mem(&g_device_hcd->resp, count);
         if (retval < 0) {
-            pr_err("Failed to allocate memory for device_hcd->resp.buf\n");
+            pr_debug("Failed to allocate memory for device_hcd->resp.buf\n");
             UNLOCK_BUFFER(g_device_hcd->resp);
             goto exit;
         }
@@ -261,13 +261,13 @@ static ssize_t device_read(struct file *filp, char __user *buf,
                                             g_device_hcd->resp.buf,
                                             count);
         if (retval < 0) {
-            pr_err("Failed to read message\n");
+            pr_debug("Failed to read message\n");
             UNLOCK_BUFFER(g_device_hcd->resp);
             goto exit;
         }
     } else {
         if (count != g_device_hcd->resp.data_length) {
-            pr_err("Invalid length information\n");
+            pr_debug("Invalid length information\n");
             UNLOCK_BUFFER(g_device_hcd->resp);
             retval = -EINVAL;
             goto exit;
@@ -275,7 +275,7 @@ static ssize_t device_read(struct file *filp, char __user *buf,
     }
 
     if (copy_to_user(buf, g_device_hcd->resp.buf, count)) {
-        pr_err("Failed to copy data to user space\n");
+        pr_debug("Failed to copy data to user space\n");
         UNLOCK_BUFFER(g_device_hcd->resp);
         retval = -EINVAL;
         goto exit;
@@ -285,7 +285,7 @@ static ssize_t device_read(struct file *filp, char __user *buf,
         goto skip_concurrent;
 
     if (g_device_hcd->report_touch == NULL) {
-        pr_err("Unable to report touch\n");
+        pr_debug("Unable to report touch\n");
         g_device_hcd->concurrent = false;
     }
 
@@ -303,7 +303,7 @@ exit:
     return retval;
 }
 
-static ssize_t device_write(struct file *filp, const char __user *buf,
+static inline ssize_t device_write(struct file *filp, const char __user *buf,
                             size_t count, loff_t *f_pos)
 {
     int retval;
@@ -318,13 +318,13 @@ static ssize_t device_write(struct file *filp, const char __user *buf,
 
     retval = syna_tcm_alloc_mem(&g_device_hcd->out, count == 1 ? count + 1 : count);
     if (retval < 0) {
-        pr_err("Failed to allocate memory for device_hcd->out.buf\n");
+        pr_debug("Failed to allocate memory for device_hcd->out.buf\n");
         UNLOCK_BUFFER(g_device_hcd->out);
         goto exit;
     }
 
     if (copy_from_user(g_device_hcd->out.buf, buf, count)) {
-        pr_err("Failed to copy data from user space\n");
+        pr_debug("Failed to copy data from user space\n");
         UNLOCK_BUFFER(g_device_hcd->out);
         retval = -EINVAL;
         goto exit;
@@ -332,7 +332,7 @@ static ssize_t device_write(struct file *filp, const char __user *buf,
 
     LOCK_BUFFER(g_device_hcd->resp);
 
-    pr_info("%s: cmd 0x%x\n", __func__, g_device_hcd->out.buf[0]);
+    pr_debug("%s: cmd 0x%x\n", __func__, g_device_hcd->out.buf[0]);
     if (g_device_hcd->raw_mode) {
         retval = g_device_hcd->write_message(tcm_info,
                                              g_device_hcd->out.buf[0],
@@ -360,7 +360,7 @@ static ssize_t device_write(struct file *filp, const char __user *buf,
     }
 
     if (retval < 0) {
-        pr_err("Failed to write command 0x%02x\n",
+        pr_debug("Failed to write command 0x%02x\n",
                g_device_hcd->out.buf[0]);
         UNLOCK_BUFFER(g_device_hcd->resp);
         UNLOCK_BUFFER(g_device_hcd->out);
@@ -370,7 +370,7 @@ static ssize_t device_write(struct file *filp, const char __user *buf,
     if (count && g_device_hcd->out.buf[0] == CMD_SET_TOUCH_REPORT_CONFIG) {
         retval = device_capture_touch_report_config(count);
         if (retval < 0) {
-            pr_err("Failed to capture touch report config\n");
+            pr_debug("Failed to capture touch report config\n");
         }
     }
 
@@ -389,7 +389,7 @@ exit:
     return retval;
 }
 
-static int device_open(struct inode *inp, struct file *filp)
+static inline int device_open(struct inode *inp, struct file *filp)
 {
     int retval;
 
@@ -409,7 +409,7 @@ static int device_open(struct inode *inp, struct file *filp)
     return retval;
 }
 
-static int device_release(struct inode *inp, struct file *filp)
+static inline int device_release(struct inode *inp, struct file *filp)
 {
 
     mutex_lock(&g_device_hcd->extif_mutex);
@@ -422,7 +422,7 @@ static int device_release(struct inode *inp, struct file *filp)
     return 0;
 }
 
-static char *device_devnode(struct device *dev, umode_t *mode)
+static inline char *device_devnode(struct device *dev, umode_t *mode)
 {
     if (!mode)
         return NULL;
@@ -433,7 +433,7 @@ static char *device_devnode(struct device *dev, umode_t *mode)
                      dev_name(dev));
 }
 
-static int device_create_class(void)
+static inline int device_create_class(void)
 {
     if (g_device_hcd->class != NULL)
         return 0;
@@ -441,7 +441,7 @@ static int device_create_class(void)
     g_device_hcd->class = class_create(THIS_MODULE, PLATFORM_DRIVER_NAME);
 
     if (IS_ERR(g_device_hcd->class)) {
-        pr_err("Failed to create class\n");
+        pr_debug("Failed to create class\n");
         return -ENODEV;
     }
 
@@ -467,14 +467,14 @@ static const struct file_operations device_fops = {
     .release = device_release,
 };
 
-static int device_init(struct syna_tcm_data *tcm_info)
+static inline int device_init(struct syna_tcm_data *tcm_info)
 {
     int retval;
     dev_t dev_num;
 
     g_device_hcd = kzalloc(sizeof(*g_device_hcd), GFP_KERNEL);
     if (!g_device_hcd) {
-        pr_err("Failed to allocate memory for device_hcd\n");
+        pr_debug("Failed to allocate memory for device_hcd\n");
         return -ENOMEM;
     }
 
@@ -492,14 +492,14 @@ static int device_init(struct syna_tcm_data *tcm_info)
         retval = register_chrdev_region(dev_num, 1,
                                         PLATFORM_DRIVER_NAME);
         if (retval < 0) {
-            pr_err("Failed to register char device\n");
+            pr_debug("Failed to register char device\n");
             goto err_register_chrdev_region;
         }
     } else {
         retval = alloc_chrdev_region(&dev_num, 0, 1,
                                      PLATFORM_DRIVER_NAME);
         if (retval < 0) {
-            pr_err("Failed to allocate char device\n");
+            pr_debug("Failed to allocate char device\n");
             goto err_alloc_chrdev_region;
         }
 
@@ -512,13 +512,13 @@ static int device_init(struct syna_tcm_data *tcm_info)
 
     retval = cdev_add(&g_device_hcd->char_dev, dev_num, 1);
     if (retval < 0) {
-        pr_err("Failed to add char device\n");
+        pr_debug("Failed to add char device\n");
         goto err_add_chardev;
     }
 
     retval = device_create_class();
     if (retval < 0) {
-        pr_err("Failed to create class\n");
+        pr_debug("Failed to create class\n");
         goto err_create_class;
     }
 
@@ -526,7 +526,7 @@ static int device_init(struct syna_tcm_data *tcm_info)
                                          g_device_hcd->dev_num, NULL, CHAR_DEVICE_NAME"%d",
                                          MINOR(g_device_hcd->dev_num));
     if (IS_ERR(g_device_hcd->device)) {
-        pr_err("Failed to create device\n");
+        pr_debug("Failed to create device\n");
         retval = -ENODEV;
         goto err_create_device;
     }
@@ -560,7 +560,7 @@ struct device_hcd *syna_remote_device_init(struct syna_tcm_data *tcm_info)
     return g_device_hcd;
 }
 
-int syna_remote_device_destory(struct syna_tcm_data *tcm_info)
+inline int syna_remote_device_destory(struct syna_tcm_data *tcm_info)
 {
     if (!g_device_hcd)
         return 0;

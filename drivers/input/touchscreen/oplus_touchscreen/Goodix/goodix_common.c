@@ -6,11 +6,11 @@
 #include "goodix_common.h"
 
 #define TPD_DEVICE "goodix_common"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_INFO(a, arg...)  pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
 #define TPD_DEBUG(a, arg...)\
     do{\
         if (tp_debug)\
-        pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+        pr_debug("[TP]"TPD_DEVICE ": " a, ##arg);\
     }while(0)
 
 /**
@@ -21,7 +21,7 @@
  * we can using this function to get item offset form index item
  * Returning parameter number(success) or negative errno(failed)
  */
-uint32_t search_for_item_offset(const struct firmware *fw, int item_cnt, uint8_t item_index)
+inline uint32_t search_for_item_offset(const struct firmware *fw, int item_cnt, uint8_t item_index)
 {
     int i = 0;
     uint32_t item_offset = 0;
@@ -46,7 +46,7 @@ uint32_t search_for_item_offset(const struct firmware *fw, int item_cnt, uint8_t
  * we can using this function to get parameter form index item
  * Returning pointer to parameter buffer
  */
-int32_t *getpara_for_item(const struct firmware *fw, uint8_t item_index, uint32_t *para_num)
+inline int32_t *getpara_for_item(const struct firmware *fw, uint8_t item_index, uint32_t *para_num)
 {
     uint32_t item_offset = 0;
     int i = 0;
@@ -187,7 +187,7 @@ void tp_kfree(void **mem)
     }
 }
 
-void GetCirclePoints(struct Coordinate *input_points, int number, struct Coordinate *pPnts)
+inline void GetCirclePoints(struct Coordinate *input_points, int number, struct Coordinate *pPnts)
 {
     int i = 0;
     int k = 0, j = 0, m = 0, n = 0;
@@ -237,7 +237,7 @@ void GetCirclePoints(struct Coordinate *input_points, int number, struct Coordin
  * @n: how many points need to be calculated
  * Return 1--clockwise, 0--anticlockwise, not circle, report 2
  */
-int ClockWise(struct Coordinate *p, int n)
+inline int ClockWise(struct Coordinate *p, int n)
 {
     int i, j, k;
     int count = 0;
@@ -266,7 +266,7 @@ int ClockWise(struct Coordinate *p, int n)
         return 0;
 }
 
-static ssize_t tp_devices_check_read_func(struct file *file, char __user *page, size_t size, loff_t *ppos)
+static inline ssize_t tp_devices_check_read_func(struct file *file, char __user *page, size_t size, loff_t *ppos)
 {
     char pagesize[64] = {0};
     int ret = 0;
@@ -284,7 +284,7 @@ static const struct file_operations gt1x_devices_check = {
     .read  = tp_devices_check_read_func,
 };
 
-static ssize_t proc_health_info_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_health_info_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE] = {0};
@@ -305,7 +305,7 @@ static ssize_t proc_health_info_read(struct file *file, char __user *user_buf, s
     return ret;
 }
 
-static ssize_t proc_health_info_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_health_info_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[4] = {0};
     int temp = 0;
@@ -352,7 +352,7 @@ static const struct file_operations goodix_health_info_ops =
 };
 
 //proc/touchpanel/Goodix/config_version
-static int gt1x_tp_config_read_func(struct seq_file *s, void *v)
+static inline int gt1x_tp_config_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct goodix_proc_operations *goodix_ops;
@@ -377,14 +377,14 @@ static int gt1x_tp_config_read_func(struct seq_file *s, void *v)
     return 0;
 }
 
-static int proc_data_config_version_read(struct seq_file *s, void *v)
+static inline int proc_data_config_version_read(struct seq_file *s, void *v)
 
 {
     gt1x_tp_config_read_func(s, v);
     return 0;
 }
 
-static int gt1x_data_config_version_open(struct inode *inode, struct file *file)
+static inline int gt1x_data_config_version_open(struct inode *inode, struct file *file)
 {
     return single_open(file, proc_data_config_version_read, PDE_DATA(inode));
 }
@@ -396,7 +396,7 @@ static const struct file_operations gt1x_tp_config_version_proc_fops = {
     .release = single_release,
 };
 
-static ssize_t goodix_water_protect_read(struct file *file, char *buff, size_t len, loff_t *pos)
+static inline ssize_t goodix_water_protect_read(struct file *file, char *buff, size_t len, loff_t *pos)
 {
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
     struct goodix_proc_operations *syna_ops;
@@ -419,7 +419,7 @@ static ssize_t goodix_water_protect_read(struct file *file, char *buff, size_t l
     return ret;
 }
 
-static ssize_t goodix_water_protect_write(struct file *file, const char *buff, size_t len, loff_t *pos)
+static inline ssize_t goodix_water_protect_write(struct file *file, const char *buff, size_t len, loff_t *pos)
 {
     struct touchpanel_data *ts = PDE_DATA(file_inode(file));
     struct goodix_proc_operations *syna_ops;
@@ -447,7 +447,7 @@ static struct file_operations goodix_water_protect_debug_ops = {
     .write = goodix_water_protect_write,
 };
 
-void goodix_limit_read(struct seq_file *s, struct touchpanel_data *ts)
+inline void goodix_limit_read(struct seq_file *s, struct touchpanel_data *ts)
 {
     int ret = 0, m = 0, i = 0, j = 0, item_cnt = 0;
     const struct firmware *fw = NULL;
@@ -554,7 +554,7 @@ void goodix_limit_read(struct seq_file *s, struct touchpanel_data *ts)
     release_firmware(fw);
 }
 
-static int tp_auto_test_read_func(struct seq_file *s, void *v)
+static inline int tp_auto_test_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct goodix_proc_operations *goodix_ops;
@@ -640,7 +640,7 @@ OUT:
 
     return 0;
 }
-static int baseline_autotest_open(struct inode *inode, struct file *file)
+static inline int baseline_autotest_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_auto_test_read_func, PDE_DATA(inode));
 }
@@ -652,7 +652,7 @@ static const struct file_operations tp_auto_test_proc_fops = {
     .release = single_release,
 };
 
-int Goodix_create_proc(struct touchpanel_data *ts, struct goodix_proc_operations *goodix_ops)
+inline int Goodix_create_proc(struct touchpanel_data *ts, struct goodix_proc_operations *goodix_ops)
 {
     int ret = 0;
     struct proc_dir_entry *prEntry_tmp = NULL;

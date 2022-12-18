@@ -38,18 +38,18 @@ static int checkCMD(struct chip_data_s3706 *chip_info, int retry_time);
 /*******Part0:LOG TAG Declear********************/
 
 #define TPD_DEVICE "synaptics-s3706"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_INFO(a, arg...)  pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
 #define TPD_DEBUG(a, arg...)\
         do {\
                 if (LEVEL_DEBUG == tp_debug) {\
-                        pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+                        pr_debug("[TP]"TPD_DEVICE ": " a, ##arg);\
                 }\
         }while(0)
 
 #define TPD_DETAIL(a, arg...)\
         do {\
                 if (LEVEL_BASIC != tp_debug) {\
-                        pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+                        pr_debug("[TP]"TPD_DEVICE ": " a, ##arg);\
                 }\
         }while(0)
 
@@ -62,7 +62,7 @@ static int checkCMD(struct chip_data_s3706 *chip_info, int retry_time);
 
 /*******Part1:Call Back Function implement*******/
 
-static int synaptics_get_touch_points(void *chip_data, struct point_info *points, int max_num)
+static inline int synaptics_get_touch_points(void *chip_data, struct point_info *points, int max_num)
 {
         int ret, i, obj_attention;
         static int enable_obj_attention = 0;
@@ -103,7 +103,7 @@ static int synaptics_get_touch_points(void *chip_data, struct point_info *points
         return enable_obj_attention;
 }
 
-static int synaptics_ftm_process(void *chip_data)
+static inline int synaptics_ftm_process(void *chip_data)
 {
         int ret = 0;
         TPD_INFO("%s go to sleep in ftm\n", __func__);
@@ -115,7 +115,7 @@ static int synaptics_ftm_process(void *chip_data)
         return 0;
 }
 
-static int synaptics_get_vendor(void *chip_data, struct panel_info *panel_data)
+static inline int synaptics_get_vendor(void *chip_data, struct panel_info *panel_data)
 {
         char manu_temp[MAX_DEVICE_MANU_LENGTH] = SYNAPTICS_PREFIX;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -129,7 +129,7 @@ static int synaptics_get_vendor(void *chip_data, struct panel_info *panel_data)
         return 0;
 }
 
-static int synaptics_read_F54_base_reg(struct chip_data_s3706 *chip_info)
+static inline int synaptics_read_F54_base_reg(struct chip_data_s3706 *chip_info)
 {
         uint8_t buf[4] = {0};
         int ret = 0;
@@ -154,7 +154,7 @@ static int synaptics_read_F54_base_reg(struct chip_data_s3706 *chip_info)
         return ret;
 }
 
-static void synaptics_health_zone_init(struct chip_data_s3706 *chip_info)
+static inline void synaptics_health_zone_init(struct chip_data_s3706 *chip_info)
 {
         int ret = 0;
         uint8_t l_tmp = 0, h_tmp = 0;
@@ -173,7 +173,7 @@ static void synaptics_health_zone_init(struct chip_data_s3706 *chip_info)
         ret = touch_i2c_write_byte(chip_info->client, 0xff, 0x00);        /* page 0*/
 }
 
-static int synaptics_get_chip_info(void *chip_data)
+static inline int synaptics_get_chip_info(void *chip_data)
 {
         uint8_t buf[4] = {0};
         int ret;
@@ -289,7 +289,7 @@ static int synaptics_get_chip_info(void *chip_data)
  * @chip_info: struct include i2c resource.
  * Return fw version result.
  */
-static uint32_t synaptics_get_fw_id(struct chip_data_s3706 *chip_info)
+static inline uint32_t synaptics_get_fw_id(struct chip_data_s3706 *chip_info)
 {
         uint8_t buf[4];
         uint32_t current_firmware = 0;
@@ -302,7 +302,7 @@ static uint32_t synaptics_get_fw_id(struct chip_data_s3706 *chip_info)
         return current_firmware;
 }
 
-static uint8_t synaptics_get_noise_level(struct chip_data_s3706 *chip_info)
+static inline uint8_t synaptics_get_noise_level(struct chip_data_s3706 *chip_info)
 {
         int ret = -1;
         uint8_t game_buffer[13];
@@ -319,7 +319,7 @@ static uint8_t synaptics_get_noise_level(struct chip_data_s3706 *chip_info)
         return game_buffer[12];
 }
 
-static uint8_t synaptics_get_lock_point_level(struct chip_data_s3706 *chip_info)
+static inline uint8_t synaptics_get_lock_point_level(struct chip_data_s3706 *chip_info)
 {
         int ret = -1;
         uint8_t tmp;
@@ -347,7 +347,7 @@ static uint8_t synaptics_get_lock_point_level(struct chip_data_s3706 *chip_info)
         return tmp;
 }
 
-static fw_check_state synaptics_fw_check(void *chip_data, struct resolution_info *resolution_info, struct panel_info *panel_data)
+static inline fw_check_state synaptics_fw_check(void *chip_data, struct resolution_info *resolution_info, struct panel_info *panel_data)
 {
         uint32_t bootloader_mode;
         int max_y_ic = 0;
@@ -396,7 +396,7 @@ static fw_check_state synaptics_fw_check(void *chip_data, struct resolution_info
  * @enable: disable or enable control purpose.
  * Return  0: succeed, -1: failed.
  */
-static int synaptics_enable_interrupt(struct chip_data_s3706 *chip_info, bool enable)
+static inline int synaptics_enable_interrupt(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret;
         uint8_t abs_status_int;
@@ -433,7 +433,7 @@ static int synaptics_enable_interrupt(struct chip_data_s3706 *chip_info, bool en
         return 0;
 }
 
-static u8 synaptics_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
+static inline u8 synaptics_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
 {
         int ret = 0;
         uint8_t device_status = 0;
@@ -478,7 +478,7 @@ static u8 synaptics_trigger_reason(void *chip_data, int gesture_enable, int is_s
         return  result_event;
 }
 
-static u32 synaptics_u32_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
+static inline u32 synaptics_u32_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
 {
         int ret = 0;
         uint8_t device_status = 0;
@@ -524,7 +524,7 @@ static u32 synaptics_u32_trigger_reason(void *chip_data, int gesture_enable, int
         return  result_event;
 }
 
-static int synaptics_resetgpio_set(struct hw_resource *hw_res, bool on)
+static inline int synaptics_resetgpio_set(struct hw_resource *hw_res, bool on)
 {
         if (gpio_is_valid(hw_res->reset_gpio)) {
                 TPD_DEBUG("Set the reset_gpio \n");
@@ -537,7 +537,7 @@ static int synaptics_resetgpio_set(struct hw_resource *hw_res, bool on)
 /*
  * return success: 0; fail : negative
  */
-static int synaptics_reset(void *chip_data)
+static inline int synaptics_reset(void *chip_data)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
@@ -552,7 +552,7 @@ static int synaptics_reset(void *chip_data)
         return 0;
 }
 
-static int synaptics_configuration_init(struct chip_data_s3706 *chip_info, bool config)
+static inline int synaptics_configuration_init(struct chip_data_s3706 *chip_info, bool config)
 {
         int ret = 0, retval = 0;
         unsigned char ctrl_buf[3];
@@ -602,7 +602,7 @@ static int synaptics_configuration_init(struct chip_data_s3706 *chip_info, bool 
         return ret;
 }
 
-static int synaptics_glove_mode_enable(struct chip_data_s3706 *chip_info, bool enable)
+static inline int synaptics_glove_mode_enable(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret = 0;
 
@@ -623,7 +623,7 @@ static int synaptics_glove_mode_enable(struct chip_data_s3706 *chip_info, bool e
         return ret;
 }
 
-static void synaptics_enable_fingerprint_underscreen(void * chip_data, uint32_t enable)
+static inline void synaptics_enable_fingerprint_underscreen(void * chip_data, uint32_t enable)
 {
         int ret = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -651,7 +651,7 @@ static void synaptics_enable_fingerprint_underscreen(void * chip_data, uint32_t 
         return;
 }
 
-static int synaptics_enable_black_gesture(struct chip_data_s3706 *chip_info, bool enable)
+static inline int synaptics_enable_black_gesture(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret;
         unsigned char report_gesture_ctrl_buf[3];
@@ -683,7 +683,7 @@ static int synaptics_enable_black_gesture(struct chip_data_s3706 *chip_info, boo
         return 0;
 }
 
-static int synaptics_corner_limit_handle(struct chip_data_s3706 *chip_info, bool enable)
+static inline int synaptics_corner_limit_handle(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret = -1;
         uint8_t pre_set_1 = 0, pre_set_2 = 0, pre_set_3 = 0;
@@ -741,7 +741,7 @@ static int synaptics_corner_limit_handle(struct chip_data_s3706 *chip_info, bool
         return ret;
 }
 
-static int synaptics_enable_edge_limit(struct chip_data_s3706 *chip_info, bool enable)
+static inline int synaptics_enable_edge_limit(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret;
 
@@ -780,7 +780,7 @@ static int synaptics_enable_edge_limit(struct chip_data_s3706 *chip_info, bool e
 }
 
 //enable face dectect function
-static int synaptics_enable_face_detect(struct chip_data_s3706 *chip_info, bool enable)
+static inline int synaptics_enable_face_detect(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret = 0;
 
@@ -818,7 +818,7 @@ static int synaptics_enable_face_detect(struct chip_data_s3706 *chip_info, bool 
         return ret;
 }
 
-static void synaptics_enable_charge_mode(struct chip_data_s3706 *chip_info, bool enable)
+static inline void synaptics_enable_charge_mode(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret = 0, arg = 0;
 
@@ -836,7 +836,7 @@ static void synaptics_enable_charge_mode(struct chip_data_s3706 *chip_info, bool
         }
 }
 
-static void synaptics_enable_game_mode(struct chip_data_s3706 *chip_info, bool enable)
+static inline void synaptics_enable_game_mode(struct chip_data_s3706 *chip_info, bool enable)
 {
         int ret = 0;
         uint8_t tmp = 0x0;
@@ -956,7 +956,7 @@ static void synaptics_enable_game_mode(struct chip_data_s3706 *chip_info, bool e
 }
 
 
-static int synaptics_mode_switch(void *chip_data, work_mode mode, bool flag)
+static inline int synaptics_mode_switch(void *chip_data, work_mode mode, bool flag)
 {
         int ret = -1;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -1037,7 +1037,7 @@ static int synaptics_mode_switch(void *chip_data, work_mode mode, bool flag)
         return ret;
 }
 
-static int synaptics_get_gesture_info(void *chip_data, struct gesture_info * gesture)
+static inline int synaptics_get_gesture_info(void *chip_data, struct gesture_info * gesture)
 {
         int ret = 0, i, gesture_sign, regswipe;
         uint8_t gesture_buffer[10];
@@ -1141,7 +1141,7 @@ static int synaptics_get_gesture_info(void *chip_data, struct gesture_info * ges
         return 0;
 }
 
-static int synaptics_power_control(void *chip_data, bool enable)
+static inline int synaptics_power_control(void *chip_data, bool enable)
 {
         int ret = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -1173,7 +1173,7 @@ static int synaptics_power_control(void *chip_data, bool enable)
         return ret;
 }
 
-static int checkCMD(struct chip_data_s3706 *chip_info, int retry_time)
+static inline int checkCMD(struct chip_data_s3706 *chip_info, int retry_time)
 {
         int ret;
         int flag_err = 0;
@@ -1192,7 +1192,7 @@ static int checkCMD(struct chip_data_s3706 *chip_info, int retry_time)
         return 0;
 }
 
-static int checkCMD_for_finger(struct chip_data_s3706 *chip_info)
+static inline int checkCMD_for_finger(struct chip_data_s3706 *chip_info)
 {
         int ret;
         int flag_err = 0;
@@ -1227,7 +1227,7 @@ unsigned char GetLogicalPin(unsigned char p_pin, uint8_t RX_NUM, uint8_t * rx_ph
     return 0xff;
 }
 
-static int synaptics_capacity_test(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, struct test_header *ph, uint8_t *raw_data, uint8_t *data_buf)
+static inline int synaptics_capacity_test(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, struct test_header *ph, uint8_t *raw_data, uint8_t *data_buf)
 {
         int ret = 0;
         int x = 0, y = 0, z = 0;
@@ -1432,7 +1432,7 @@ static int synaptics_capacity_test(struct seq_file *s, struct chip_data_s3706 *c
         return error_count;
 }
 
-static int synaptics_auto_test_rt25(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata)
+static inline int synaptics_auto_test_rt25(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata)
 {
         int ret = 0;
         int i = 0, j = 0, x = 0;
@@ -1508,7 +1508,7 @@ OUT:
         return error_count;
 }
 
-static int synaptics_auto_test_rt26(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata)
+static inline int synaptics_auto_test_rt26(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata)
 {
         int ret = 0;
         int error_count = 0;
@@ -1577,7 +1577,7 @@ static int synaptics_auto_test_rt26(struct seq_file *s, struct chip_data_s3706 *
         return error_count;
 }
 
-static int synaptics_auto_test_rt100(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t * raw_data)
+static inline int synaptics_auto_test_rt100(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t * raw_data)
 {
         int ret = 0;
         int error_count = 0;
@@ -1788,7 +1788,7 @@ END:
         return error_count;
 }
 
-static int synaptics_auto_test_rt133(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata)
+static inline int synaptics_auto_test_rt133(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata)
 {
         int ret = 0;
         int y = 0;
@@ -1824,7 +1824,7 @@ static int synaptics_auto_test_rt133(struct seq_file *s, struct chip_data_s3706 
         return error_count;
 }
 
-static int synaptics_auto_test_rt150(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
+static inline int synaptics_auto_test_rt150(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
 {
         int ret = 0;
         int y = 0;
@@ -1879,7 +1879,7 @@ static int synaptics_auto_test_rt150(struct seq_file *s, struct chip_data_s3706 
         return error_count;
 }
 
-static int synaptics_auto_test_rt154(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
+static inline int synaptics_auto_test_rt154(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
 {
         int ret = 0;
         int error_count = 0;
@@ -1940,7 +1940,7 @@ static int synaptics_auto_test_rt154(struct seq_file *s, struct chip_data_s3706 
         return error_count;
 }
 
-static int synaptics_auto_test_rt155(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
+static inline int synaptics_auto_test_rt155(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
 {
         int ret = 0;
         int error_count = 0;
@@ -2000,7 +2000,7 @@ static int synaptics_auto_test_rt155(struct seq_file *s, struct chip_data_s3706 
         return error_count;
 }
 
-static int synaptics_auto_test_rt155_fd(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
+static inline int synaptics_auto_test_rt155_fd(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
 {
         int ret = 0, j = 0, error_count = 0;
         const int node_num = syna_testdata->TX_NUM + syna_testdata->RX_NUM, judge_threshold = 300;
@@ -2057,7 +2057,7 @@ static int synaptics_auto_test_rt155_fd(struct seq_file *s, struct chip_data_s37
         return error_count;
 }
 
-static int synaptics_auto_test_rt59(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
+static inline int synaptics_auto_test_rt59(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
 {
         int ret = 0;
         int error_count = 0;
@@ -2122,7 +2122,7 @@ static int synaptics_auto_test_rt59(struct seq_file *s, struct chip_data_s3706 *
         return error_count;
 }
 
-static int synaptics_auto_test_rt63(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
+static inline int synaptics_auto_test_rt63(struct seq_file *s, struct chip_data_s3706 *chip_info, struct syna_testdata *syna_testdata, uint8_t *data_buf)
 {
         int ret = 0, error_count = 0, i = 0;
         const int node_num = syna_testdata->TX_NUM+syna_testdata->RX_NUM;
@@ -2183,7 +2183,7 @@ static int synaptics_auto_test_rt63(struct seq_file *s, struct chip_data_s3706 *
         return error_count;
 }
 
-static void synaptics_auto_test(struct seq_file *s, void *chip_data, struct syna_testdata *syna_testdata)
+static inline void synaptics_auto_test(struct seq_file *s, void *chip_data, struct syna_testdata *syna_testdata)
 {
         int ret = 0;
         int error_count = 0;
@@ -2336,7 +2336,7 @@ END:
         TPD_INFO("\n\nstep5 reset and open irq complete\n");
 }
 
-static void synaptics_baseline_read(struct seq_file *s, void *chip_data)
+static inline void synaptics_baseline_read(struct seq_file *s, void *chip_data)
 {
         int ret = 0;
         int x = 0, y = 0, z = 0;
@@ -2419,7 +2419,7 @@ END:
 }
 
 /*Reserved node*/
-static void synaptics_reserve_read(struct seq_file *s, void *chip_data)
+static inline void synaptics_reserve_read(struct seq_file *s, void *chip_data)
 {
         int ret = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -2439,7 +2439,7 @@ static void synaptics_reserve_read(struct seq_file *s, void *chip_data)
         msleep(10);
 }
 
-static void synaptics_RT76_read(struct seq_file *s, void *chip_data)
+static inline void synaptics_RT76_read(struct seq_file *s, void *chip_data)
 {
         int ret = 0, x = 0, y = 0, z = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -2480,7 +2480,7 @@ static void synaptics_RT76_read(struct seq_file *s, void *chip_data)
         kfree(raw_data);
 }
 
-static void synaptics_RT251_read(struct seq_file *s, void *chip_data)
+static inline void synaptics_RT251_read(struct seq_file *s, void *chip_data)
 {
         int ret = 0, y = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -2531,7 +2531,7 @@ static void synaptics_RT251_read(struct seq_file *s, void *chip_data)
         msleep(60);
 }
 
-static void synaptics_main_register_read(struct seq_file *s, void *chip_data)
+static inline void synaptics_main_register_read(struct seq_file *s, void *chip_data)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
@@ -2550,8 +2550,8 @@ static void synaptics_main_register_read(struct seq_file *s, void *chip_data)
 
 #if GESTURE_COORD_GET
 #define GESTURE_COORD_LEN 4096
-static char str_gesture[GESTURE_COORD_LEN];
-static void synaptics_get_gesture_coord(void *chip_data, uint32_t gesture_type)
+static inline char str_gesture[GESTURE_COORD_LEN];
+static inline void synaptics_get_gesture_coord(void *chip_data, uint32_t gesture_type)
 {
         int ret = 0, x = 0, y = 0, z = 0;
         int16_t temp_delta = 0;
@@ -2656,7 +2656,7 @@ static void synaptics_get_gesture_coord(void *chip_data, uint32_t gesture_type)
 }
 #endif /*GESTURE_COORD_GET*/
 
-static void synaptics_delta_read(struct seq_file *s, void *chip_data)
+static inline void synaptics_delta_read(struct seq_file *s, void *chip_data)
 {
         int ret = 0, x = 0, y = 0, z = 0;
         int16_t temp_delta = 0;
@@ -2722,7 +2722,7 @@ OUT:
         kfree(raw_data);
 }
 
-static int s3706_reset_device(struct synaptics_rmi4_data *rmi4_data, bool rebuild)
+static inline int s3706_reset_device(struct synaptics_rmi4_data *rmi4_data, bool rebuild)
 {
         TPD_INFO("%s.\n", __func__);
         synaptics_resetgpio_set(g_chip_info->hw_res, false); /* reset gpio*/
@@ -2733,7 +2733,7 @@ static int s3706_reset_device(struct synaptics_rmi4_data *rmi4_data, bool rebuil
         return 0;
 }
 
-static int fwu_recovery_check_status(struct chip_data_s3706 *chip_info)
+static inline int fwu_recovery_check_status(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned char data_base;
@@ -2760,7 +2760,7 @@ static int fwu_recovery_check_status(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_scan_pdt(struct chip_data_s3706 *chip_info)
+static inline int fwu_scan_pdt(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned char ii;
@@ -2867,7 +2867,7 @@ static int fwu_scan_pdt(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_write_f34_v7_partition_id(struct chip_data_s3706 *chip_info, unsigned char cmd)
+static inline int fwu_write_f34_v7_partition_id(struct chip_data_s3706 *chip_info, unsigned char cmd)
 {
         int retval;
         unsigned char data_base;
@@ -2953,7 +2953,7 @@ static int fwu_write_f34_v7_partition_id(struct chip_data_s3706 *chip_info, unsi
         return 0;
 }
 
-static int fwu_write_f34_partition_id(struct chip_data_s3706 *chip_info, unsigned char cmd)
+static inline int fwu_write_f34_partition_id(struct chip_data_s3706 *chip_info, unsigned char cmd)
 {
         int retval = -1;
 
@@ -2964,7 +2964,7 @@ static int fwu_write_f34_partition_id(struct chip_data_s3706 *chip_info, unsigne
         return retval;
 }
 
-static int fwu_read_flash_status(struct chip_data_s3706 *chip_info)
+static inline int fwu_read_flash_status(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned char status;
@@ -3030,7 +3030,7 @@ static int fwu_read_flash_status(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_wait_for_idle(struct chip_data_s3706 *chip_info, int timeout_ms, bool poll)
+static inline int fwu_wait_for_idle(struct chip_data_s3706 *chip_info, int timeout_ms, bool poll)
 {
         int count = 0;
         int timeout_count = ((timeout_ms * 1000) / MAX_SLEEP_TIME_US) + 1;
@@ -3053,7 +3053,7 @@ static int fwu_wait_for_idle(struct chip_data_s3706 *chip_info, int timeout_ms, 
         return -ETIMEDOUT;
 }
 
-static int fwu_write_f34_v7_command_single_transaction(struct chip_data_s3706 *chip_info, unsigned char cmd)
+static inline int fwu_write_f34_v7_command_single_transaction(struct chip_data_s3706 *chip_info, unsigned char cmd)
 {
         int retval;
         unsigned char data_base;
@@ -3121,7 +3121,7 @@ static int fwu_write_f34_v7_command_single_transaction(struct chip_data_s3706 *c
         return 0;
 }
 
-static int fwu_write_f34_v7_command(struct chip_data_s3706 *chip_info, unsigned char cmd)
+static inline int fwu_write_f34_v7_command(struct chip_data_s3706 *chip_info, unsigned char cmd)
 {
         int retval;
         unsigned char data_base;
@@ -3197,7 +3197,7 @@ static int fwu_write_f34_v7_command(struct chip_data_s3706 *chip_info, unsigned 
         return 0;
 }
 
-static int fwu_write_f34_command(struct chip_data_s3706 *chip_info, unsigned char cmd)
+static inline int fwu_write_f34_command(struct chip_data_s3706 *chip_info, unsigned char cmd)
 {
         int retval = -1;
 
@@ -3208,7 +3208,7 @@ static int fwu_write_f34_command(struct chip_data_s3706 *chip_info, unsigned cha
         return retval;
 }
 
-static int fwu_read_f34_v7_partition_table(struct chip_data_s3706 *chip_info, unsigned char *partition_table)
+static inline int fwu_read_f34_v7_partition_table(struct chip_data_s3706 *chip_info, unsigned char *partition_table)
 {
         int retval;
         unsigned char data_base;
@@ -3271,7 +3271,7 @@ static int fwu_read_f34_v7_partition_table(struct chip_data_s3706 *chip_info, un
         return 0;
 }
 
-static void fwu_parse_partition_table(struct chip_data_s3706 *chip_info, const unsigned char *partition_table,
+static inline void fwu_parse_partition_table(struct chip_data_s3706 *chip_info, const unsigned char *partition_table,
                 struct block_count *blkcount, struct physical_address *phyaddr)
 {
         unsigned char ii;
@@ -3370,7 +3370,7 @@ static void fwu_parse_partition_table(struct chip_data_s3706 *chip_info, const u
         return;
 }
 
-static int fwu_read_f34_v7_queries(struct chip_data_s3706 *chip_info)
+static inline int fwu_read_f34_v7_queries(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned char ii;
@@ -3492,7 +3492,7 @@ static int fwu_read_f34_v7_queries(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_read_f34_queries(struct chip_data_s3706 *chip_info)
+static inline int fwu_read_f34_queries(struct chip_data_s3706 *chip_info)
 {
         int retval = -1;
 
@@ -3506,7 +3506,7 @@ static int fwu_read_f34_queries(struct chip_data_s3706 *chip_info)
         return retval;
 }
 
-static int fwu_get_device_config_id(struct chip_data_s3706 *chip_info)
+static inline int fwu_get_device_config_id(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned char config_id_size = 0;
@@ -3526,7 +3526,7 @@ static int fwu_get_device_config_id(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int synaptics_rmi4_fwu_init(struct chip_data_s3706 *chip_info, bool force)
+static inline int synaptics_rmi4_fwu_init(struct chip_data_s3706 *chip_info, bool force)
 {
         int retval;
         struct pdt_properties pdt_props;
@@ -3616,7 +3616,7 @@ exit:
         return retval;
 }
 
-static unsigned int le_to_uint(const unsigned char *ptr)
+static inline unsigned int le_to_uint(const unsigned char *ptr)
 {
         return (unsigned int)ptr[0] +
                         (unsigned int)ptr[1] * 0x100 +
@@ -3624,7 +3624,7 @@ static unsigned int le_to_uint(const unsigned char *ptr)
                         (unsigned int)ptr[3] * 0x1000000;
 }
 
-static void fwu_parse_image_header_10_bootloader(struct chip_data_s3706 *chip_info, const unsigned char *image)
+static inline void fwu_parse_image_header_10_bootloader(struct chip_data_s3706 *chip_info, const unsigned char *image)
 {
         unsigned char ii;
         unsigned char num_of_containers;
@@ -3666,7 +3666,7 @@ static void fwu_parse_image_header_10_bootloader(struct chip_data_s3706 *chip_in
         return;
 }
 
-static void fwu_parse_image_header_10_utility(struct chip_data_s3706 *chip_info, const unsigned char *image)
+static inline void fwu_parse_image_header_10_utility(struct chip_data_s3706 *chip_info, const unsigned char *image)
 {
         unsigned char ii;
         unsigned char num_of_containers;
@@ -3703,7 +3703,7 @@ static void fwu_parse_image_header_10_utility(struct chip_data_s3706 *chip_info,
 }
 
 
-static void fwu_parse_image_header_10(struct chip_data_s3706 *chip_info)
+static inline void fwu_parse_image_header_10(struct chip_data_s3706 *chip_info)
 {
         unsigned char ii;
         unsigned char num_of_containers;
@@ -3792,7 +3792,7 @@ static void fwu_parse_image_header_10(struct chip_data_s3706 *chip_info)
         return;
 }
 
-static void fwu_compare_partition_tables(struct chip_data_s3706 *chip_info)
+static inline void fwu_compare_partition_tables(struct chip_data_s3706 *chip_info)
 {
         chip_info->fwu->incompatible_partition_tables = false;
 
@@ -3835,7 +3835,7 @@ static void fwu_compare_partition_tables(struct chip_data_s3706 *chip_info)
         return;
 }
 
-static int fwu_parse_image_info(struct chip_data_s3706 *chip_info)
+static inline int fwu_parse_image_info(struct chip_data_s3706 *chip_info)
 {
         struct image_header_10 *header;
 
@@ -3876,7 +3876,7 @@ static int fwu_parse_image_info(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_get_image_firmware_id(struct chip_data_s3706 *chip_info, unsigned int *fw_id)
+static inline int fwu_get_image_firmware_id(struct chip_data_s3706 *chip_info, unsigned int *fw_id)
 {
         int retval;
         unsigned char index = 0;
@@ -3919,7 +3919,7 @@ static int fwu_get_image_firmware_id(struct chip_data_s3706 *chip_info, unsigned
         return 0;
 }
 
-static enum flash_area fwu_go_nogo(struct chip_data_s3706 *chip_info)
+static inline enum flash_area fwu_go_nogo(struct chip_data_s3706 *chip_info)
 {
         int retval;
         enum flash_area flash_area = NONE;
@@ -4000,7 +4000,7 @@ exit:
         return flash_area;
 }
 
-static int fwu_enter_flash_prog(struct chip_data_s3706 *chip_info)
+static inline int fwu_enter_flash_prog(struct chip_data_s3706 *chip_info)
 {
         int retval;
         struct f01_device_control f01_device_control;
@@ -4067,7 +4067,7 @@ static int fwu_enter_flash_prog(struct chip_data_s3706 *chip_info)
         return retval;
 }
 
-static int fwu_write_f34_v7_blocks(struct chip_data_s3706 *chip_info, unsigned char *block_ptr,
+static inline int fwu_write_f34_v7_blocks(struct chip_data_s3706 *chip_info, unsigned char *block_ptr,
                 unsigned short block_cnt, unsigned char command)
 {
         int retval = -1;
@@ -4169,7 +4169,7 @@ static int fwu_write_f34_v7_blocks(struct chip_data_s3706 *chip_info, unsigned c
         return 0;
 }
 
-static int fwu_write_f34_blocks(struct chip_data_s3706 *chip_info, unsigned char *block_ptr,
+static inline int fwu_write_f34_blocks(struct chip_data_s3706 *chip_info, unsigned char *block_ptr,
                 unsigned short block_cnt, unsigned char cmd)
 {
         int retval = 0;
@@ -4183,7 +4183,7 @@ static int fwu_write_f34_blocks(struct chip_data_s3706 *chip_info, unsigned char
         return retval;
 }
 
-static int fwu_write_lockdown(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_lockdown(struct chip_data_s3706 *chip_info)
 {
         unsigned short lockdown_block_count;
 
@@ -4193,7 +4193,7 @@ static int fwu_write_lockdown(struct chip_data_s3706 *chip_info)
                         lockdown_block_count, CMD_WRITE_LOCKDOWN);
 }
 
-static int fwu_do_lockdown_v7(struct chip_data_s3706 *chip_info)
+static inline int fwu_do_lockdown_v7(struct chip_data_s3706 *chip_info)
 {
         int retval;
         struct f34_v7_data0 status;
@@ -4225,7 +4225,7 @@ static int fwu_do_lockdown_v7(struct chip_data_s3706 *chip_info)
         return retval;
 }
 
-static int fwu_check_ui_configuration_size(struct chip_data_s3706 *chip_info)
+static inline int fwu_check_ui_configuration_size(struct chip_data_s3706 *chip_info)
 {
         unsigned short block_count;
 
@@ -4239,7 +4239,7 @@ static int fwu_check_ui_configuration_size(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_erase_configuration(struct chip_data_s3706 *chip_info)
+static inline int fwu_erase_configuration(struct chip_data_s3706 *chip_info)
 {
         int retval;
 
@@ -4285,13 +4285,13 @@ static int fwu_erase_configuration(struct chip_data_s3706 *chip_info)
         return retval;
 }
 
-static int fwu_write_configuration(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_configuration(struct chip_data_s3706 *chip_info)
 {
         return fwu_write_f34_blocks(chip_info, (unsigned char *)chip_info->fwu->config_data,
                         chip_info->fwu->config_block_count, CMD_WRITE_CONFIG);
 }
 
-static int fwu_write_ui_configuration(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_ui_configuration(struct chip_data_s3706 *chip_info)
 {
         chip_info->fwu->config_area = UI_CONFIG_AREA;
         chip_info->fwu->config_data = chip_info->fwu->img.ui_config.data;
@@ -4301,7 +4301,7 @@ static int fwu_write_ui_configuration(struct chip_data_s3706 *chip_info)
         return fwu_write_configuration(chip_info);
 }
 
-static int fwu_check_ui_firmware_size(struct chip_data_s3706 *chip_info)
+static inline int fwu_check_ui_firmware_size(struct chip_data_s3706 *chip_info)
 {
         unsigned short block_count;
 
@@ -4315,7 +4315,7 @@ static int fwu_check_ui_firmware_size(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_check_dp_configuration_size(struct chip_data_s3706 *chip_info)
+static inline int fwu_check_dp_configuration_size(struct chip_data_s3706 *chip_info)
 {
         unsigned short block_count;
 
@@ -4329,7 +4329,7 @@ static int fwu_check_dp_configuration_size(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_check_guest_code_size(struct chip_data_s3706 *chip_info)
+static inline int fwu_check_guest_code_size(struct chip_data_s3706 *chip_info)
 {
         unsigned short block_count;
 
@@ -4342,7 +4342,7 @@ static int fwu_check_guest_code_size(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_check_bl_configuration_size(struct chip_data_s3706 *chip_info)
+static inline int fwu_check_bl_configuration_size(struct chip_data_s3706 *chip_info)
 {
         unsigned short block_count;
 
@@ -4356,7 +4356,7 @@ static int fwu_check_bl_configuration_size(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_erase_guest_code(struct chip_data_s3706 *chip_info)
+static inline int fwu_erase_guest_code(struct chip_data_s3706 *chip_info)
 {
         int retval;
 
@@ -4375,7 +4375,7 @@ static int fwu_erase_guest_code(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_erase_all(struct chip_data_s3706 *chip_info)
+static inline int fwu_erase_all(struct chip_data_s3706 *chip_info)
 {
         int retval;
 
@@ -4432,7 +4432,7 @@ static int fwu_erase_all(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_erase_bootloader(struct chip_data_s3706 *chip_info)
+static inline int fwu_erase_bootloader(struct chip_data_s3706 *chip_info)
 {
         int retval;
 
@@ -4451,7 +4451,7 @@ static int fwu_erase_bootloader(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_write_bootloader(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_bootloader(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned short bootloader_block_count;
@@ -4466,7 +4466,7 @@ static int fwu_write_bootloader(struct chip_data_s3706 *chip_info)
         return retval;
 }
 
-static int fwu_allocate_read_config_buf(struct chip_data_s3706 *chip_info, unsigned int count)
+static inline int fwu_allocate_read_config_buf(struct chip_data_s3706 *chip_info, unsigned int count)
 {
         if (count > chip_info->fwu->read_config_buf_size) {
                 kfree(chip_info->fwu->read_config_buf);
@@ -4483,7 +4483,7 @@ static int fwu_allocate_read_config_buf(struct chip_data_s3706 *chip_info, unsig
         return 0;
 }
 
-static void calculate_checksum(unsigned short *data, unsigned long len,
+static inline void calculate_checksum(unsigned short *data, unsigned long len,
                 unsigned long *result)
 {
         unsigned long temp;
@@ -4506,7 +4506,7 @@ static void calculate_checksum(unsigned short *data, unsigned long len,
         return;
 }
 
-static void convert_to_little_endian(unsigned char *dest, unsigned long src)
+static inline void convert_to_little_endian(unsigned char *dest, unsigned long src)
 {
         dest[0] = (unsigned char)(src & 0xff);
         dest[1] = (unsigned char)((src >> 8) & 0xff);
@@ -4516,7 +4516,7 @@ static void convert_to_little_endian(unsigned char *dest, unsigned long src)
         return;
 }
 
-static int fwu_write_utility_parameter(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_utility_parameter(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned char ii;
@@ -4600,7 +4600,7 @@ image_param:
         return 0;
 }
 
-static int fwu_write_bl_area_v7(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_bl_area_v7(struct chip_data_s3706 *chip_info)
 {
         int retval;
         bool has_utility_param;
@@ -4663,7 +4663,7 @@ static int fwu_write_bl_area_v7(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_read_f34_v7_blocks(struct chip_data_s3706 *chip_info, unsigned short block_cnt,
+static inline int fwu_read_f34_v7_blocks(struct chip_data_s3706 *chip_info, unsigned short block_cnt,
                 unsigned char command)
 {
         int retval;
@@ -4739,7 +4739,7 @@ static int fwu_read_f34_v7_blocks(struct chip_data_s3706 *chip_info, unsigned sh
         return 0;
 }
 
-static int fwu_read_f34_blocks(struct chip_data_s3706 *chip_info, unsigned short block_cnt, unsigned char cmd)
+static inline int fwu_read_f34_blocks(struct chip_data_s3706 *chip_info, unsigned short block_cnt, unsigned char cmd)
 {
         int retval = 0;
 
@@ -4748,7 +4748,7 @@ static int fwu_read_f34_blocks(struct chip_data_s3706 *chip_info, unsigned short
         return retval;
 }
 
-static int fwu_write_flash_configuration(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_flash_configuration(struct chip_data_s3706 *chip_info)
 {
         int retval;
         struct synaptics_rmi4_data *rmi4_data = chip_info->fwu->rmi4_data;
@@ -4776,7 +4776,7 @@ static int fwu_write_flash_configuration(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_write_partition_table_v7(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_partition_table_v7(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned short block_count;
@@ -4813,7 +4813,7 @@ static int fwu_write_partition_table_v7(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_write_partition_table_v8(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_partition_table_v8(struct chip_data_s3706 *chip_info)
 {
         int retval;
         struct synaptics_rmi4_data *rmi4_data = chip_info->fwu->rmi4_data;
@@ -4842,7 +4842,7 @@ static int fwu_write_partition_table_v8(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_write_dp_configuration(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_dp_configuration(struct chip_data_s3706 *chip_info)
 {
         chip_info->fwu->config_area = DP_CONFIG_AREA;
         chip_info->fwu->config_data = chip_info->fwu->img.dp_config.data;
@@ -4852,7 +4852,7 @@ static int fwu_write_dp_configuration(struct chip_data_s3706 *chip_info)
         return fwu_write_configuration(chip_info);
 }
 
-static int fwu_write_guest_code(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_guest_code(struct chip_data_s3706 *chip_info)
 {
         int retval;
         unsigned short guest_code_block_count;
@@ -4867,7 +4867,7 @@ static int fwu_write_guest_code(struct chip_data_s3706 *chip_info)
         return 0;
 }
 
-static int fwu_write_firmware(struct chip_data_s3706 *chip_info)
+static inline int fwu_write_firmware(struct chip_data_s3706 *chip_info)
 {
         unsigned short firmware_block_count;
 
@@ -4877,7 +4877,7 @@ static int fwu_write_firmware(struct chip_data_s3706 *chip_info)
                         firmware_block_count, CMD_WRITE_FW);
 }
 
-static int fwu_do_reflash(struct chip_data_s3706 *chip_info)
+static inline int fwu_do_reflash(struct chip_data_s3706 *chip_info)
 {
         int retval;
         bool do_bl_update = false;
@@ -4979,7 +4979,7 @@ static int fwu_do_reflash(struct chip_data_s3706 *chip_info)
         return retval;
 }
 
-static int fwu_start_reflash(struct chip_data_s3706 *chip_info)
+static inline int fwu_start_reflash(struct chip_data_s3706 *chip_info)
 {
         int retval = 0;
         enum flash_area flash_area;
@@ -5076,7 +5076,7 @@ exit:
         return retval;
 }
 
-static fw_update_state synaptics_fw_update(void *chip_data, const struct firmware *fw, bool force)
+static inline fw_update_state synaptics_fw_update(void *chip_data, const struct firmware *fw, bool force)
 {
         int retval = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -5106,7 +5106,7 @@ no_need_release_mem:
         return FW_NO_NEED_UPDATE;
 }
 
-static fp_touch_state synaptics_spurious_fp_check(void *chip_data)
+static inline fp_touch_state synaptics_spurious_fp_check(void *chip_data)
 {
         int x = 0, y = 0, z = 0, err_count = 0;
         int ret = 0, TX_NUM = 0, RX_NUM = 0;
@@ -5197,7 +5197,7 @@ OUT:
 }
 
 
-static u8 synaptics_get_keycode(void *chip_data)
+static inline u8 synaptics_get_keycode(void *chip_data)
 {
         int ret = 0;
         u8 bitmap_result = 0;
@@ -5216,7 +5216,7 @@ static u8 synaptics_get_keycode(void *chip_data)
         return bitmap_result;
 }
 
-static void synaptics_finger_proctect_data_get(void * chip_data)
+static inline void synaptics_finger_proctect_data_get(void * chip_data)
 {
         int ret = 0, x = 0, y = 0, z = 0;
         uint8_t *raw_data = NULL;
@@ -5309,7 +5309,7 @@ RE_TRY:
         kfree(raw_data);
 }
 
-static void synaptics_health_report(void *chip_data, struct monitor_data *mon_data)
+static inline void synaptics_health_report(void *chip_data, struct monitor_data *mon_data)
 {
         int ret = 0, i = 0;
         int data_length = 0;
@@ -5410,7 +5410,7 @@ static void synaptics_health_report(void *chip_data, struct monitor_data *mon_da
         ret = touch_i2c_write_byte(chip_info->client, 0xff, 0x0);        /* page 0*/
 }
 
-static void synaptics_gesture_rate(struct seq_file *s, u16* coord_arg, void *chip_data)
+static inline void synaptics_gesture_rate(struct seq_file *s, u16* coord_arg, void *chip_data)
 {
         int ret = 0;
         int loop = 0;
@@ -5445,7 +5445,7 @@ static void synaptics_gesture_rate(struct seq_file *s, u16* coord_arg, void *chi
         ret = touch_i2c_write_byte(chip_info->client, 0xff, 0x00);        /* page 4*/
 }
 
-static void synaptics_register_info_read(void * chip_data, uint16_t register_addr, uint8_t * result, uint8_t length)
+static inline void synaptics_register_info_read(void * chip_data, uint16_t register_addr, uint8_t * result, uint8_t length)
 {
         int ret = 0;
         uint8_t l_tmp = 0, h_tmp = 0;
@@ -5462,12 +5462,12 @@ static void synaptics_register_info_read(void * chip_data, uint16_t register_add
         ret = touch_i2c_read_block(chip_info->client, l_tmp, length, result);         /*read data*/
 }
 
-static int synaptics_get_usb_state(void)
+static inline int synaptics_get_usb_state(void)
 {
         return 0;
 }
 
-static int synaptics_get_face_state(void * chip_data)
+static inline int synaptics_get_face_state(void * chip_data)
 {
     int state = -1, ret = -1;
     struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -5497,21 +5497,21 @@ static int synaptics_get_face_state(void * chip_data)
     return ret;
 }
 
-static void synaptics_set_touch_direction(void *chip_data, uint8_t dir)
+static inline void synaptics_set_touch_direction(void *chip_data, uint8_t dir)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
         chip_info->touch_direction = dir;
 }
 
-static uint8_t synaptics_get_touch_direction(void *chip_data)
+static inline uint8_t synaptics_get_touch_direction(void *chip_data)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
         return chip_info->touch_direction;
 }
 
-static void synaptics_screenon_fingerprint_info(void *chip_data, struct fp_underscreen_info *fp_tpinfo)
+static inline void synaptics_screenon_fingerprint_info(void *chip_data, struct fp_underscreen_info *fp_tpinfo)
 {
         int ret = 0;
         uint8_t buf[10];
@@ -5543,14 +5543,14 @@ static void synaptics_screenon_fingerprint_info(void *chip_data, struct fp_under
         touch_i2c_write_byte(chip_info->client, 0xff, 0x0);
 }
 
-static void synaptics_specific_resume_operate(void *chip_data)
+static inline void synaptics_specific_resume_operate(void *chip_data)
 {
     struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
     chip_info->filter_state = false;
 }
 
-static void synaptics_enable_gesture_mask(void *chip_data, uint32_t enable)
+static inline void synaptics_enable_gesture_mask(void *chip_data, uint32_t enable)
 {
         int ret = -1, gesture_mask = 0;
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
@@ -5570,7 +5570,7 @@ static void synaptics_enable_gesture_mask(void *chip_data, uint32_t enable)
         return;
 }
 
-static int synaptics_set_report_point_first(void *chip_data, uint32_t enable)
+static inline int synaptics_set_report_point_first(void *chip_data, uint32_t enable)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
         int ret = 0;
@@ -5604,7 +5604,7 @@ static int synaptics_set_report_point_first(void *chip_data, uint32_t enable)
         return ret;
 }
 
-static int synaptics_get_report_point_first(void *chip_data)
+static inline int synaptics_get_report_point_first(void *chip_data)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
         int ret = 0;
@@ -5653,14 +5653,14 @@ static struct oplus_touchpanel_operations synaptics_ops = {
         .get_report_point_first     = synaptics_get_report_point_first,
 };
 
-static void synaptics_set_touchfilter_state(void *chip_data, uint8_t state)
+static inline void synaptics_set_touchfilter_state(void *chip_data, uint8_t state)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
         chip_info->filter_state = state;
 }
 
-static uint8_t synaptics_get_touchfilter_state(void *chip_data)
+static inline uint8_t synaptics_get_touchfilter_state(void *chip_data)
 {
         struct chip_data_s3706 *chip_info = (struct chip_data_s3706 *)chip_data;
 
@@ -5684,7 +5684,7 @@ static struct debug_info_proc_operations debug_info_proc_ops = {
         .gesture_rate       = synaptics_gesture_rate,
 };
 
-static int synaptics_tp_probe(struct i2c_client *client, const struct i2c_device_id *id)
+static inline int synaptics_tp_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 #ifdef CONFIG_SYNAPTIC_RED
         struct remotepanel_data *premote_data = NULL;
@@ -5790,7 +5790,7 @@ ts_malloc_failed:
         return ret;
 }
 
-static int synaptics_tp_remove(struct i2c_client *client)
+static inline int synaptics_tp_remove(struct i2c_client *client)
 {
         struct touchpanel_data *ts = i2c_get_clientdata(client);
 
@@ -5803,7 +5803,7 @@ static int synaptics_tp_remove(struct i2c_client *client)
         return 0;
 }
 
-static int synaptics_i2c_suspend(struct device *dev)
+static inline int synaptics_i2c_suspend(struct device *dev)
 {
         struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -5813,7 +5813,7 @@ static int synaptics_i2c_suspend(struct device *dev)
         return 0;
 }
 
-static int synaptics_i2c_resume(struct device *dev)
+static inline int synaptics_i2c_resume(struct device *dev)
 {
         struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -5851,7 +5851,7 @@ static struct i2c_driver tp_i2c_driver = {
         },
 };
 
-static int __init tp_driver_init(void)
+static inline int __init tp_driver_init(void)
 {
         TPD_INFO("%s is called\n", __func__);
 
@@ -5868,7 +5868,7 @@ static int __init tp_driver_init(void)
 }
 
 /* should never be called */
-static void __exit tp_driver_exit(void)
+static inline void __exit tp_driver_exit(void)
 {
         i2c_del_driver(&tp_i2c_driver);
         return;

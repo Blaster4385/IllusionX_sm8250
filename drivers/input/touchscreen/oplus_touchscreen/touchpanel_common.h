@@ -27,11 +27,7 @@
 #include "util_interface/touch_interfaces.h"
 #include "tp_devices.h"
 
-#ifdef CONFIG_TOUCHPANEL_MTK_PLATFORM
-#include<mt-plat/mtk_boot_common.h>
-#else
 #include <soc/oplus/system/boot_mode.h>
-#endif
 
 #define EFTM (250)
 #define FW_UPDATE_COMPLETE_TIMEOUT  msecs_to_jiffies(40*1000)

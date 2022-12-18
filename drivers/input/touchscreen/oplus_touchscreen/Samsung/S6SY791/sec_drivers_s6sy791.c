@@ -30,17 +30,17 @@
 
 /****************** Start of Log Tag Declear and level define*******************************/
 #define TPD_DEVICE "sec-s6sy791"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_INFO(a, arg...)  pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
 #define TPD_DEBUG(a, arg...)\
     do{\
         if (LEVEL_DEBUG == tp_debug)\
-            pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+            pr_debug("[TP]"TPD_DEVICE ": " a, ##arg);\
     }while(0)
 
 #define TPD_DETAIL(a, arg...)\
     do{\
         if (LEVEL_BASIC != tp_debug)\
-            pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+            pr_debug("[TP]"TPD_DEVICE ": " a, ##arg);\
     }while(0)
 
 #define TPD_DEBUG_NTAG(a, arg...)\
@@ -68,7 +68,7 @@ static struct chip_data_s6sy791 *g_chip_info;
 /**************************** end of global variable delcare*****************************************/
 
 /****** Start of other functions that work for oplus_touchpanel_operations callbacks***********/
-static int sec_enable_black_gesture(struct chip_data_s6sy791 *chip_info, bool enable)
+static inline int sec_enable_black_gesture(struct chip_data_s6sy791 *chip_info, bool enable)
 {
     int ret = 0;
     int i = 0;
@@ -135,7 +135,7 @@ static int sec_enable_black_gesture(struct chip_data_s6sy791 *chip_info, bool en
     return ret;
 }
 
-static void sec_enable_gesture_mask(void *chip_data, uint32_t enable)
+static inline void sec_enable_gesture_mask(void *chip_data, uint32_t enable)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
     int ret = -1;
@@ -177,7 +177,7 @@ static void sec_enable_gesture_mask(void *chip_data, uint32_t enable)
 }
 
 
-static int sec_enable_charge_mode(struct chip_data_s6sy791 *chip_info, bool enable)
+static inline int sec_enable_charge_mode(struct chip_data_s6sy791 *chip_info, bool enable)
 {
     int ret = -1;
 
@@ -191,7 +191,7 @@ static int sec_enable_charge_mode(struct chip_data_s6sy791 *chip_info, bool enab
     return ret;
 }
 
-static int sec_enable_earsense_mode(struct chip_data_s6sy791 *chip_info, bool enable)
+static inline int sec_enable_earsense_mode(struct chip_data_s6sy791 *chip_info, bool enable)
 {
     int ret = -1;
 
@@ -207,7 +207,7 @@ static int sec_enable_earsense_mode(struct chip_data_s6sy791 *chip_info, bool en
     return ret;
 }
 
-static int sec_enable_palm_reject(struct chip_data_s6sy791 *chip_info, bool enable)
+static inline int sec_enable_palm_reject(struct chip_data_s6sy791 *chip_info, bool enable)
 {
     int ret = -1;
 
@@ -221,7 +221,7 @@ static int sec_enable_palm_reject(struct chip_data_s6sy791 *chip_info, bool enab
     return ret;
 }
 
-static int sec_enable_game_mode(struct chip_data_s6sy791 *chip_info, bool enable)
+static inline int sec_enable_game_mode(struct chip_data_s6sy791 *chip_info, bool enable)
 {
     int ret = -1;
     char buf[4] = {0x00, 0x00, 0x00, 0x00};
@@ -233,7 +233,7 @@ static int sec_enable_game_mode(struct chip_data_s6sy791 *chip_info, bool enable
     return ret;
 }
 
-static int sec_enable_headset_mode(struct chip_data_s6sy791 *chip_info, bool enable)
+static inline int sec_enable_headset_mode(struct chip_data_s6sy791 *chip_info, bool enable)
 {
     int ret = -1;
 
@@ -242,7 +242,7 @@ static int sec_enable_headset_mode(struct chip_data_s6sy791 *chip_info, bool ena
     return ret;
 }
 
-static void sec_mdelay(unsigned int ms)
+static inline void sec_mdelay(unsigned int ms)
 {
     if (ms < 20)
         usleep_range(ms * 1000, ms * 1000);
@@ -250,7 +250,7 @@ static void sec_mdelay(unsigned int ms)
         msleep(ms);
 }
 
-static int sec_wait_for_ready(struct chip_data_s6sy791 *chip_info, unsigned int ack)
+static inline int sec_wait_for_ready(struct chip_data_s6sy791 *chip_info, unsigned int ack)
 {
     int rc = -1;
     int retry = 0, retry_cnt = 100;
@@ -277,7 +277,7 @@ static int sec_wait_for_ready(struct chip_data_s6sy791 *chip_info, unsigned int 
     return rc;
 }
 
-static int sec_enter_fw_mode(struct chip_data_s6sy791 *chip_info)
+static inline int sec_enter_fw_mode(struct chip_data_s6sy791 *chip_info)
 {
     int ret = -1;
     u8 device_id[3] = {0};
@@ -333,7 +333,7 @@ static int sec_enter_fw_mode(struct chip_data_s6sy791 *chip_info)
     return 0;
 }
 
-static u8 sec_checksum(u8 *data, int offset, int size)
+static inline u8 sec_checksum(u8 *data, int offset, int size)
 {
     int i;
     u8 checksum = 0;
@@ -344,7 +344,7 @@ static u8 sec_checksum(u8 *data, int offset, int size)
     return checksum;
 }
 
-static int sec_flash_page_erase(struct chip_data_s6sy791 *chip_info, u32 page_idx, u32 page_num)
+static inline int sec_flash_page_erase(struct chip_data_s6sy791 *chip_info, u32 page_idx, u32 page_num)
 {
     int ret = -1;
     u8 tCmd[6] = {0};
@@ -361,7 +361,7 @@ static int sec_flash_page_erase(struct chip_data_s6sy791 *chip_info, u32 page_id
     return ret;
 }
 
-static int sec_flash_page_write(struct chip_data_s6sy791 *chip_info, u32 page_idx, u8 *page_data)
+static inline int sec_flash_page_write(struct chip_data_s6sy791 *chip_info, u32 page_idx, u8 *page_data)
 {
     int ret;
     u8 tCmd[1 + 2 + SEC_FW_BLK_SIZE_MAX + 1];
@@ -378,7 +378,7 @@ static int sec_flash_page_write(struct chip_data_s6sy791 *chip_info, u32 page_id
     return ret;
 }
 
-static bool sec_limited_flash_page_write(struct chip_data_s6sy791 *chip_info, u32 page_idx, u8 *page_data)
+static inline bool sec_limited_flash_page_write(struct chip_data_s6sy791 *chip_info, u32 page_idx, u8 *page_data)
 {
     int ret = -1;
     u8 *tCmd = NULL;
@@ -428,7 +428,7 @@ err_write:
 
 }
 
-static int sec_flash_write(struct chip_data_s6sy791 *chip_info, u32 mem_addr, u8 *mem_data, u32 mem_size)
+static inline int sec_flash_write(struct chip_data_s6sy791 *chip_info, u32 mem_addr, u8 *mem_data, u32 mem_size)
 {
     int ret = -1;
     u32 page_idx = 0, size_copy = 0, flash_page_size = 0;
@@ -494,7 +494,7 @@ err:
     return -EIO;
 }
 
-static int sec_block_read(struct chip_data_s6sy791 *chip_info, u32 mem_addr, int mem_size, u8 *buf)
+static inline int sec_block_read(struct chip_data_s6sy791 *chip_info, u32 mem_addr, int mem_size, u8 *buf)
 {
     int ret;
     u8 cmd[5];
@@ -541,7 +541,7 @@ static int sec_block_read(struct chip_data_s6sy791 *chip_info, u32 mem_addr, int
     return 0;
 }
 
-static int sec_memory_read(struct chip_data_s6sy791 *chip_info, u32 mem_addr, u8 *mem_data, u32 mem_size)
+static inline int sec_memory_read(struct chip_data_s6sy791 *chip_info, u32 mem_addr, u8 *mem_data, u32 mem_size)
 {
     int ret;
     int retry = 3;
@@ -581,7 +581,7 @@ static int sec_memory_read(struct chip_data_s6sy791 *chip_info, u32 mem_addr, u8
     return read_size;
 }
 
-static int sec_chunk_update(struct chip_data_s6sy791 *chip_info, u32 addr, u32 size, u8 *data)
+static inline int sec_chunk_update(struct chip_data_s6sy791 *chip_info, u32 addr, u32 size, u8 *data)
 {
     int ii = 0, ret = 0;
     u8 *mem_rb = NULL;
@@ -628,7 +628,7 @@ err_write_fail:
     return ret;
 }
 
-static int sec_read_calibration_report(struct chip_data_s6sy791 *chip_info)
+static inline int sec_read_calibration_report(struct chip_data_s6sy791 *chip_info)
 {
     int ret;
     u8 buf[5] = { 0 };
@@ -647,7 +647,7 @@ static int sec_read_calibration_report(struct chip_data_s6sy791 *chip_info)
     return buf[4];
 }
 
-static int sec_execute_force_calibration(struct chip_data_s6sy791 *chip_info)
+static inline int sec_execute_force_calibration(struct chip_data_s6sy791 *chip_info)
 {
     int rc = -1;
 
@@ -663,7 +663,7 @@ static int sec_execute_force_calibration(struct chip_data_s6sy791 *chip_info)
     return rc;
 }
 
-static void handleFourCornerPoint(struct Coordinate *point, int n)
+static inline void handleFourCornerPoint(struct Coordinate *point, int n)
 {
     int i = 0;
     struct Coordinate left_most = point[0], right_most = point[0], top_most = point[0], down_most = point[0];
@@ -693,7 +693,7 @@ static void handleFourCornerPoint(struct Coordinate *point, int n)
 /****** End of other functions that work for oplus_touchpanel_operations callbacks*************/
 
 /********* Start of implementation of oplus_touchpanel_operations callbacks********************/
-static int sec_reset(void *chip_data)
+static inline int sec_reset(void *chip_data)
 {
     int ret = -1;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
@@ -724,7 +724,7 @@ static int sec_reset(void *chip_data)
     return 0;
 }
 
-static int sec_ftm_process(void *chip_data)
+static inline int sec_ftm_process(void *chip_data)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
 
@@ -738,7 +738,7 @@ static int sec_ftm_process(void *chip_data)
     return 0;
 }
 
-static int sec_get_vendor(void *chip_data, struct panel_info *panel_data)
+static inline int sec_get_vendor(void *chip_data, struct panel_info *panel_data)
 {
     int len = 0;
     char manu_temp[MAX_DEVICE_MANU_LENGTH] = "SEC_";
@@ -759,12 +759,12 @@ static int sec_get_vendor(void *chip_data, struct panel_info *panel_data)
     return 0;
 }
 
-static int sec_get_chip_info(void *chip_data)
+static inline int sec_get_chip_info(void *chip_data)
 {
     return 0;
 }
 
-static int sec_power_control(void *chip_data, bool enable)
+static inline int sec_power_control(void *chip_data, bool enable)
 {
     int ret = 0;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
@@ -806,7 +806,7 @@ static int sec_power_control(void *chip_data, bool enable)
     return ret;
 }
 
-static fw_check_state sec_fw_check(void *chip_data, struct resolution_info *resolution_info, struct panel_info *panel_data)
+static inline fw_check_state sec_fw_check(void *chip_data, struct resolution_info *resolution_info, struct panel_info *panel_data)
 {
     int ret = 0;
     int ver_len = 0;
@@ -861,7 +861,7 @@ static fw_check_state sec_fw_check(void *chip_data, struct resolution_info *reso
     return FW_NORMAL;
 }
 
-static bool check_calibration(struct chip_data_s6sy791 *chip_info)
+static inline bool check_calibration(struct chip_data_s6sy791 *chip_info)
 {
     u8 *data = NULL;
     int16_t temp_delta = 0, err_cnt = 0, judge_threshold = 2000;
@@ -894,7 +894,7 @@ OUT:
     return err_cnt > 2;
 }
 
-static fw_update_state sec_fw_update(void *chip_data, const struct firmware *fw, bool force)
+static inline fw_update_state sec_fw_update(void *chip_data, const struct firmware *fw, bool force)
 {
     int i = 0, ret = 0;
     u8 buf[4] = {0};
@@ -1003,7 +1003,7 @@ CAL_CHECK:
     return update_state;
 }
 
-static u32 sec_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
+static inline u32 sec_trigger_reason(void *chip_data, int gesture_enable, int is_suspended)
 {
     int ret = 0;
     int event_id = 0;
@@ -1107,7 +1107,7 @@ static u32 sec_trigger_reason(void *chip_data, int gesture_enable, int is_suspen
     return IRQ_IGNORE;
 }
 
-static int sec_get_touch_points(void *chip_data, struct point_info *points, int max_num)
+static inline int sec_get_touch_points(void *chip_data, struct point_info *points, int max_num)
 {
     int i = 0;
     int t_id = 0;
@@ -1198,7 +1198,7 @@ static int sec_get_touch_points(void *chip_data, struct point_info *points, int 
 
 #ifdef CONFIG_TOUCHPANEL_ALGORITHM
 // only do finger one
-static int sec_get_touch_points_specail(void *chip_data, struct point_info *points, int max_num)
+static inline int sec_get_touch_points_specail(void *chip_data, struct point_info *points, int max_num)
 {
     int t_id = 0;
     struct sec_event_coordinate *p_event_coord = NULL;
@@ -1233,7 +1233,7 @@ static int sec_get_touch_points_specail(void *chip_data, struct point_info *poin
 #endif
 
 
-static int sec_get_gesture_info(void *chip_data, struct gesture_info *gesture)
+static inline int sec_get_gesture_info(void *chip_data, struct gesture_info *gesture)
 {
     int i = 0, ret = -1;
     uint8_t coord[18] = {0};
@@ -1446,7 +1446,7 @@ static int sec_get_gesture_info(void *chip_data, struct gesture_info *gesture)
     return 0;
 }
 
-static void sec_change_to_np_mode(void *chip_data)
+static inline void sec_change_to_np_mode(void *chip_data)
 {
     int ret = -1;
     int i = 0;
@@ -1463,7 +1463,7 @@ static void sec_change_to_np_mode(void *chip_data)
     }
 }
 
-static void sec_enable_fingerprint_mode(void *chip_data, uint32_t enable)
+static inline void sec_enable_fingerprint_mode(void *chip_data, uint32_t enable)
 {
     int ret = -1;
     int i = 0;
@@ -1503,7 +1503,7 @@ static void sec_enable_fingerprint_mode(void *chip_data, uint32_t enable)
     return;
 }
 
-static void sec_get_fingerprint_info(void *chip_data, struct fp_underscreen_info *fp_tpinfo)
+static inline void sec_get_fingerprint_info(void *chip_data, struct fp_underscreen_info *fp_tpinfo)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
 
@@ -1517,7 +1517,7 @@ static void sec_get_fingerprint_info(void *chip_data, struct fp_underscreen_info
     }
 }
 
-static int sec_mode_switch(void *chip_data, work_mode mode, bool flag)
+static inline int sec_mode_switch(void *chip_data, work_mode mode, bool flag)
 {
     int ret = -1;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
@@ -1608,21 +1608,21 @@ static int sec_mode_switch(void *chip_data, work_mode mode, bool flag)
 //}
 //#endif
 
-static void sec_set_touch_direction(void *chip_data, uint8_t dir)
+static inline void sec_set_touch_direction(void *chip_data, uint8_t dir)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
 
     chip_info->touch_direction = dir;
 }
 
-static uint8_t sec_get_touch_direction(void *chip_data)
+static inline uint8_t sec_get_touch_direction(void *chip_data)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
 
     return chip_info->touch_direction;
 }
 
-static void sec_rate_white_list_ctrl(void *chip_data, int value)
+static inline void sec_rate_white_list_ctrl(void *chip_data, int value)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
 
@@ -1664,7 +1664,7 @@ static struct oplus_touchpanel_operations sec_ops = {
 
 
 /**************** Start of implementation of debug_info proc callbacks************************/
-static int sec_fix_tmode(struct chip_data_s6sy791 *chip_info, u8 mode, u8 state)
+static inline int sec_fix_tmode(struct chip_data_s6sy791 *chip_info, u8 mode, u8 state)
 {
     int ret = -1;
     u8 tBuff[2] = { mode, state };
@@ -1677,7 +1677,7 @@ static int sec_fix_tmode(struct chip_data_s6sy791 *chip_info, u8 mode, u8 state)
     return ret;
 }
 
-static int sec_release_tmode(struct chip_data_s6sy791 *chip_info)
+static inline int sec_release_tmode(struct chip_data_s6sy791 *chip_info)
 {
     int ret = -1;
 
@@ -1687,7 +1687,7 @@ static int sec_release_tmode(struct chip_data_s6sy791 *chip_info)
     return ret;
 }
 
-static int sec_read_self(struct chip_data_s6sy791 *chip_info, u8 type, char *data, int len)
+static inline int sec_read_self(struct chip_data_s6sy791 *chip_info, u8 type, char *data, int len)
 {
     int ret = 0;
     unsigned int data_len = (chip_info->hw_res->TX_NUM + chip_info->hw_res->RX_NUM) * 2;
@@ -1726,7 +1726,7 @@ err_out:
     return ret;
 }
 
-static int sec_read_mutual(struct chip_data_s6sy791 *chip_info, u8 type, char *data, int len)
+static inline int sec_read_mutual(struct chip_data_s6sy791 *chip_info, u8 type, char *data, int len)
 {
     int ret = 0;
     //u8 buf[2] = {0};
@@ -1769,7 +1769,7 @@ err_out:
     return ret;
 }
 
-static void sec_delta_read(struct seq_file *s, void *chip_data)
+static inline void sec_delta_read(struct seq_file *s, void *chip_data)
 {
     u8 *data = NULL;
     int16_t x = 0, y = 0, z = 0, temp_delta = 0, ret = 0;
@@ -1823,7 +1823,7 @@ kfree_out:
     return;
 }
 
-static void sec_baseline_read(struct seq_file *s, void *chip_data)
+static inline void sec_baseline_read(struct seq_file *s, void *chip_data)
 {
     u8 *data = NULL;
     int16_t x = 0, y = 0, z = 0, temp_delta = 0, ret = -1;
@@ -1859,7 +1859,7 @@ kfree_out:
     return;
 }
 
-static void sec_self_delta_read(struct seq_file *s, void *chip_data)
+static inline void sec_self_delta_read(struct seq_file *s, void *chip_data)
 {
     u8 *data = NULL;
     int16_t x = 0, rx_offset = 0, temp_delta = 0, ret = -1;
@@ -1897,7 +1897,7 @@ kfree_out:
     return;
 }
 
-static void sec_self_raw_read(struct seq_file *s, void *chip_data)
+static inline void sec_self_raw_read(struct seq_file *s, void *chip_data)
 {
     u8 *data = NULL;
     int16_t x = 0, rx_offset = 0, temp_delta = 0, ret = -1;
@@ -1935,7 +1935,7 @@ kfree_out:
     return;
 }
 
-static void sec_main_register_read(struct seq_file *s, void *chip_data)
+static inline void sec_main_register_read(struct seq_file *s, void *chip_data)
 {
     u8 buf[4] = {0};
     u8 grip_buf[5] = {0};
@@ -2044,7 +2044,7 @@ static void sec_main_register_read(struct seq_file *s, void *chip_data)
     return;
 }
 
-static void sec_rtdp_start(struct chip_data_s6sy791 *chip_info)
+static inline void sec_rtdp_start(struct chip_data_s6sy791 *chip_info)
 {
     int ret = -1;
     u8 tpara[4] = {0x0B, 0x06, 0x64, 0x06};    //scan type, mutual rawdata type, trigger threshold, self rawdata type
@@ -2061,7 +2061,7 @@ static void sec_rtdp_start(struct chip_data_s6sy791 *chip_info)
     sec_mdelay(1000);
 }
 
-static int sec_rtdp_read_event(struct chip_data_s6sy791 *chip_info)
+static inline int sec_rtdp_read_event(struct chip_data_s6sy791 *chip_info)
 {
     int ret = -1;
 
@@ -2069,7 +2069,7 @@ static int sec_rtdp_read_event(struct chip_data_s6sy791 *chip_info)
     return ret;
 }
 
-static void sec_rtdp_dump(struct seq_file *s, struct chip_data_s6sy791 *chip_info)
+static inline void sec_rtdp_dump(struct seq_file *s, struct chip_data_s6sy791 *chip_info)
 {
     uint8_t temp[2] = {0};
     uint8_t *pRead = NULL;
@@ -2131,7 +2131,7 @@ ERR_OUT:
     }
 }
 
-static void sec_reserve_read(struct seq_file *s, void *chip_data)
+static inline void sec_reserve_read(struct seq_file *s, void *chip_data)
 {
     int state = 0;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
@@ -2159,7 +2159,7 @@ static struct debug_info_proc_operations debug_info_proc_ops = {
     .reserve_read       = sec_reserve_read,
 };
 
-static void sec_start_aging_test(void *chip_data){
+static inline void sec_start_aging_test(void *chip_data){
     int ret = -1;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
     TPD_INFO("%s: start aging test \n", __func__);
@@ -2168,7 +2168,7 @@ static void sec_start_aging_test(void *chip_data){
         TPD_INFO("%s: start aging test failed!\n", __func__);
 }
 
-static void sec_finish_aging_test(void *chip_data){
+static inline void sec_finish_aging_test(void *chip_data){
     int ret = -1;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
     TPD_INFO("%s: finish aging test \n", __func__);
@@ -2182,7 +2182,7 @@ static struct aging_test_proc_operations aging_test_proc_ops = {
     .finish_aging_test  = sec_finish_aging_test,
 };
 
-static void sec_earsese_rawdata_read(void *chip_data, char *rawdata, int read_len)
+static inline void sec_earsese_rawdata_read(void *chip_data, char *rawdata, int read_len)
 {
     int ret = 0;
     u8 buf[2] = {0};
@@ -2227,7 +2227,7 @@ static void sec_earsese_rawdata_read(void *chip_data, char *rawdata, int read_le
     return;
 }
 
-static void sec_earsese_delta_read(void *chip_data, char *earsense_delta, int read_len)
+static inline void sec_earsese_delta_read(void *chip_data, char *earsense_delta, int read_len)
 {
     int ret = 0, hover_status = 0, data_type = 0;
     u8 buf[2] = {0};
@@ -2286,7 +2286,7 @@ static void sec_earsese_delta_read(void *chip_data, char *earsense_delta, int re
     return;
 }
 
-static void sec_earsese_selfdata_read( void *chip_data, char *self_data, int read_len)
+static inline void sec_earsese_selfdata_read( void *chip_data, char *self_data, int read_len)
 {
     int i = 0, ret = 0;
     int8_t tmp = 0;
@@ -2316,14 +2316,14 @@ static struct earsense_proc_operations earsense_proc_ops = {
     .self_data_read = sec_earsese_selfdata_read,
 };
 /***************** End of implementation of debug_info proc callbacks*************************/
-static void sec_swap(u8 *a, u8 *b)
+static inline void sec_swap(u8 *a, u8 *b)
 {
     u8 temp = *a;
     *a = *b;
     *b = temp;
 }
 
-static void rearrange_sft_result(u8 *data, int length)
+static inline void rearrange_sft_result(u8 *data, int length)
 {
     int i = 0;
 
@@ -2333,7 +2333,7 @@ static void rearrange_sft_result(u8 *data, int length)
     }
 }
 
-static void store_to_file(int fd, char *format, ...)
+static inline void store_to_file(int fd, char *format, ...)
 {
     va_list args;
     char buf[64] = {0};
@@ -2351,7 +2351,7 @@ static void store_to_file(int fd, char *format, ...)
     }
 }
 
-static int sec_execute_selftest(struct seq_file *s, int fd, struct chip_data_s6sy791 *chip_info, struct sec_testdata *sec_testdata)
+static inline int sec_execute_selftest(struct seq_file *s, int fd, struct chip_data_s6sy791 *chip_info, struct sec_testdata *sec_testdata)
 {
     int rc = -1;
     u8 tpara[2] = {0x25, 0x40};
@@ -2448,7 +2448,7 @@ ERR_EXIT:
     return rc;
 }
 
-static int sec_execute_p2ptest(struct seq_file *s, struct chip_data_s6sy791 *chip_info, struct sec_testdata *sec_testdata)
+static inline int sec_execute_p2ptest(struct seq_file *s, struct chip_data_s6sy791 *chip_info, struct sec_testdata *sec_testdata)
 {
     int rc;
     u8 tpara[2] = {0x0F, 0x11};
@@ -2484,7 +2484,7 @@ err_exit:
     return rc;
 }
 
-static uint32_t search_for_item(const struct firmware *fw, int item_cnt, uint8_t item_index)
+static inline uint32_t search_for_item(const struct firmware *fw, int item_cnt, uint8_t item_index)
 {
     int i = 0;
     uint32_t item_offset = 0;
@@ -2501,7 +2501,7 @@ static uint32_t search_for_item(const struct firmware *fw, int item_cnt, uint8_t
     return item_offset;
 }
 
-static void sec_auto_test(struct seq_file *s, void *chip_data, struct sec_testdata *sec_testdata)
+static inline void sec_auto_test(struct seq_file *s, void *chip_data, struct sec_testdata *sec_testdata)
 {
     u8 type = 0;
     uint32_t err_cnt = 0, item_offset = 0;
@@ -2937,7 +2937,7 @@ ERR_OUT:
     TPD_INFO(" TP auto test %d error(s). %s\n", err_cnt, err_cnt ? "" : "All test passed.");
 }
 
-static int sec_get_verify_result(struct chip_data_s6sy791 *chip_info)
+static inline int sec_get_verify_result(struct chip_data_s6sy791 *chip_info)
 {
     int ret = -1;
 
@@ -2951,7 +2951,7 @@ static int sec_get_verify_result(struct chip_data_s6sy791 *chip_info)
     return ret;
 }
 
-static void sec_calibrate(struct seq_file *s, void *chip_data)
+static inline void sec_calibrate(struct seq_file *s, void *chip_data)
 {
     int ret = -1;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
@@ -2983,7 +2983,7 @@ static void sec_calibrate(struct seq_file *s, void *chip_data)
     return;
 }
 
-static void sec_verify_calibration(struct seq_file *s, void *chip_data)
+static inline void sec_verify_calibration(struct seq_file *s, void *chip_data)
 {
     int ret = -1;
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
@@ -2998,7 +2998,7 @@ static void sec_verify_calibration(struct seq_file *s, void *chip_data)
     return;
 }
 
-static bool sec_get_cal_status(struct seq_file *s, void *chip_data)
+static inline bool sec_get_cal_status(struct seq_file *s, void *chip_data)
 {
     struct chip_data_s6sy791 *chip_info = (struct chip_data_s6sy791 *)chip_data;
 
@@ -3249,7 +3249,7 @@ static void sec_init_oplus_apk_op(struct touchpanel_data *ts)
 
 
 /*********** Start of I2C Driver and Implementation of it's callbacks*************************/
-static int sec_tp_probe(struct i2c_client *client, const struct i2c_device_id *id)
+static inline int sec_tp_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
     struct chip_data_s6sy791 *chip_info = NULL;
     struct touchpanel_data *ts = NULL;
@@ -3332,7 +3332,7 @@ ts_malloc_failed:
     return ret;
 }
 
-static int sec_tp_remove(struct i2c_client *client)
+static inline int sec_tp_remove(struct i2c_client *client)
 {
     struct touchpanel_data *ts = i2c_get_clientdata(client);
 
@@ -3342,7 +3342,7 @@ static int sec_tp_remove(struct i2c_client *client)
     return 0;
 }
 
-static int sec_i2c_suspend(struct device *dev)
+static inline int sec_i2c_suspend(struct device *dev)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -3352,7 +3352,7 @@ static int sec_i2c_suspend(struct device *dev)
     return 0;
 }
 
-static int sec_i2c_resume(struct device *dev)
+static inline int sec_i2c_resume(struct device *dev)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -3393,7 +3393,7 @@ static struct i2c_driver tp_i2c_driver = {
 /******************* End of I2C Driver and It's dev_pm_ops***********************/
 
 /***********************Start of module init and exit****************************/
-static int __init tp_driver_init(void)
+static inline int __init tp_driver_init(void)
 {
     TPD_INFO("%s is called\n", __func__);
 
@@ -3408,7 +3408,7 @@ static int __init tp_driver_init(void)
     return 0;
 }
 
-static void __exit tp_driver_exit(void)
+static inline void __exit tp_driver_exit(void)
 {
     i2c_del_driver(&tp_i2c_driver);
 }

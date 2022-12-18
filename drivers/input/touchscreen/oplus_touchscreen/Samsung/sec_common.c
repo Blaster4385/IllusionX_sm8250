@@ -8,11 +8,11 @@
 /*******LOG TAG Declear*****************************/
 
 #define TPD_DEVICE "sec_common"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_INFO(a, arg...)  pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
 #define TPD_DEBUG(a, arg...)\
     do{\
         if (tp_debug)\
-        pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
+        pr_debug("[TP]"TPD_DEVICE ": " a, ##arg);\
     }while(0)
 
 /*********** sec tool operate content***********************/
@@ -38,7 +38,7 @@ static struct attribute_group cmd_attr_group = {
     .attrs = cmd_attributes,
 };
 
-static ssize_t sec_ts_reg_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
+static inline ssize_t sec_ts_reg_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 	int ret = 0;
@@ -56,7 +56,7 @@ static ssize_t sec_ts_reg_store(struct device *dev, struct device_attribute *att
     return size;
 }
 
-static ssize_t sec_ts_regread_show(struct device *dev, struct device_attribute *attr, char *buf)
+static inline ssize_t sec_ts_regread_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
     int ret = -1;
@@ -104,7 +104,7 @@ malloc_err:
     return lv1_readsize;
 }
 
-static ssize_t sec_ts_regreadsize_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
+static inline ssize_t sec_ts_regreadsize_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
     struct touchpanel_data *ts = dev_get_drvdata(dev);
 
@@ -120,7 +120,7 @@ static ssize_t sec_ts_regreadsize_store(struct device *dev, struct device_attrib
 }
 
 //create sec debug interfaces
-void sec_raw_device_init(struct touchpanel_data *ts)
+inline void sec_raw_device_init(struct touchpanel_data *ts)
 {
     int ret = -1;
     struct class *sec_class = NULL;
@@ -159,7 +159,7 @@ err_sysfs:
 }
 
 
-void sec_limit_read(struct seq_file *s, struct touchpanel_data *ts)
+inline void sec_limit_read(struct seq_file *s, struct touchpanel_data *ts)
 {
     int ret = 0, m = 0, i = 0, j = 0, item_cnt = 0, array_index = 0;
     const struct firmware *fw = NULL;
@@ -323,7 +323,7 @@ void sec_limit_read(struct seq_file *s, struct touchpanel_data *ts)
 
 /************ sec auto test content*************************/
 
-static int tp_auto_test_read_func(struct seq_file *s, void *v)
+static inline int tp_auto_test_read_func(struct seq_file *s, void *v)
 {
     struct touchpanel_data *ts = s->private;
     struct sec_proc_operations *sec_ops;
@@ -446,7 +446,7 @@ OUT:
     return 0;
 }
 
-static int baseline_autotest_open(struct inode *inode, struct file *file)
+static inline int baseline_autotest_open(struct inode *inode, struct file *file)
 {
     return single_open(file, tp_auto_test_read_func, PDE_DATA(inode));
 }
@@ -459,7 +459,7 @@ static const struct file_operations tp_auto_test_proc_fops = {
 };
 
 
-static ssize_t proc_curved_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+static inline ssize_t proc_curved_control_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
     ssize_t ret = 0;
     char page[PAGESIZE];
@@ -479,7 +479,7 @@ static ssize_t proc_curved_control_read(struct file *file, char __user *user_buf
     return ret;
 }
 
-static ssize_t proc_curved_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_curved_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     char buf[8] = {0};
     int ret, temp;
@@ -522,7 +522,7 @@ static const struct file_operations proc_curved_control_ops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_corner_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_corner_control_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int ret = 0, para_num = 0;
     char buf[GRIP_PARAMETER_LEN] = {0};
@@ -564,7 +564,7 @@ static const struct file_operations proc_corner_control_ops = {
     .owner = THIS_MODULE,
 };
 
-static ssize_t proc_kernel_grip_para_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+static inline ssize_t proc_kernel_grip_para_write(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
 {
     int para = 0;
     char buf[10] = {0};
@@ -601,7 +601,7 @@ static const struct file_operations proc_kernel_grip_para_ops = {
 };
 
 //proc/touchpanel/baseline_test
-int sec_create_proc(struct touchpanel_data *ts, struct sec_proc_operations *sec_ops)
+inline int sec_create_proc(struct touchpanel_data *ts, struct sec_proc_operations *sec_ops)
 {
     int ret = 0;
 

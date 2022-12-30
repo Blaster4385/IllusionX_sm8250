@@ -1329,7 +1329,7 @@ static inline void enqueue_task(struct rq *rq, struct task_struct *p, int flags)
 	uclamp_rq_inc(rq, p);
 	p->sched_class->enqueue_task(rq, p, flags);
 	walt_update_last_enqueue(p);
-	trace_sched_enq_deq_task(p, 1, cpumask_bits(&p->cpus_allowed)[0]);
+	trace_sched_enq_deq_task(p, 1, cpumask_bits(p->cpus_ptr)[0]);
 }
 
 static inline void dequeue_task(struct rq *rq, struct task_struct *p, int flags)
@@ -1348,7 +1348,7 @@ static inline void dequeue_task(struct rq *rq, struct task_struct *p, int flags)
 	if (p == rq->ed_task)
 		early_detection_notify(rq, sched_ktime_clock());
 #endif
-	trace_sched_enq_deq_task(p, 0, cpumask_bits(&p->cpus_allowed)[0]);
+	trace_sched_enq_deq_task(p, 0, cpumask_bits(p->cpus_ptr)[0]);
 }
 
 void activate_task(struct rq *rq, struct task_struct *p, int flags)
@@ -1945,7 +1945,7 @@ void sched_migrate_to_cpumask_start(struct cpumask *old_mask,
 	struct task_struct *p = current;
 
 	raw_spin_lock_irq(&p->pi_lock);
-	*cpumask_bits(old_mask) = *cpumask_bits(&p->cpus_allowed);
+	*cpumask_bits(old_mask) = *cpumask_bits(p->cpus_ptr);
 	raw_spin_unlock_irq(&p->pi_lock);
 
 	/*
@@ -1966,7 +1966,7 @@ void sched_migrate_to_cpumask_end(const struct cpumask *old_mask,
 	 * cpumask. There's no need to immediately migrate right now.
 	 */
 	raw_spin_lock_irq(&p->pi_lock);
-	if (*cpumask_bits(&p->cpus_allowed) == *cpumask_bits(dest)) {
+	if (*cpumask_bits(p->cpus_ptr) == *cpumask_bits(dest)) {
 		struct rq *rq = this_rq();
 
 		raw_spin_lock(&rq->lock);

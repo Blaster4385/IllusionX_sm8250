@@ -6481,7 +6481,7 @@ select_idle_capacity(struct task_struct *p, struct sched_domain *sd, int target)
 	sync_entity_load_avg(&p->se);
 
 	cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-	cpumask_and(cpus, sched_domain_span(sd), &p->cpus_allowed);
+	cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
 
 	for_each_cpu_wrap(cpu, cpus, target) {
 		unsigned long cpu_cap = capacity_of(cpu);
@@ -10722,7 +10722,7 @@ no_move:
 			 * moved to this_cpu:
 			 */
 			if (!cpumask_test_cpu(this_cpu,
-						&busiest->curr->cpus_allowed)
+						busiest->curr->cpus_ptr)
 				|| !can_migrate_boosted_task(busiest->curr,
 						cpu_of(busiest), this_cpu)) {
 				raw_spin_unlock_irqrestore(&busiest->lock,

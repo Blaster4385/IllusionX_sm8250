@@ -268,13 +268,12 @@ static const struct file_operations pm_qos_debug_fops = {
 };
 
 static inline int pm_qos_set_value_for_cpus(struct pm_qos_request *new_req,
-					    struct pm_qos_constraints *c,
-					    unsigned long *cpus,
-					    unsigned long new_cpus,
-					    enum pm_qos_req_action new_action)
+        struct pm_qos_constraints *c,
+		unsigned long *cpus, bool dev_req)
 {
 	struct pm_qos_request *req;
 	unsigned long new_req_cpus;
+	bool changed = false;
 	int cpu;
 
 	/*
@@ -285,27 +284,16 @@ static inline int pm_qos_set_value_for_cpus(struct pm_qos_request *new_req,
 	if (c != pm_qos_array[PM_QOS_CPU_DMA_LATENCY]->constraints)
 		return -EINVAL;
 
-	if (new_cpus) {
-		/* cpus_affine changed, so the old CPUs need to be refreshed */
-		new_req_cpus = atomic_read(&new_req->cpus_affine) | new_cpus;
-		atomic_set(&new_req->cpus_affine, new_cpus);
-	} else {
-		new_req_cpus = atomic_read(&new_req->cpus_affine);
-	}
-
-	if (new_action != PM_QOS_REMOVE_REQ) {
-		bool changed = false;
-
-		for_each_cpu(cpu, to_cpumask(&new_req_cpus)) {
-			if (c->target_per_cpu[cpu] != new_req->node.prio) {
-				changed = true;
-				break;
-			}
+	new_req_cpus = atomic_read(&new_req->cpus_affine);
+	for_each_cpu(cpu, to_cpumask(&new_req_cpus)) {
+		if (c->target_per_cpu[cpu] != new_req->node.prio) {
+			changed = true;
+			break;
 		}
-
-		if (!changed)
-			return 0;
 	}
+
+	if (!changed)
+		return 0;
 
 	plist_for_each_entry(req, &c->list, node) {
 		unsigned long affected_cpus;
@@ -335,10 +323,19 @@ static inline int pm_qos_set_value_for_cpus(struct pm_qos_request *new_req,
 	return 0;
 }
 
-static int pm_qos_update_target_cpus(struct pm_qos_constraints *c,
-				     struct plist_node *node,
-				     enum pm_qos_req_action action, int value,
-				     unsigned long new_cpus)
+/**
+ * pm_qos_update_target - manages the constraints list and calls the notifiers
+ *  if needed
+ * @c: constraints data struct
+ * @node: request to add to the list, to update or to remove
+ * @action: action to take on the constraints list
+ * @value: value of the request to add or update
+ *
+ * This function returns 1 if the aggregated constraint value has changed, 0
+ *  otherwise.
+ */
+int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
+			 enum pm_qos_req_action action, int value, bool dev_req)
 {
 	struct pm_qos_request *req = container_of(node, typeof(*req), node);
 	int prev_value, curr_value, new_value;
@@ -375,7 +372,7 @@ static int pm_qos_update_target_cpus(struct pm_qos_constraints *c,
 
 	curr_value = pm_qos_get_value(c);
 	pm_qos_set_value(c, curr_value);
-	ret = pm_qos_set_value_for_cpus(req, c, &cpus, new_cpus, action);
+	ret = pm_qos_set_value_for_cpus(req, c, &cpus, dev_req);
 
 	spin_unlock(&pm_qos_lock);
 
@@ -396,23 +393,6 @@ static int pm_qos_update_target_cpus(struct pm_qos_constraints *c,
 		ret = 0;
 	}
 	return ret;
-}
-
-/**
- * pm_qos_update_target - manages the constraints list and calls the notifiers
- *  if needed
- * @c: constraints data struct
- * @node: request to add to the list, to update or to remove
- * @action: action to take on the constraints list
- * @value: value of the request to add or update
- *
- * This function returns 1 if the aggregated constraint value has changed, 0
- *  otherwise.
- */
-int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
-			 enum pm_qos_req_action action, int value)
-{
-	return pm_qos_update_target_cpus(c, node, action, value, 0);
 }
 
 /**
@@ -558,8 +538,9 @@ static void pm_qos_irq_release(struct kref *ref)
 	struct pm_qos_constraints *c =
 				pm_qos_array[req->pm_qos_class]->constraints;
 
-	pm_qos_update_target_cpus(c, &req->node, PM_QOS_UPDATE_REQ,
-				  c->default_value, CPUMASK_ALL);
+	atomic_set(&req->cpus_affine, CPUMASK_ALL);
+	pm_qos_update_target(c, &req->node, PM_QOS_UPDATE_REQ,
+			c->default_value, false);
 }
 
 static void pm_qos_irq_notify(struct irq_affinity_notify *notify,
@@ -570,8 +551,10 @@ static void pm_qos_irq_notify(struct irq_affinity_notify *notify,
 	struct pm_qos_constraints *c =
 				pm_qos_array[req->pm_qos_class]->constraints;
 
-	pm_qos_update_target_cpus(c, &req->node, PM_QOS_UPDATE_REQ,
-				  req->node.prio, *cpumask_bits(mask));
+	atomic_set(&req->cpus_affine, *cpumask_bits(mask));
+
+	pm_qos_update_target(c, &req->node, PM_QOS_UPDATE_REQ,
+				    req->node.prio, false);
 }
 #endif
 

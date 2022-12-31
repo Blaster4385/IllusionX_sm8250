@@ -3809,6 +3809,8 @@ done:
 	if (wq_has_sleeper(&lruvec->mm_state.wait))
 		wake_up_all(&lruvec->mm_state.wait);
 
+	wakeup_flusher_threads(WB_REASON_VMSCAN);
+
 	return true;
 }
 
